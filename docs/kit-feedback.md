@@ -7,3 +7,4 @@
 3. **?qa=1 の `ctx.choose`**：何も開かず `window.__gfChoice` か primary を返す。四問を続けて答える作業台のような場面では、一つの値では足りないので、通しの確認では getter で順に返す列を使った（full.mjs の `pre()`）。kit 側で「答えの列」を受け取れるとよい。
 4. **はしご（ST_HATCH）の [E] の箱**：作業場の床の揚げ戸の真上に、はしごの箱が重なる。揚げ戸の作業のあいだ、はしごの箱を interactables から外して避けた。
 5. **InstancedMesh** は `frustumCulled = false` にしないと、札の壁が見る向きで消えた。
+6. **prewarm と画面効果（fx）の的**：遊ぶ間は家を `ctx.fx.rt`（線形・トーンマップなし）に描き、四角を画面へ描く。kit の `prewarm` は的なし（画面）で compile と render をするので、遊びでは使わない画面向けの版を 9〜12 本作っていた（ソフトウェア描画でタイトル中に 3〜5.5 秒の固まり）。この作品は `noPrewarm: true` にして、`js/ext/boot.js` で物一つずつ `renderer.compile(物, camera, scene)` を fx の的の下で行い、進み具合の棒を出した。kit 側で、prewarm が fx の的に向けて compile し、物ごとに分けて進み具合を出せるとよい。
