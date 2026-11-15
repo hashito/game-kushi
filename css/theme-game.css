@@ -3,3 +3,12 @@
 [data-theme="dark-industrial candle-room"] {
   /* --gf-accent: #d98a2b;  --gf-accent-ink: #1a1206;  --gf-radius: 4px;  --gf-font: 'Noto Sans JP', sans-serif; */
 }
+[data-theme="dark-industrial candle-room"] { --gf-accent: #c9862f; --gf-accent-ink: #1a1206; }
+/* the charms in hand (top right) */
+.kc-fuda { padding: 4px 10px; border-radius: 6px; background: rgba(12, 10, 8, 0.74); color: #efe6d0; font-size: 15px; line-height: 1.5; letter-spacing: 0.06em; border: 1px solid rgba(239, 230, 208, 0.3); }
+.kc-fuda.kc-none { color: #b8ad98; border-color: rgba(184, 173, 152, 0.25); }
+/* the hatch pushed up from below (top centre) */
+.kc-seal { padding: 6px 12px; border-radius: 6px; background: rgba(30, 6, 4, 0.82); color: #ffd9c8; font-size: 15px; text-align: center; min-width: 220px; border: 1px solid rgba(255, 140, 110, 0.5); }
+.kc-seal p { margin: 0 0 4px; }
+.kc-seal-bar { height: 8px; background: rgba(255, 255, 255, 0.15); border-radius: 4px; overflow: hidden; }
+.kc-seal-bar i { display: block; height: 100%; width: 0; background: #e0533a; }

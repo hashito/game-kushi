@@ -21,7 +21,7 @@ let n = 0;
 const api = {
   p, log, sleep, base,
   shot: async (name) => { const f = path.join(out, `${String(++n).padStart(2, '0')}_${name}.jpg`); await p.shot(f); log('shot', f); return f; },
-  G: (expr) => Promise.race([new Promise((_, no) => setTimeout(() => no(new Error(`eval timed out: ${expr.slice(0, 80)}`)), 20000)), p.eval(`(async () => { const g = window.__game, kg = window.__kg; return JSON.stringify(await (${expr})); })()`).then((s) => (s === undefined ? undefined : JSON.parse(s)))]),
+  G: (expr) => Promise.race([new Promise((_, no) => setTimeout(() => no(new Error(`eval timed out: ${expr.slice(0, 80)}`)), 20000)), p.eval(`(async () => { const g = window.__game, kg = window.__kg, kc = window.__kc; return JSON.stringify(await (${expr})); })()`).then((s) => (s === undefined ? undefined : JSON.parse(s)))]),
   errors: () => p.errors,
 };
 try {

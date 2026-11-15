@@ -95,16 +95,15 @@
   "controls": {
     "crouch": true,
     "flashlight": {
-      "color": 16756838,
-      "intensity": 2.2,
-      "distance": 9,
-      "angle": 0.75
+      "color": 16754784,
+      "intensity": 16,
+      "distance": 14,
+      "angle": 0.95
     },
     "fov": 72,
     "far": 55,
     "gate": {
-      "crouch": "L3",
-      "light": "L3"
+      "crouch": "L3"
     },
     "touch": [
       {
@@ -165,5 +164,6 @@
       "札の家",
       "ホラーゲーム"
     ]
-  }
+  },
+  "thoughtVoices": "assets/voice/thoughts.json"
 }

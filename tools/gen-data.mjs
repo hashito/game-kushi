@@ -20,7 +20,7 @@ const rooms = [
   R('NAKA', '中の間', 2.6, 13, 5.4, 7, 1, 'washitsu', { floorTex: 'tatami_old', wallTex: 'clay_wall' }),
   R('HASHIRI', '走り庭（台所）', 0, 8, 2.6, 12, 1, 'doma', { floorTex: 'dirt_floor', wallTex: 'plaster_soot' }),
   R('OKU', '奥の間', 2.6, 6.5, 5.4, 6.5, 1, 'washitsu', { floorTex: 'tatami_old', wallTex: 'clay_wall' }),
-  R('ROKA', '渡り廊下', 2.6, 5, 5.4, 1.5, 1, 'corridor', { kind: 'corridor', floorTex: 'engawa_boards', wallTex: 'wood_dark' }),
+  R('ROKA', '渡り廊下', 2.6, 5, 5.4, 1.5, 1, 'corridor', { kind: 'corridor', floorTex: 'engawa_boards', wallTex: 'clay_wall' }),
   R('SAGYO', '作業場', 0, -1, 8, 6, 1, 'workshop', { floorTex: 'planks_worn', wallTex: 'wall_clay_stained' }),
   // under the workshop: the cellar where the boxwood boards were smoked and laid down for years
   R('MURO', '室（むろ）', 1, -1, 8, 6, 0, 'storage', { floorTex: 'dirt_floor', wallTex: 'stone_wall' }),
@@ -28,8 +28,8 @@ const rooms = [
   R('P1', '板の道', 1.6, -41, 2, 40, 0, 'corridor', { kind: 'corridor', floorTex: 'planks_dark', wallTex: 'stone_wall' }),
   R('P2', '低い道', -18.6, -42.6, 22.2, 1.6, 0, 'corridor', { kind: 'corridor', floorTex: 'dirt_floor', wallTex: 'rock_granite_mossy' }),
   R('P3', '水の道', -18.6, -81, 2, 38.4, 0, 'corridor', { kind: 'corridor', floorTex: 'wet_floor', wallTex: 'rock_granite_mossy' }),
-  R('P4A', '札の回廊', -18.6, -82.6, 14.6, 1.6, 0, 'corridor', { kind: 'corridor', floorTex: 'planks_dark', wallTex: 'wood_dark' }),
-  R('P4B', '札の回廊（格子戸の先）', -4, -82.6, 14, 1.6, 0, 'corridor', { kind: 'corridor', floorTex: 'planks_dark', wallTex: 'wood_dark' }),
+  R('P4A', '札の回廊', -18.6, -82.6, 14.6, 1.6, 0, 'corridor', { kind: 'corridor', floorTex: 'planks_dark', wallTex: 'planks_dark' }),
+  R('P4B', '札の回廊（格子戸の先）', -4, -82.6, 14, 1.6, 0, 'corridor', { kind: 'corridor', floorTex: 'planks_dark', wallTex: 'planks_dark' }),
   R('P5', '下りの道', 8, -100, 2, 17.4, 0, 'corridor', { kind: 'corridor', floorTex: 'dirt_floor', wallTex: 'stone_wall' }),
   R('OKUMURO', '奥の室', 5, -108, 8, 8, 0, 'storage', { floorTex: 'dirt_floor', wallTex: 'stone_wall' }),
 ];
@@ -79,15 +79,15 @@ const fuda = {
     { id: 'K_P3A', room: 'P3', x: -17.6, z: -78.6, along: 'z', label: '結界の柱' },
     { id: 'K_P3B', room: 'P3', x: -17.6, z: -60.0, along: 'z', label: '結界の柱' },
     { id: 'K_P3C', room: 'P3', x: -17.6, z: -45.0, along: 'z', label: '結界の柱' },
-    { id: 'K_P2', room: 'P2', x: 0.8, z: -41.8, along: 'x', label: '結界の柱' },
+    { id: 'K_P2', room: 'P2', x: -6.0, z: -41.8, along: 'x', label: '結界の柱' },
     { id: 'K_P1A', room: 'P1', x: 2.6, z: -28.0, along: 'z', label: '結界の柱' },
     { id: 'K_P1B', room: 'P1', x: 2.6, z: -10.0, along: 'z', label: '結界の柱' },
   ],
   // the spare charms on the walls of the charm corridor (side quest: more charms for the way back)
   walls: [
-    { id: 'W_1', room: 'P4A', x: -14.0, z: -81.04, face: 's', label: '壁の札' },
-    { id: 'W_2', room: 'P4A', x: -11.2, z: -82.56, face: 'n', label: '壁の札' },
-    { id: 'W_3', room: 'P4A', x: -6.4, z: -81.04, face: 's', label: '壁の札' },
+    { id: 'W_1', room: 'P4A', x: -14.0, z: -81.13, face: 'n', label: '壁の札' },
+    { id: 'W_2', room: 'P4A', x: -11.2, z: -82.47, face: 's', label: '壁の札' },
+    { id: 'W_3', room: 'P4A', x: -6.4, z: -81.13, face: 'n', label: '壁の札' },
   ],
   // the route the dead woman walks (the middle of the passage, from the room at the end to the ladder)
   route: [[9, -104], [9, -100], [9, -81.8], [-17.6, -81.8], [-17.6, -41.8], [2.6, -41.8], [2.6, -1.0], [6.0, 0.6]],
@@ -171,13 +171,12 @@ const things = [
   T('NAKA_TANSU', 'NAKA', 6.0, 13.35, 0.7, '箪笥', ['引き出しの一つに、役所の書類の控えが入っている。'], ''),
   T('HASHIRI_KAMADO', 'HASHIRI', 0.5, 15.8, 0.9, 'かまど', ['煤けたかまど。火を落としてから、ずいぶんたっている。'], ''),
   T('HASHIRI_WELL', 'HASHIRI', 1.3, 9.0, 0.7, '井戸', ['土間の中に井戸がある。木の蓋に、札が三枚。', '蓋の下で、水がはねる音がした。'], 'この井戸の水は、どこにつながっているんだろう。'),
-  T('HASHIRI_MIZUYA', 'HASHIRI', 2.25, 18.4, 1.3, '水屋', ['茶碗が二人分。片方は、縁が欠けている。'], ''),
+  T('HASHIRI_MIZUYA', 'HASHIRI', 2.25, 18.8, 1.55, '水屋', ['茶碗が二人分。片方は、縁が欠けている。'], ''),
   T('OKU_KYODAI', 'OKU', 7.6, 8.0, 1.0, '鏡台', ['鏡台に布がかけてある。引き出しに、櫛を入れる細長い桐の箱。中は空だ。'], '櫛の箱だけが、ここにある。'),
   T('OKU_KIMONO', 'OKU', 3.0, 7.05, 1.2, '着物の箪笥', ['箪笥の上に、藍色の着物がたたんである。……少し湿っている。'], ''),
   T('ROKA_AMADO', 'ROKA', 7.6, 5.75, 1.2, '雨戸', ['雨戸が閉め切ってある。すき間に、札が縦に何枚も貼ってある。'], '外は、もう真っ暗だろう。'),
   T('SAGYO_COMB', 'SAGYO', 0.55, 1.2, 0.95, '作りかけの櫛', ['作業台に、作りかけの櫛が一枚。歯が半分だけ挽いてある。のこぎり、やすり、木賊（とくさ：磨くための草）。'], '五十年、誰も触っていない。'),
   T('SAGYO_BOARDS', 'SAGYO', 1.2, 4.6, 1.2, '柘植の板', ['薄い板が束ねて立ててある。黄色い木肌。櫛の材の柘植だ。'], ''),
-  T('SAGYO_USU', 'SAGYO', 6.6, -0.4, 0.5, '揚げ戸の上の臼', ['床の揚げ戸の上に、石の臼が載せてある。人の力では持ち上がらない。', '梃子があれば、転がせそうだ。'], '揚げ戸を、上から押さえつけている。', { requires: { not: ['T_USU'] } }),
   T('SAGYO_FLOOR', 'SAGYO', 4.2, 1.5, 0.1, '作業場の床', ['床板の下から、かすかに音がする。カリ……カリ……。何かを、細かくひっかくような。'], '櫛で、髪をすく音みたいだ。'),
   T('MURO_SCRATCH', 'MURO', 6.6, 0.0, 3.0, '揚げ戸の裏', ['揚げ戸の裏板に、爪でかいた跡が何十本もある。下から、誰かが開けようとした跡だ。'], '閉じこめられていたんだ。下から、何日も。'),
   T('MURO_BOARDS', 'MURO', 8.6, 0.6, 1.2, '寝かせた板', ['柘植の板が、壁一面に積んである。燻された煙の匂いが、まだ残っている。'], ''),
@@ -195,7 +194,7 @@ const things = [
 const stages = {
   goal: { title: '奥の棚の櫛を持ち帰り、この家で起きたことを確かめる', short: '奥の棚の櫛を持って来る', sub: '戸の札をはがして奥へ進む。はがした札は、柱に貼って使える。', meter: '進み' },
   levels: [
-    { id: 'L1', name: '帳場の声', title: '帳場のハルさんの話を聞き、札のはがし方と貼り方を覚える', recap: '私はヘルパーの宮下航。代わりに訪ねた櫛田ハルさんの家で、表の戸が開かなくなった。帳場の格子の奥のハルさんに「奥の棚から櫛を持って来い。持って来るまで戸は開けん」と言われた。札は [E] ではがせて、柱に貼れる。', text: '札は [E] を押している間に、そっとはがれる。はがした札は、柱に貼れる。', unlocks: ['front'] },
+    { id: 'L1', name: '帳場の声', title: '帳場のハルさんの話を聞き、札のはがし方と貼り方を覚える', recap: '私はヘルパーの宮下航。代わりに訪ねた櫛田ハルさんの家で、表の戸が開かなくなった。帳場の格子の奥のハルさんに「奥の棚から櫛を持って来い。持って来るまで戸は開けん」と言われた。札は [E] ではがせて、柱に [E] で貼れる。', text: '札に向いて [E] で、そっとはがせる。はがした札は、柱に [E] で貼れる。', unlocks: ['front'] },
     { id: 'L2', name: '家の奥へ', title: '札をはがしながら奥へ進み、作業場の揚げ戸を開ける', recap: '札をはがして中の間・台所・奥の間を抜け、作業場まで来た。黒電話で野口さんから、ハルさんが先週亡くなったと聞いた。死んだハルさんは、自分の札の輪から出られない。千草さんの日記は「奥の棚から持って来い」と言われた日で終わっていた。揚げ戸の札は、その日の日付だった。', text: 'ハルさんは先週亡くなっている。死んだ者は、札を越えられない。', unlocks: ['house'] },
     { id: 'L3', name: '室と長い通路', title: '地下の室で手燭に火を入れ、灯明に火を移しながら、通路の奥の室まで行く', recap: '揚げ戸の裏には、下から爪でかいた跡があった。長い通路の札の回廊で、藍の着物の女の人が札に押し返された。柱に札を貼ると、その向こうで止まった。', text: '通路は長い。灯明に火を移しておけば、帰り道が明るい。', unlocks: ['muro', 'passage'] },
     { id: 'L4', name: '奥の棚', title: '奥の棚の櫛を取り、追ってくる千草さんを柱の札で止めながら、揚げ戸まで戻る', recap: '奥の室で、千草さんの亡きがらを見つけた。棚の箱の櫛を取ると、千草さんが起き上がって追ってきた。柱の札で止めながら通路を戻り、揚げ戸に古い札を上から貼った。', text: '櫛を持っていると、千草さんが来る。柱に札を貼って止める。', unlocks: [] },
@@ -226,7 +225,7 @@ const tasks = [
     meaning: '表の戸が開かない理由と、ハルさんが私に何をさせたいのかを聞くため。', hint: '店の間の右奥、格子で囲まれた帳場。格子の前で [E]。',
     steps: [stepLook('S_CHOBA', '帳場の格子の前に立つ', '店の間の右奥。灯りの向こうに、背中を向けた老女。'), stepDo('[E] で話す')] },
   { id: 'T_PEEL1', stage: 'L1', room: 'MISE', needs: ['T_CHOBA'], title: '中の間の襖の札をはがす',
-    meaning: '札のはがし方を覚えるため。はがした札は持ち歩けて、帰りに柱に貼って使える。', hint: '店の間の奥（北）の襖。札に向いて [E] を押している間に、そっとはがれる。',
+    meaning: '札のはがし方を覚えるため。はがした札は持ち歩けて、帰りに柱に貼って使える。', hint: '店の間の奥（北）の襖。札に向いて [E] で、そっとはがせる。',
     steps: [{ text: '中の間の襖の札に向く', body: '店の間の奥の襖。白い札が、襖と柱にまたがって貼ってある。', done: 'task' }] },
   { id: 'T_PASTE1', stage: 'L1', room: 'MISE', needs: ['T_PEEL1'], title: '大黒柱に札を貼り、もう一度はがす',
     meaning: '札の貼り方を覚えるため。柱に貼った札の向こうへ、死んだ者は来られない。', hint: '店の間と土間の境の太い柱（大黒柱）。柱に向いて [E] で貼り、もう一度 [E] ではがす。',
@@ -339,7 +338,7 @@ const talk = {
     { who: H, where: '帳場の格子の奥', text: 'わしは、この格子の内から出られん。足のこともあるが、それだけやない。……櫛を持って来るまで、表の戸は開けん。大声を出しても、ここらは誰も通らん。' },
     { who: I, text: '脅されている。携帯は圏外で、外に知らせる手もない。……今は、言われたとおりにするしかない。' },
     { who: H, where: '帳場の格子の奥', text: '奥へ行く戸には、みな札が貼ってある。札は、はがしてええ。はがした札は、なくさず持って行け。帰りに要る。' },
-    { who: H, where: '帳場の格子の奥', text: 'まず、中の間の襖の札を一枚はがしてみい。札に向いて [E] を押しとる間に、そっとはがれる。' },
+    { who: H, where: '帳場の格子の奥', text: 'まず、中の間の襖の札を一枚はがしてみい。札の端に指をかけて、そっとはがすんじゃ。' },
   ],
   peel1_done: [
     { who: H, where: '帳場の格子の奥', text: 'それでええ。はがした札は、柱に貼り直せる。土間との境の太い柱、大黒柱に、貼ってみい。' },
@@ -505,7 +504,7 @@ wr('data/stages.json', stages);
 wr('data/tasks.json', tasks);
 wr('data/endings.json', endings);
 // line ids and recorded voices (tools/gen-voice.mjs writes assets/voice/<id>.mp3)
-for (const [k, seq] of Object.entries(talk)) seq.forEach((L, i) => { L.id = `${k}-${i + 1}`; if (fs.existsSync(path.join(ROOT, 'assets/voice', `${L.id}.mp3`))) L.voice = `assets/voice/${L.id}.mp3`; });
+for (const [k, seq] of Object.entries(talk)) seq.forEach((L, i) => { L.id = `${k}-${i + 1}`; if (L.who === N) L.vfx = 'phone'; if (fs.existsSync(path.join(ROOT, 'assets/voice', `${L.id}.mp3`))) L.voice = `assets/voice/${L.id}.mp3`; });
 wr('data/talk.json', talk);
 wr('data/monsters.json', monsters);
 wr('data/release-notes.json', releaseNotes);

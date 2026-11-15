@@ -82,7 +82,7 @@
       "type": "corridor",
       "furnish": false,
       "floorTex": "engawa_boards",
-      "wallTex": "wood_dark"
+      "wallTex": "clay_wall"
     },
     {
       "id": "SAGYO",
@@ -166,7 +166,7 @@
       "type": "corridor",
       "furnish": false,
       "floorTex": "planks_dark",
-      "wallTex": "wood_dark"
+      "wallTex": "planks_dark"
     },
     {
       "id": "P4B",
@@ -180,7 +180,7 @@
       "type": "corridor",
       "furnish": false,
       "floorTex": "planks_dark",
-      "wallTex": "wood_dark"
+      "wallTex": "planks_dark"
     },
     {
       "id": "P5",

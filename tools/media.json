@@ -1,0 +1,136 @@
+{
+  "tail": "photograph, old Japanese machiya townhouse, night, candle light, film grain, muted colors, realistic, cinematic",
+  "negative": "text, letters, words, numbers, caption, watermark, logo, kanji, writing, calligraphy, signature, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, cartoon, anime",
+  "images": [
+    {
+      "key": "title",
+      "size": "1344x768",
+      "prompt": "the dark interior of an old Japanese townhouse at night, a wooden lattice booth at the back, many blank white paper strips pasted on the lattice, each strip completely plain with only a small red dot, a single small candle glowing behind the lattice, a long dark hallway going deeper, no writing anywhere"
+    },
+    {
+      "key": "op-sheet",
+      "size": "1344x768",
+      "prompt": "a young man in a dark jacket sitting in a small car at dusk, seen from outside through the side window, he looks at an old wooden townhouse across the street, mountain village, no readable text"
+    },
+    {
+      "key": "op-mise",
+      "size": "1344x768",
+      "prompt": "the dark wooden lattice facade of an old Japanese townhouse at dusk in November, a narrow empty street, a closed wooden sliding door, a paper lantern unlit, no signs, no signboards, plain walls"
+    },
+    {
+      "key": "op-door",
+      "size": "1344x768",
+      "prompt": "view from inside a dark earthen-floored entrance of an old Japanese house, the wooden sliding front door is shut, a plain white paper charm strip pasted across the door and the post, dim light from a gap"
+    },
+    {
+      "key": "op-choba",
+      "size": "1344x768",
+      "prompt": "inside a dark old Japanese shop room, a wooden lattice booth in the back corner, many plain white paper charm strips pasted on the inside of the lattice, behind it a very old woman with long loose white hair sits with her back turned in front of a small oil lamp"
+    },
+    {
+      "key": "face-haru",
+      "size": "768x768",
+      "prompt": "a very old Japanese woman in a dark kimono seen through a wooden lattice, long loose white hair, her face half in shadow, pale skin, stern tired eyes, a small oil lamp beside her, plain white paper strips on the lattice"
+    },
+    {
+      "key": "face-chigusa",
+      "size": "768x768",
+      "prompt": "a young Japanese woman in a dark indigo kimono, her long wet black hair hangs down over her face so the face cannot be seen, only her pale chin, in a dark stone tunnel, candle light from below"
+    },
+    {
+      "key": "face-noguchi",
+      "size": "768x768",
+      "prompt": "an old black rotary telephone on a low wooden shelf in a dark tatami room, the handset off the hook, candle light"
+    },
+    {
+      "key": "item-sheet",
+      "size": "768x768",
+      "prompt": "a blue plastic clipboard lying face down on a dark wooden floor, only its plain back and the metal clip visible, a ballpoint pen beside it"
+    },
+    {
+      "key": "item-phone",
+      "size": "768x768",
+      "prompt": "a smartphone with a dark screen on an old wooden floor, a weak reflection of a candle on the glass"
+    },
+    {
+      "key": "item-teshoku",
+      "size": "768x768",
+      "prompt": "an old Japanese brass hand candlestick with a ring handle and a short white candle, on a dark wooden shelf"
+    },
+    {
+      "key": "item-matches",
+      "size": "768x768",
+      "prompt": "an old small box of kitchen matches, plain paper box with no label, some matches beside it, on a sooty wooden shelf"
+    },
+    {
+      "key": "item-koteko",
+      "size": "768x768",
+      "prompt": "a long heavy rusty iron crowbar leaning against an old plaster wall in a dark workshop"
+    },
+    {
+      "key": "item-oldfuda",
+      "size": "768x768",
+      "prompt": "a very old yellowed blank paper strip with torn edges and water stains, completely plain, lying on dark floor boards, no marks, no stamp"
+    },
+    {
+      "key": "item-comb",
+      "size": "768x768",
+      "prompt": "a traditional Japanese half-moon boxwood comb, bright yellow polished wood, fine teeth, lying on a dark indigo cloth"
+    },
+    {
+      "key": "item-letter",
+      "size": "768x768",
+      "prompt": "an old plain paper envelope without stamp, slightly yellowed, lying on a dark wooden surface, no readable writing"
+    },
+    {
+      "key": "doc-todoke",
+      "size": "768x768",
+      "prompt": "an old folded official paper document in a wooden chest drawer, yellowed, seen from an angle, out of focus, no readable text"
+    },
+    {
+      "key": "doc-diary",
+      "size": "768x768",
+      "prompt": "an old cloth-bound diary notebook lying closed on a low wooden writing desk in a dark tatami room, a dried flower on top"
+    },
+    {
+      "key": "doc-tsuge",
+      "size": "1344x768",
+      "prompt": "a traditional comb maker's workbench in a dark old workshop, thin yellow boxwood boards, small saws, files, a half-finished wooden comb, dust"
+    },
+    {
+      "key": "doc-wedding",
+      "size": "768x768",
+      "prompt": "an old black and white wedding photograph in a wooden frame on a Buddhist altar, a young Japanese groom in a black kimono and a bride in white wedding kimono with a half-moon comb in her hair"
+    },
+    {
+      "key": "room-mise",
+      "size": "1344x768",
+      "prompt": "a dark empty old Japanese comb shop room, empty glass display cases, worn wooden floor, a plain wooden signboard without letters on the wall, a lattice booth in the corner"
+    },
+    {
+      "key": "in-okumuro",
+      "size": "1344x768",
+      "prompt": "a small dark stone underground room, a little wooden shelf on the far wall with a long thin wooden box tied with an old cord, under the shelf a collapsed indigo kimono and long black hair spread on the dirt floor, lit by a single candle"
+    },
+    {
+      "key": "mon-close",
+      "size": "1344x768",
+      "prompt": "extreme close-up in a dark tunnel, long wet black hair hanging in front of the camera, a pale woman's hand reaching out through the hair, candle light, horror"
+    },
+    {
+      "key": "end-e1",
+      "size": "1344x768",
+      "prompt": "a traditional Japanese charcoal brazier with a yellow wooden comb burning in it, flames, behind a wooden lattice an old woman with long white hair sits with her back turned, dark room"
+    },
+    {
+      "key": "end-e2",
+      "size": "1344x768",
+      "prompt": "morning light falls into an old Japanese workshop, a wooden floor hatch stands open, dust floating in the light beam, a ladder going down into darkness"
+    },
+    {
+      "key": "end-e3",
+      "size": "1344x768",
+      "prompt": "dawn light in an old Japanese shop room, many loose plain white paper strips scattered on the tatami, the lattice booth empty, a yellow half-moon wooden comb resting on the floor"
+    }
+  ]
+}

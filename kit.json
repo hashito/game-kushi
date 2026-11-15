@@ -262,5 +262,18 @@
     "tools/check-hud-overlap.mjs": "31bd80df3582",
     "tools/perf-probe.mjs": "dc14d52ac813"
   },
-  "textures": []
+  "textures": [
+    "tatami_old",
+    "planks_worn",
+    "dirt_floor",
+    "wet_floor",
+    "clay_wall",
+    "wall_clay_stained",
+    "plaster_soot",
+    "stone_wall",
+    "rock_granite_mossy",
+    "wood_dark",
+    "planks_dark",
+    "engawa_boards"
+  ]
 }
