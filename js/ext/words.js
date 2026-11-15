@@ -51,7 +51,7 @@ export const W = {
   letters_more: 'まだ足りない：',
   sq2_count: '壁の札をはがした。帰りに使える。',
   scene_title: '札の家',
-  okumuro_shelf: '棚の箱は、固い紐で結んである。',
+  okumuro_shelf: '棚の箱は、棚の柱に固い紐で縛りつけてある。',
   haru_again: '帳場の格子の奥で、ハルさんは背中を向けたまま動かない。……「奥の棚から、櫛を持って来い」。',
   haru_wait_comb: 'ハルさんに渡せるものは、まだ何もない。',
   front_shut: '表の戸は動かない。',

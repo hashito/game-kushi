@@ -12,7 +12,7 @@ export default async (api) => {
   const choose = async (id) => { for (let i = 0; i < 40; i++) { const ok = await G(`(() => { const b = document.querySelector('.gf-talk-choice[data-id="${id}"]'); if (b) { b.click(); return true; } return false; })()`); if (ok) return true; await sleep(250); } log('  no choice', id); return false; };
   // ?qa=1: ctx.choose opens nothing and answers window.__gfChoice at once, so the answers are queued before the [E] that asks
   const pre = (ids) => G(`(window.__gfQ = ${JSON.stringify(ids)}, Object.getOwnPropertyDescriptor(window, '__gfChoice') || Object.defineProperty(window, '__gfChoice', { configurable: true, get() { return (window.__gfQ || []).shift(); } }), 1)`);
-  const use = async (x, z, y, tag) => { const pr = await H.use(x, z, y); log(' ', tag || 'use', '|', pr); return pr; };
+  const use = async (x, z, y, tag) => { let pr = ''; for (let i = 0; i < 3 && !pr; i++) { if (i) await sleep(600); pr = await H.use(x, z, y); } log(' ', tag || 'use', '|', pr); return pr; };   // an empty prompt (a line still on screen, a step short) is tried again
   const peel = async (x, z, y = 1.45) => { const pr = await H.use(x, z, y, { wait: 1400 }); log('  peel |', pr); };
   const where = async () => log('  at', JSON.stringify(await H.pos()));
   const crouch = async (on) => { const c = await G('g.fp.crouching'); if (c !== on) { await p.key('KeyC'); await sleep(300); } };

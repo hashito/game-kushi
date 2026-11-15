@@ -26,7 +26,7 @@ const todo = [...lines.values()].filter((L) => (!only || only.has(L.id)) && (for
 console.log(`${lines.size} spoken lines, ${todo.length} to make`);
 if (dry) process.exit(0);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const say = (t) => t.replace(/[「」『』]/g, '').replace(/……/g, '、').replace(/―/g, '、').replace(/[\[［][^\]］]*[\]］]\s*/g, '');
+const say = (t) => t.replace(/（[^）]*）/g, '').replace(/[「」『』]/g, '').replace(/……/g, '、').replace(/―/g, '、').replace(/[\[［][^\]］]*[\]］]\s*/g, '');
 const post = async (L) => { const v = VOICES[L.who]; const r = await fetch(`${API}/v1/jobs`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind: 'voice', params: { text: say(L.text), speaker: v.speaker, speed: v.speed } }) }); const j = await r.json(); if (!j.id) throw new Error(JSON.stringify(j)); return j.id; };
 let n = 0;
 const pending = [];
