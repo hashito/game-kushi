@@ -12,3 +12,5 @@
 .kc-seal p { margin: 0 0 4px; }
 .kc-seal-bar { height: 8px; background: rgba(255, 255, 255, 0.15); border-radius: 4px; overflow: hidden; /* pair-ok */ }
 .kc-seal-bar i { display: block; height: 100%; width: 0; background: #e0533a; /* pair-ok */ }
+.kc-bootbar { width: min(320px, 70vw); height: 4px; margin: 8px auto 0; background: rgba(255, 255, 255, 0.12); border-radius: 2px; overflow: hidden; /* pair-ok */ }
+.kc-bootbar i { display: block; height: 100%; width: 0; background: var(--accent, #c8892e); /* pair-ok */ }

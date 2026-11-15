@@ -250,7 +250,7 @@ export function installStory(ext, G) {
     if (to === 'MURO' && !flag('muro_in')) { setFlag('muro_in'); later(() => talk('muro_in', '室'), 500); }
     if (to === 'OKUMURO' && tryDone('T_OKUMURO')) later(() => talk('okumuro', '奥の室'), 300);
   });
-  ext.on('task:done', ({ id }) => { if (id === 'T_SAGYO') ringT = 2.5; if (id === 'T_CHOBA') later(() => say('chip_first', 5), 800); });
+  ext.on('task:done', ({ id }) => { if (id === 'T_SAGYO') ringT = 2.5; if (id === 'T_CHOBA' && !(ctx && ctx.testScene)) later(() => say('chip_first', 5), 800); });
   ext.on('thing:look', ({ id }) => { if (id === 'OMOTE_DOOR' && done('T_PHONE')) ctx.answer('戸は、死んだハルさんが押さえている。……櫛を持って来るまで、開かない。'); });
 
   function startSeal() {

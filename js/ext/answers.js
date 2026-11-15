@@ -2,6 +2,7 @@
 // "[E] 扉（鍵がかかっている）", "（いまは使えません）"). Three parts:
 //   1. ctx.canStart is wrapped: a "not yet" answer for a task becomes what the protagonist knows is missing and where to go.
 //   2. a door held by a charm gets its own kind ('charmdoor'): "[E] 戸の札をはがす", and [E] peels the charm (or says why not).
+//   2b. a station whose task is not open yet shows "[E] 帳場の格子（ハルさん）", not a bare name, and [E] gives that answer.
 //   3. the ladder under the hatch gets its own kind ('kladder'): no generic "使えません", the hint says why.
 import { W } from './words.js';
 
@@ -61,6 +62,17 @@ export function installAnswers(ext, G) {
     for (const o of ctx.world.interactables) {
       const it = o.userData && o.userData.interact;
       if (it && it.kind === 'door' && charmOf(it.id)) it.kind = 'charmdoor';
+    }
+
+    // ---------- 2b. a station whose task is not open yet still offers [E] (the answer says what is missing) ----------
+    const NAMES = { S_CHOBA: '帳場の格子（ハルさん）' };
+    const tasks = ctx.data.tasks || [];
+    for (const o of ctx.world.interactables) {
+      const it = o.userData && o.userData.interact;
+      if (!it || it.kind !== 'station') continue;
+      const base = NAMES[it.id] || it.label;
+      if (!base) continue;
+      Object.defineProperty(it, 'label', { configurable: true, get: () => (tasks.some((t) => t.station === it.id && !done(t.id)) ? `[E] ${base}` : base) });
     }
 
     // ---------- 3. the ladder under the hatch ----------
