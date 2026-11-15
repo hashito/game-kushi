@@ -7,7 +7,7 @@ import { helpers } from './lib.mjs';
 export default async (api) => {
   const { p, G, sleep, log, shot } = api, H = helpers(api);
   const END = process.env.PLAY_END || 'give', LET = END === 'free', UPTO = process.env.PLAY_UPTO || '';
-  const st = async (tag) => log(tag, await G(`({ room: g.state.room, n: g.state.tasks.length, last: g.state.tasks.slice(-3), level: g.prog.index, fuda: kc.fuda, prompt: document.getElementById('prompt').textContent, ended: g.state.ended })`));
+  const st = async (tag) => log(tag, await G(`({ room: g.state.room, n: g.state.tasks.length, last: g.state.tasks.slice(-3), level: g.prog.index, fuda: kc.fuda, prompt: document.getElementById('prompt').textContent, ended: g.state.ended, inv: g.state.inv.join(" ") })`));
   const must = async (task) => { const ok = await G(`g.state.tasks.includes('${task}')`); if (!ok) throw new Error(`ERROR ${task} not done: ${JSON.stringify(await G('({ room: g.state.room, tasks: g.state.tasks, prompt: document.getElementById("prompt").textContent })'))}`); };
   const choose = async (id) => { for (let i = 0; i < 40; i++) { const ok = await G(`(() => { const b = document.querySelector('.gf-talk-choice[data-id="${id}"]'); if (b) { b.click(); return true; } return false; })()`); if (ok) return true; await sleep(250); } log('  no choice', id); return false; };
   // ?qa=1: ctx.choose opens nothing and answers window.__gfChoice at once, so the answers are queued before the [E] that asks
@@ -40,7 +40,7 @@ export default async (api) => {
   await shot('naka');
   await H.walkTo(5.4, 14.0); await peel(5.83, 13.08); await H.idle(); await H.walkTo(5.3, 12.0);
   await H.walkTo(6.5, 11.6); await use(7.35, 11.6, 0.42, 'DOC_DIARY'); await H.idle(); await must('T_OKU'); await shot('oku');
-  if (LET) { await H.walkTo(3.0, 8.0); await use(3.0, 7.05, 1.05, 'LETTER2'); await H.idle(); }
+  if (LET) { await H.walkTo(3.0, 8.0); await use(3.3, 7.05, 1.05, 'LETTER2'); await H.idle(); }
   await H.walkTo(5.4, 7.4); await peel(5.83, 6.58); await H.idle(); await H.walkTo(5.3, 5.75);
   await H.walkTo(5.0, 5.9); await peel(5.83, 5.08); await H.idle(); await H.walkTo(5.3, 4.0); await H.idle();
   await must('T_SAGYO'); await shot('sagyo');
@@ -50,7 +50,7 @@ export default async (api) => {
   await sleep(3000); await H.idle();
   await H.route([[5.3, 4.2], [5.3, 5.75], [5.3, 7.4], [5.3, 12.0], [5.3, 14.0], [3.6, 14.2]]); await shot('phone');
   await use(3.15, 13.55, 0.7, 'T_PHONE'); await H.idle(); await must('T_PHONE'); await shot('after-phone');
-  if (LET) { await H.walkTo(6.5, 16.5); await use(7.45, 16.5, 0.9, 'T_SQ1'); await H.idle(); log('  letters', await G('g.state.flags.includes("letters")')); }
+  if (LET) { await H.walkTo(6.5, 16.5); await use(7.45, 16.5, 0.9, 'T_SQ1'); await H.idle(); const lt = await G('g.state.flags.includes("letters")'); log('  letters', lt); if (!lt) throw new Error('ERROR letters not read'); }
   // the mill and the hatch
   await H.route([[5.3, 14.0], [5.3, 12.0], [5.3, 7.4], [5.3, 5.75], [5.3, 4.0], [6.6, 1.0]]);
   await H.face(6.6, -0.5, 0.4); await sleep(300); await shot('usu');
@@ -99,15 +99,15 @@ export default async (api) => {
   // ---- L5 ----
   if (END === 'give') {
     await H.route([[5.3, 4.0], [5.3, 5.75], [5.3, 7.4], [5.3, 12.0], [5.3, 14.0], [3.9, 19.0], [3.9, 21.0], [4.9, 23.2]]);
-    await H.face(5.7, 22.5, 1.0); await pre(['give']); await p.key('KeyE'); await sleep(800); await H.idle();
+    await pre(['give']); await use(5.7, 22.5, 1.0, 'T_END give'); await sleep(800); await H.idle();
   } else {
-    await H.walkTo(1.6, 2.2); await H.face(0.75, 2.2, 0.9); await pre(['away', 'muro', 'shut', 'haru', 'burn']); await p.key('KeyE'); await sleep(800);
+    await H.walkTo(1.6, 2.2); await pre(['away', 'muro', 'shut', 'haru', 'burn']); await use(0.75, 2.2, 0.9, 'T_THINK'); await sleep(800);
     await H.idle(1500);
     await H.idle(1500); log('  think answers left', await G('window.__gfQ.length'));
     await H.idle(); await must('T_THINK'); await shot('think-done');
-    await H.walkTo(6.6, 1.0); await H.face(6.6, -0.5, 0.1); await pre(['yes']); await p.key('KeyE'); await sleep(800); await H.idle(); await must('T_RETURN'); await shot('returned');
+    await H.walkTo(6.6, 1.0); await pre(['yes']); await use(6.6, -0.5, 0.1, 'T_RETURN'); await sleep(800); await H.idle(); await must('T_RETURN'); await shot('returned');
     await H.route([[5.3, 4.0], [5.3, 5.75], [5.3, 7.4], [5.3, 12.0], [5.3, 14.0], [3.9, 19.0], [3.9, 21.0], [4.9, 23.2]]);
-    await H.face(5.7, 22.5, 1.0); await pre([END]); await p.key('KeyE'); await sleep(800); await H.idle(3000); await H.idle();
+    await pre([END]); await use(5.7, 22.5, 1.0, 'T_END ' + END); await sleep(800); await H.idle(3000); await H.idle();
   }
   await sleep(1500); await shot('ending');
   await st('end'); log('ending', await G('g.state.ended && (g.state.endingId || g.state.ending || true)'), await G('g.state.flags.filter((f) => /^end_/.test(f))'));

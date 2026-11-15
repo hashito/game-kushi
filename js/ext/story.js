@@ -1,6 +1,7 @@
 // The story of 札の家: what is said when (data/talk.json, js/ext/words.js), the tasks that need code, the scripted moments of the passage
 // (one every few metres on the way in), the gate and the post lesson, the comb and the chase back, the hatch, the questions at the bench,
 // and the three endings. Shares G with fuda.js (the charms), ghost.js (千草さん) and house.js (the things).
+import * as THREE from 'three';
 import { W } from './words.js';
 
 const ROOM_SURFACE = { P3: 'water', P2: 'dirt', P5: 'dirt', MURO: 'dirt', OKUMURO: 'dirt', OMOTE: 'dirt', HASHIRI: 'dirt' };
@@ -13,7 +14,8 @@ const EVENTS = [
 ];
 
 export function installStory(ext, G) {
-  let ctx = null, RUN0 = 3.8, LIT = 0;
+  let ctx = null, RUN0 = 3.8, LIT = 0, nearT = 0, nearK = 1, nearNow = 1;
+  const ray = new THREE.Raycaster(), CENTER = new THREE.Vector2(0, 0);
   const done = (id) => ctx.state.tasks.includes(id);
   const has = (id) => ctx.state.inv.includes(id);
   const flag = (k) => ctx.state.flags.includes(k);
@@ -271,8 +273,13 @@ export function installStory(ext, G) {
     if (room === 'P2' && !ctx.fp.crouching) { hintT -= dt; if (hintT <= 0) { say('crouch_hint', 3); hintT = 8; } } else hintT = Math.min(hintT, 1);
     // the candle: a flicker, a blackout
     if (ctx.flashlight && ctx.lightOn && LIT) {
-      if (black > 0) { black -= dt; ctx.flashlight.intensity = black > 0 ? 0.05 : LIT; }
-      else if (flick > 0) { flick -= dt; ctx.flashlight.intensity = flick > 0 ? LIT * (0.25 + Math.random() * 0.4) : LIT; }
+      // a wall right in front of the flame does not burn white: the light eases down when something is close (sampled 8 times a second)
+      nearT -= dt; if (nearT <= 0) { nearT = 0.125; ray.setFromCamera(CENTER, ctx.camera); ray.far = 2.6; const h = ray.intersectObject(ctx.world.group, true).find((x) => x.object.visible && !x.object.isSprite && !(x.object.material && (x.object.material.visible === false || x.object.material.opacity < 0.2))); nearK = h ? 0.3 + 0.7 * Math.max(0, Math.min(1, (h.distance - 0.3) / 2.3)) : 1; }
+      nearNow += (nearK - nearNow) * Math.min(1, dt * 6);
+      const L = LIT * nearNow;
+      if (black > 0) { black -= dt; ctx.flashlight.intensity = black > 0 ? 0.05 : L; }
+      else if (flick > 0) { flick -= dt; ctx.flashlight.intensity = flick > 0 ? L * (0.25 + Math.random() * 0.4) : L; }
+      else ctx.flashlight.intensity = L;
     }
     if (peek > 0) { peek -= dt; if (peek <= 0 && G.gh.mode === 'peek') G.ghostStop(); }
     if (ctx.floor === 0) {

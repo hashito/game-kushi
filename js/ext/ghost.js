@@ -12,7 +12,7 @@ import { buildChigusa } from './people.js';
 
 export const SPEED = { walk: 3.0, lesson: 1.4, gate: 1.3 };
 export function installGhost(ext, G) {
-  let ctx = null, fig = null, route = [], cum = [];
+  let ctx = null, fig = null, route = [], cum = [], glow = null;
   const H = G.gh = { mode: 'off', s: 0, wait: 0, lunge: 6, hiddenT: 0, rise: 0, fade: 0, shown: false, onCatch: null, onStop: null };
   const v2 = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
   /** the nearest point of the route to (x, z): { s, d } */
@@ -44,7 +44,7 @@ export function installGhost(ext, G) {
     return out.sort((a, b) => a.s - b.s);
   }
   G.ghostStart = (mode, s, o = {}) => { H.mode = mode; H.s = s; H.wait = o.wait || 0; H.lunge = 6; H.hiddenT = 0; H.rise = o.rise || 0; H.fade = 0; H.speed = o.speed; H.onStop = o.onStop || null; H.onCatch = o.onCatch || null; H.stopAt = o.stopAt ?? null; };
-  G.ghostStop = () => { H.mode = 'off'; if (fig) fig.root.visible = false; for (const P of G.posts.values()) P.press = false; };
+  G.ghostStop = () => { H.mode = 'off'; if (fig) fig.root.visible = false; if (glow) glow.intensity = 0; for (const P of G.posts.values()) P.press = false; };
   G.ghostFade = () => { H.fade = 0.0001; };
 
   let T = 0;
@@ -52,7 +52,7 @@ export function installGhost(ext, G) {
     if (!fig) return;
     T += dt;
     for (const P of G.posts.values()) P.press = false;
-    if (H.mode === 'off' || ctx.floor !== 0) { fig.root.visible = false; return; }
+    if (H.mode === 'off' || ctx.floor !== 0) { fig.root.visible = false; glow.intensity = 0; return; }
     if (!active) return;
     const cam = ctx.camera.position, me = project(cam.x, cam.z), ps = me.s;
     let vis = H.wait <= 0;
@@ -84,6 +84,8 @@ export function installGhost(ext, G) {
     // the figure
     const p = at(H.s);
     fig.root.visible = vis;
+    // a cold, faint light of her own: in the dark passage she is seen (never only felt). The light always stays in the scene (no shader rebuild)
+    glow.position.set(p.x, ctx.world.floorY(0) + 1.3, p.z); glow.intensity = vis ? (H.fade > 0 ? Math.max(0, 1 - H.fade / 1.2) : 1) * (2.2 + Math.sin(T * 7) * 0.4) : 0;
     fig.root.position.set(p.x, ctx.world.floorY(0) + (H.rise > 0 ? -Math.max(0, H.rise - 0.4) * 0.9 : 0), p.z);
     fig.root.rotation.y = p.yaw;
     fig.body.rotation.z = Math.sin(T * 2.4) * 0.05; fig.head.rotation.z = 0.3 + Math.sin(T * 0.9) * 0.1;
@@ -110,6 +112,7 @@ export function installGhost(ext, G) {
     cum = [0]; for (let i = 1; i < route.length; i++) cum.push(cum[i - 1] + v2(route[i - 1], route[i]));
     G.routeLen = cum[cum.length - 1];
     G.gateS = project(-4, -81.8).s;
+    glow = new THREE.PointLight(0x9db8d0, 0, 4.5, 2); ctx.scene.add(glow);
     fig = buildChigusa(); fig.root.visible = false; ctx.world.group.add(fig.root); G.chigusa = fig;
     // warm-up: her materials compiled before play
     const warm = new THREE.Group(); warm.visible = false; warm.add(buildChigusa().root); ctx.scene.add(warm); ctx.warmObjects = [...(ctx.warmObjects || []), warm];
