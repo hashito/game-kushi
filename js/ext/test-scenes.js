@@ -37,7 +37,7 @@ export function installTests(ext, G) {
       if (sc.at.floor === 0) { const ps = G.project(sc.at.x, sc.at.z).s; for (const e of G.evS || []) if (e.s >= ps - 0.5 && !G.ev.includes(e.id)) G.ev.push(e.id); }
       if (G.applyStory) G.applyStory();
       if (sc.light || ctx.state.tasks.includes('T_LIGHT')) G.light0(true);
-      if (sc.chase != null) { G.candleOut = true; const ps = G.project(sc.at.x, sc.at.z).s; G.ghostStart('chase', Math.max(0, ps - sc.chase), { rise: 1.5, onCatch: () => { G.ghostStop(); ctx.die('chigusa'); } }); }
+      if (sc.chase != null) { G.candleOut = true; if (G.takeSnap) G.takeSnap(); const ps = G.project(sc.at.x, sc.at.z).s; G.ghostStart('chase', Math.max(0, ps - sc.chase), { rise: 1.5, onCatch: () => { G.ghostStop(); ctx.die('chigusa'); } }); }
     },
   });
 }

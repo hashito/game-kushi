@@ -172,7 +172,7 @@ export function installStory(ext, G) {
 
   // ---------------- L4: the comb, the chase, the hatch ----------------
   let snap = null;
-  const takeSnap = () => { snap = { fuda: G.fuda, posts: Object.fromEntries([...G.posts.values()].map((P) => [P.def.id, P.on ? P.burn : -1])) }; };
+  const takeSnap = G.takeSnap = () => { snap = { fuda: G.fuda, posts: Object.fromEntries([...G.posts.values()].map((P) => [P.def.id, P.on ? P.burn : -1])) }; };
   function chaseFrom(s, rise) { G.ghostStart('chase', s, { rise, onCatch: () => { G.ghostStop(); ctx.die('chigusa'); } }); }
   async function rise() {
     G.combBox.visible = false; G.boxCord.visible = false;
@@ -186,7 +186,7 @@ export function installStory(ext, G) {
     if (done('T_BOX') && !done('T_ESCAPE') && snap) {
       G.fuda = snap.fuda; for (const [id, v] of Object.entries(snap.posts)) G.setPost(id, v >= 0, Math.max(0, v)); G.showFuda();
       const ps = G.project(cam().x, cam().z).s;
-      chaseFrom(Math.max(0, ps - (flag('cp_mid') ? 16 : 0)), 2.6);
+      chaseFrom(flag('cp_mid') ? Math.max(0, ps - 16) : 0, 4.0);   // back at the shelf she rises again behind you (4 s to get going)
       G.candleOut = !ctx.lightOn;
     }
     if (G.seal) G.seal.t = 0;
