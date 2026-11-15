@@ -268,5 +268,65 @@
   "text": "揚げ戸には、古い札を貼った。下から叩く音は、もうしない。……開けるのは、作業台で櫛をどうするか考えてからだ。",
   "file": "t-seal_shut.mp3",
   "sec": 8.4
+ },
+ "no_comb": {
+  "text": "櫛を持たずに行っても、ハルさんは戸を開けない。奥の棚は、この家のいちばん奥だ。札をはがして、奥へ進もう。",
+  "file": "t-no_comb.mp3",
+  "sec": 8.3
+ },
+ "no_comb_deep": {
+  "text": "櫛を持たずに行っても、ハルさんは戸を開けない。奥の棚は、作業場の揚げ戸の下、地下の通路のいちばん奥の室だ。",
+  "file": "t-no_comb_deep.mp3",
+  "sec": 8.1
+ },
+ "seal_first": {
+  "text": "揚げ戸の下から、千草さんが上がってくる。先に、揚げ戸に古い札を貼らないと。",
+  "file": "t-seal_first.mp3",
+  "sec": 5.6
+ },
+ "phone_dead": {
+  "text": "古い黒電話。受話器は冷たい。……今は、どこにもつながっていない。",
+  "file": "t-phone_dead.mp3",
+  "sec": 5
+ },
+ "usu_phone": {
+  "text": "電話が鳴っている。先に、中の間の黒電話に出よう。",
+  "file": "t-usu_phone.mp3",
+  "sec": 3.9
+ },
+ "hatch_usu": {
+  "text": "揚げ戸の上に、石の臼が載っている。先に、臼をどかさないと開かない。",
+  "file": "t-hatch_usu.mp3",
+  "sec": 5.3
+ },
+ "bench_early": {
+  "text": "作業台に、のこぎりとやすり。……今は、並べて考える物がそろっていない。奥の棚の櫛が先だ。",
+  "file": "t-bench_early.mp3",
+  "sec": 7.1
+ },
+ "bench_busy": {
+  "text": "今は、考えている場合じゃない。揚げ戸だ。",
+  "file": "t-bench_busy.mp3",
+  "sec": 3.3
+ },
+ "lamp_order": {
+  "text": "手前の灯明から、順に火を移していこう。帰り道の目印になる。",
+  "file": "t-lamp_order.mp3",
+  "sec": 4.9
+ },
+ "butsudan_early": {
+  "text": "仏壇に、位牌が一つ。……今は、帳場のハルさんの話が先だ。",
+  "file": "t-butsudan_early.mp3",
+  "sec": 4.8
+ },
+ "done_here": {
+  "text": "ここでは、もうすることはない。",
+  "file": "t-done_here.mp3",
+  "sec": 2
+ },
+ "not_yet": {
+  "text": "今は、まだだ。左上の目標を先にしよう。",
+  "file": "t-not_yet.mp3",
+  "sec": 3.6
  }
 }

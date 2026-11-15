@@ -6,6 +6,7 @@ import { installHouse } from './house.js';
 import { installGhost } from './ghost.js';
 import { installStory } from './story.js';
 import { installTests } from './test-scenes.js';
+import { installAnswers } from './answers.js';
 
 export default function (ext) {
   const G = {};
@@ -14,6 +15,7 @@ export default function (ext) {
   installGhost(ext, G);
   installStory(ext, G);
   installTests(ext, G);
+  installAnswers(ext, G);
   ext.on('bus:error', ({ name, error }) => console.error('[kushi]', name, error && error.stack ? error.stack.split(String.fromCharCode(10)).slice(0, 3).join(' ') : String(error)));
   ext.on('game:ready', () => { if (typeof window !== 'undefined') window.__kc = G; });
 }

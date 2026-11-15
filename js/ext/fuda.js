@@ -29,7 +29,7 @@ export function installFuda(ext, G) {
   const geo = new THREE.PlaneGeometry(0.1, 0.3);
   geo.translate(0, -0.15, 0);   // hinged at its top edge: the peel turns it down and away
   let paperM = null, oldM = null;
-  const charms = new Map();   // id -> { def, mesh, hit, door?, wall? }
+  const charms = G.charms = new Map();   // id -> { def, mesh, hit, door?, wall? }
   const posts = new Map();    // id -> { def, charm, mat, hit, on, burn, press }
   const peeling = [];
 
@@ -122,6 +122,7 @@ export function installFuda(ext, G) {
     const ok = G.canPeel(id); if (ok !== true) { ctx.answer(ok); return; }
     G.peeled.push(id);
     ctx.world.interactables.splice(ctx.world.interactables.indexOf(C.hit), 1);
+    if (C.door) G.doorPlain(C.door);
     peeling.push({ m: C.mesh, t: 0 });
     ctx.sound('paper');
     setTimeout(() => {
@@ -132,9 +133,8 @@ export function installFuda(ext, G) {
     }, 900);
   }
   G.peel = peel;
-  // [E] on a charmed door peels its charm (the charm is small: the door around it is what the eye lands on)
-  ext.on('player:interact', ({ kind, id }) => { if (kind !== 'door' || !ctx) return; for (const [cid, C] of charms) if (C.door === id && !G.peeled.includes(cid) && G.canPeel(cid) === true) { peel(cid); break; } });
-  G.peelQuiet = (id) => { const C = charms.get(id); if (!C) return; if (!G.peeled.includes(id)) G.peeled.push(id); C.mesh.visible = false; const i = ctx.world.interactables.indexOf(C.hit); if (i >= 0) ctx.world.interactables.splice(i, 1); };
+  G.doorPlain = (doorId) => { for (const o of ctx.world.interactables) { const it = o.userData && o.userData.interact; if (it && it.kind === 'charmdoor' && it.id === doorId) it.kind = 'door'; } };
+  G.peelQuiet = (id) => { const C = charms.get(id); if (!C) return; if (!G.peeled.includes(id)) G.peeled.push(id); if (C.door) G.doorPlain(C.door); C.mesh.visible = false; const i = ctx.world.interactables.indexOf(C.hit); if (i >= 0) ctx.world.interactables.splice(i, 1); };
   function postRun(id) {
     const P = posts.get(id); if (!P) return;
     if (P.on) {
