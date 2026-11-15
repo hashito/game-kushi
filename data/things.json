@@ -13,7 +13,8 @@
       "やはり動かない。ハルさんは「戸は、わしが押さえとる」と言った。"
     ],
     "feeling": "外の音が、まるで聞こえない。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-omote-door.webp"
   },
   {
     "id": "OMOTE_SHOES",
@@ -28,7 +29,8 @@
       "靴が一足。女物の古い草履。きちんとそろえてある。"
     ],
     "feeling": "何十年も履いていないような草履だ。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-omote-shoes.webp"
   },
   {
     "id": "MISE_CASE",
@@ -43,7 +45,8 @@
       "ガラスの棚に、櫛が並んでいた跡。日に焼けていない四角い跡が残っている。中身は一つもない。"
     ],
     "feeling": "櫛の店なのに、櫛が一本もない。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-mise-case.webp"
   },
   {
     "id": "MISE_TEA",
@@ -58,7 +61,8 @@
       "格子の前に、湯呑みが二つ。茶はとっくに乾いて、茶渋が輪になっている。埃が積もっている。"
     ],
     "feeling": "何日も、誰も触っていない。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-mise-tea.webp"
   },
   {
     "id": "MISE_LATTICE",
@@ -74,7 +78,8 @@
       "外から何かが入らないように、貼ったのだろうか。"
     ],
     "feeling": "ハルさんは、背中を向けたまま動かない。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-mise-lattice.webp"
   },
   {
     "id": "NAKA_IHAI",
@@ -90,7 +95,8 @@
       "清次さんは昭和四十九年の十月に亡くなっている。"
     ],
     "feeling": "ハルさんの息子さんだろう。五十二年前に、二十六で。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-naka-ihai.webp"
   },
   {
     "id": "NAKA_PHOTO",
@@ -123,7 +129,8 @@
       "線が古いのかもしれない。"
     ],
     "feeling": "外へは、電話もかけられない。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-naka-phone.webp"
   },
   {
     "id": "NAKA_TANSU",
@@ -138,7 +145,8 @@
       "引き出しの一つに、役所の書類の控えが入っている。"
     ],
     "feeling": "",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-naka-tansu.webp"
   },
   {
     "id": "HASHIRI_KAMADO",
@@ -153,7 +161,8 @@
       "煤けたかまど。火を落としてから、ずいぶんたっている。"
     ],
     "feeling": "",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-hashiri-kamado.webp"
   },
   {
     "id": "HASHIRI_WELL",
@@ -169,7 +178,8 @@
       "蓋の下で、水がはねる音がした。"
     ],
     "feeling": "この井戸の水は、どこにつながっているんだろう。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-hashiri-well.webp"
   },
   {
     "id": "HASHIRI_MIZUYA",
@@ -184,7 +194,8 @@
       "茶碗が二人分。片方は、縁が欠けている。"
     ],
     "feeling": "",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-hashiri-mizuya.webp"
   },
   {
     "id": "OKU_KYODAI",
@@ -199,7 +210,8 @@
       "鏡台に布がかけてある。引き出しに、櫛を入れる細長い桐の箱。中は空だ。"
     ],
     "feeling": "櫛の箱だけが、ここにある。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-oku-kyodai.webp"
   },
   {
     "id": "OKU_KIMONO",
@@ -214,7 +226,8 @@
       "箪笥の上に、藍色の着物がたたんである。……少し湿っている。"
     ],
     "feeling": "",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-oku-kimono.webp"
   },
   {
     "id": "ROKA_AMADO",
@@ -229,7 +242,8 @@
       "雨戸が閉め切ってある。すき間に、札が縦に何枚も貼ってある。"
     ],
     "feeling": "外は、もう真っ暗だろう。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-roka-amado.webp"
   },
   {
     "id": "SAGYO_COMB",
@@ -244,7 +258,8 @@
       "作業台に、作りかけの櫛が一枚。歯が半分だけ挽いてある。のこぎり、やすり、木賊（とくさ：磨くための草）。"
     ],
     "feeling": "五十年以上、誰も触っていない。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-sagyo-comb.webp"
   },
   {
     "id": "SAGYO_BOARDS",
@@ -259,7 +274,8 @@
       "薄い板が束ねて立ててある。黄色い木肌。櫛の材の柘植だ。"
     ],
     "feeling": "",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-sagyo-boards.webp"
   },
   {
     "id": "SAGYO_FLOOR",
@@ -274,7 +290,8 @@
       "床板の下から、かすかに音がする。カリ……カリ……。何かを、細かくひっかくような。"
     ],
     "feeling": "櫛で、髪をすく音みたいだ。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-sagyo-floor.webp"
   },
   {
     "id": "MURO_SCRATCH",
@@ -289,7 +306,8 @@
       "揚げ戸の裏板に、爪でかいた跡が何十本もある。下から、誰かが開けようとした跡だ。"
     ],
     "feeling": "閉じこめられていたんだ。下から、何日も。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-muro-scratch.webp"
   },
   {
     "id": "MURO_BOARDS",
@@ -304,7 +322,8 @@
       "柘植の板が、壁一面に積んである。燻された煙の匂いが、まだ残っている。"
     ],
     "feeling": "",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-muro-boards.webp"
   },
   {
     "id": "MURO_KILN",
@@ -319,7 +338,8 @@
       "板を燻すための、浅い炉。灰が固まっている。"
     ],
     "feeling": "",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-muro-kiln.webp"
   },
   {
     "id": "P1_HAIR",
@@ -334,7 +354,8 @@
       "積んだ板のすき間に、長い黒髪がはさまっている。何本も。"
     ],
     "feeling": "女の人の髪だ。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-p1-hair.webp"
   },
   {
     "id": "P2_HANDS",
@@ -349,7 +370,8 @@
       "床に、濡れた手の跡が続いている。這って進んだ跡だ。奥から、こちらへ。"
     ],
     "feeling": "",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-p2-hands.webp"
   },
   {
     "id": "P3_TOOTH",
@@ -364,7 +386,8 @@
       "水の上に、長い髪の束が浮いている。……ゆっくり、こちらへ流れてくる。"
     ],
     "feeling": "",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-p3-tooth.webp"
   },
   {
     "id": "P4_FUDA",
@@ -379,7 +402,8 @@
       "壁も天井も、札で埋まっている。何百枚。日付はどれも「昭和四十九年霜月十四日」。……一晩で、これだけ貼ったのか。"
     ],
     "feeling": "あの夜、ハルさんは千草さんを閉じこめるために、これだけの札を書いた。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-p4-fuda.webp"
   },
   {
     "id": "P5_STEPS",
@@ -394,7 +418,8 @@
       "湿った土に、小さな足跡。素足の女の人の足。奥から来て、奥へ戻っている。"
     ],
     "feeling": "",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-p5-steps.webp"
   },
   {
     "id": "OKUMURO_KIMONO",
@@ -410,7 +435,8 @@
       "帯留めに、字が彫ってある。「千草」。"
     ],
     "feeling": "千草さんは、家出したんじゃない。五十二年、ここにいたんだ。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-okumuro-kimono.webp"
   },
   {
     "id": "OKUMURO_CANDLE",
@@ -425,6 +451,7 @@
       "手燭が一つ。蝋燭は根元まで燃え尽きている。"
     ],
     "feeling": "千草さんの灯りは、ここで尽きた。",
-    "size": 0.7
+    "size": 0.7,
+    "photo": "assets/photos/th-okumuro-candle.webp"
   }
 ]

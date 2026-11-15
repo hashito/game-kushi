@@ -120,7 +120,7 @@
     {
       "key": "end-e1",
       "size": "1344x768",
-      "prompt": "close-up of a round ceramic charcoal brazier, glowing red charcoal, a small dark brown boxwood comb catching fire with small flames, in the blurred background behind a dark wooden lattice the hunched back of a very old Japanese woman in a dark kimono with long pure white hair"
+      "prompt": "a small real half-moon shaped Japanese boxwood comb with a rounded top, natural honey-brown wood grain, fine teeth, lying on glowing red charcoal in a round ceramic brazier, small orange flames licking its edge, smoke, warm firelight, in the blurred dark background a wooden lattice and the hunched back of a very old woman with long pure white hair, plain brazier without marks"
     },
     {
       "key": "end-e2",
@@ -131,6 +131,147 @@
       "key": "end-e3",
       "size": "1344x768",
       "prompt": "dawn light in an old Japanese shop room, many loose plain white paper strips scattered on the tatami, the lattice booth empty, a yellow half-moon wooden comb resting on the floor"
+    },
+    {
+      "key": "th-sagyo-floor",
+      "size": "768x768",
+      "prompt": "close-up of old dark wooden floor boards of a Japanese workshop, a thin gap between two boards, darkness below, dust, low candle light"
+    },
+    {
+      "key": "th-muro-scratch",
+      "size": "768x768",
+      "prompt": "underside of an old wooden trapdoor seen from below in a cellar, many long fingernail scratch marks gouged into the bare wood, candle light from below"
+    },
+    {
+      "key": "th-muro-boards",
+      "size": "768x768",
+      "prompt": "stacks of thin pale yellow boxwood planks piled against an earthen cellar wall, smoked and darkened edges, candle light"
+    },
+    {
+      "key": "th-muro-kiln",
+      "size": "768x768",
+      "prompt": "a shallow old smoking pit kiln made of stone and clay in an earthen cellar, grey hardened ash inside, candle light"
+    },
+    {
+      "key": "th-p1-hair",
+      "size": "768x768",
+      "prompt": "long strands of black human hair caught in the gap between stacked old wooden planks in a dark narrow tunnel, candle light"
+    },
+    {
+      "key": "th-p2-hands",
+      "size": "768x768",
+      "prompt": "wet handprints in a line on a damp dirt floor of a very low narrow tunnel, crawling marks, candle light, dark"
+    },
+    {
+      "key": "th-p3-tooth",
+      "size": "768x768",
+      "prompt": "a clump of long black hair floating on dark still water in a stone tunnel, ripples, candle light reflection"
+    },
+    {
+      "key": "th-p4-fuda",
+      "size": "768x768",
+      "prompt": "a narrow underground corridor whose walls and ceiling are completely covered with hundreds of old blank white paper strips each with only a small red dot, candle light"
+    },
+    {
+      "key": "th-p5-steps",
+      "size": "768x768",
+      "prompt": "small bare footprints of a woman pressed into damp brown earth in a dark tunnel, leading away into darkness, candle light"
+    },
+    {
+      "key": "th-okumuro-kimono",
+      "size": "768x768",
+      "prompt": "a collapsed old indigo kimono lying on the dirt floor of a stone cellar under a wooden shelf, long black hair spread on the floor beside it, dim candle light, somber"
+    },
+    {
+      "key": "th-okumuro-candle",
+      "size": "768x768",
+      "prompt": "an old brass candlestick with a candle burned down completely to the base, wax pooled, on the dirt floor of a stone cellar, dim"
+    },
+    {
+      "key": "th-omote-door",
+      "size": "768x768",
+      "prompt": "the inside of a closed old wooden sliding front door of a Japanese townhouse entrance, earthen floor, lattice, dark, a faint gap of night at the edge"
+    },
+    {
+      "key": "th-omote-shoes",
+      "size": "768x768",
+      "prompt": "a single pair of old worn women's straw zori sandals neatly placed on a dark wooden entrance step, dust"
+    },
+    {
+      "key": "th-mise-case",
+      "size": "768x768",
+      "prompt": "tight close-up looking down at the dusty glass shelf of an empty old display case, pale clean rectangles in the dust where combs used to lie, nothing else, only the shelf fills the frame"
+    },
+    {
+      "key": "th-mise-tea",
+      "size": "768x768",
+      "prompt": "two dusty ceramic Japanese teacups with dried brown tea rings, standing on a wooden step in front of a dark wooden lattice"
+    },
+    {
+      "key": "th-mise-lattice",
+      "size": "768x768",
+      "prompt": "a dark wooden lattice screen of an old shop counter, the inside covered with many plain blank white paper strips, a small paper lantern glowing beyond, every paper strip completely blank and empty, no signs, no notices"
+    },
+    {
+      "key": "th-naka-ihai",
+      "size": "768x768",
+      "prompt": "an old small Japanese household Buddhist altar cabinet with its lacquered doors open, a brass bowl bell, a thin line of incense smoke, one candle, the inside of the altar in deep shadow, dust, seen slightly from the side"
+    },
+    {
+      "key": "th-naka-phone",
+      "size": "768x768",
+      "prompt": "an old black rotary dial telephone on a dark wooden shelf in a Japanese tatami room, receiver lifted slightly, dust"
+    },
+    {
+      "key": "th-naka-tansu",
+      "size": "768x768",
+      "prompt": "an old Japanese wooden chest of drawers with iron handles, one drawer slightly open with folded papers inside, dim light"
+    },
+    {
+      "key": "th-hashiri-kamado",
+      "size": "768x768",
+      "prompt": "an old sooty clay cooking stove kamado in a Japanese earthen-floor kitchen, cold ash, iron pot, dark"
+    },
+    {
+      "key": "th-hashiri-well",
+      "size": "768x768",
+      "prompt": "an indoor stone well with a heavy round wooden lid in an earthen-floor kitchen, three plain blank white paper strips pasted across the lid, dark"
+    },
+    {
+      "key": "th-hashiri-mizuya",
+      "size": "768x768",
+      "prompt": "an old Japanese kitchen cupboard with sliding glass doors, two rice bowls inside, one with a chipped rim, dim"
+    },
+    {
+      "key": "th-oku-kyodai",
+      "size": "768x768",
+      "prompt": "an old Japanese dressing table with a cloth draped over the mirror, a drawer open with a long empty paulownia wood box, tatami room, candle light"
+    },
+    {
+      "key": "th-oku-kimono",
+      "size": "768x768",
+      "prompt": "a folded indigo blue kimono lying on top of an old wooden chest of drawers, slightly damp fabric, tatami room, dark"
+    },
+    {
+      "key": "th-roka-amado",
+      "size": "768x768",
+      "prompt": "closed old wooden storm shutters along a narrow Japanese veranda corridor, many plain blank white paper strips pasted vertically along the gaps, dark"
+    },
+    {
+      "key": "th-sagyo-comb",
+      "size": "768x768",
+      "prompt": "top-down view of an unfinished traditional Japanese boxwood comb lying flat on an old workbench, flat comb with a rounded top edge and straight teeth, only the left half of the teeth cut, a small fine saw and files beside it, candle light, only the bench fills the frame"
+    },
+    {
+      "key": "th-sagyo-boards",
+      "size": "768x768",
+      "prompt": "bundles of thin pale yellow boxwood boards standing against the wall of an old craftsman workshop, wood grain, dust, candle light"
     }
-  ]
+  ],
+  "seeds": {
+    "th-naka-ihai": 171,
+    "th-mise-case": 158,
+    "th-mise-lattice": 101,
+    "th-sagyo-comb": 158
+  }
 }
