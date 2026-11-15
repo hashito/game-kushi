@@ -89,7 +89,7 @@ export default async (api) => {
   await runTo(-17.6, -46.0); await H.walkTo(-17.6, -44.0); await use(-17.6, -45.0, 1.4, 'paste P3C'); await shot('chase-paste');
   await H.walkTo(-17.6, -41.8); await crouch(true); await H.walkTo(-5.0, -41.8, { near: 0.5 }); log('  chase', await G('({ me: kc.project(g.camera.position.x, g.camera.position.z).s.toFixed(1), gh: kc.gh.s.toFixed(1), deaths: g.state.deaths })'));
   await H.walkTo(2.4, -41.8, { near: 0.5 }); await crouch(false);
-  await runTo(2.6, -1.8); await runTo(6.6, 0.9); await use(6.6, -0.5, 1.2, 'ladder up'); await sleep(1500);
+  await runTo(2.6, -1.8); await runTo(2.6, -0.1); await runTo(6.6, 0.9); await use(6.6, -0.5, 1.2, 'ladder up'); await sleep(1500);
   log('dead?', await G('g.state.room'));
   await H.idle(); await must('T_ESCAPE'); await shot('seal-bar');
   await use(6.6, -0.5, 0.1, 'T_SEAL'); await H.idle(); await must('T_SEAL');

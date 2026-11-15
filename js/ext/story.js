@@ -229,7 +229,7 @@ export function installStory(ext, G) {
       }
       await talk('last', '帳場の格子');
       const letters = flag('letters');
-      const v = await ctx.choose({ who: '私', title: '帳場の格子', text: `格子の内側には、ハルさんが五十年かけて貼った札。ハルさんは、自分の札の輪から出られない。${letters ? '\n札をはがせば、ハルさんは千草さんと同じ側へ行ける。' : ''}`, options: [{ id: 'keep', label: 'ハルさんの札は、そのままにする', primary: !letters }, ...(letters ? [{ id: 'free', label: '帳場の格子の札を、はがす', primary: true }] : [])] });
+      const v = await ctx.choose({ who: '私', title: '帳場の格子', text: `格子の内側には、ハルさんが五十二年かけて貼った札。ハルさんは、自分の札の輪から出られない。${letters ? '\n札をはがせば、ハルさんは格子の外へ出て、千草さんに謝りに行ける。もう、ここには残らない。' : '\n（ハルさんが五十二年、何を思っていたのか、まだ分からない。家のどこかに、出さなかった手紙があるかもしれない。）'}`, options: [{ id: 'keep', label: 'ハルさんの札は、そのままにする', primary: !letters }, ...(letters ? [{ id: 'free', label: '帳場の格子の札を、はがす', primary: true }] : [])] });
       if (!v) return false;
       if (v === 'free') { await talk('end_free', '帳場の格子'); if (G.chobaCharms) G.chobaCharms.visible = false; setFlag('end_free'); return true; }
       if (!letters) ans('end_free_no');
