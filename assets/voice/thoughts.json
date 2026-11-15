@@ -1,0 +1,272 @@
+{
+ "start": {
+  "text": "店の奥の、格子で囲った帳場。あの人の前へ行って、話を聞こう。",
+  "file": "t-start.mp3",
+  "sec": 5.1
+ },
+ "peel_haru_first": {
+  "text": "勝手にはがしていいものか分からない。まず、帳場のハルさんの話を聞こう。",
+  "file": "t-peel_haru_first.mp3",
+  "sec": 5
+ },
+ "peel_l1": {
+  "text": "奥へ行く前に、ハルさんに言われたとおり、大黒柱に札を貼って、もう一度はがしてみよう。",
+  "file": "t-peel_l1.mp3",
+  "sec": 6.4
+ },
+ "peel_dark": {
+  "text": "板戸の向こうは真っ暗だ。先に、燻し炉の縁で手燭に火を入れよう。",
+  "file": "t-peel_dark.mp3",
+  "sec": 4.6
+ },
+ "peel_gate": {
+  "text": "今、格子戸の札をはがしたら、向こうの女の人が入ってくる。",
+  "file": "t-peel_gate.mp3",
+  "sec": 4.4
+ },
+ "door_charm": {
+  "text": "札が、戸と柱にまたがって貼ってある。札に向いて [E] で、そっとはがせる。",
+  "file": "t-door_charm.mp3",
+  "sec": 5.6
+ },
+ "peel_first": {
+  "text": "札が、はらりとはがれた。戸が、ひとりでに開く。はがした札は、手もとに残った。",
+  "file": "t-peel_first.mp3",
+  "sec": 6.3
+ },
+ "paste_need": {
+  "text": "貼る札を持っていない。戸の札をはがすと、札が手に入る。",
+  "file": "t-paste_need.mp3",
+  "sec": 4.2
+ },
+ "chip_first": {
+  "text": "右上に、持っている札の数。帰りに柱に貼るぶんだ。",
+  "file": "t-chip_first.mp3",
+  "sec": 4.1
+ },
+ "phone_ring": {
+  "text": "電話が鳴っている。……中の間の、つながらなかった黒電話だ。",
+  "file": "t-phone_ring.mp3",
+  "sec": 4
+ },
+ "usu_need": {
+  "text": "石の臼は、手では動かない。作業場の東の壁に、鉄の梃子が立てかけてあった。",
+  "file": "t-usu_need.mp3",
+  "sec": 6
+ },
+ "usu_done": {
+  "text": "臼が転がって、揚げ戸が見えた。古い札が、上から貼ってある。",
+  "file": "t-usu_done.mp3",
+  "sec": 4.7
+ },
+ "light_none": {
+  "text": "灯りになる物がない。台所の手燭とマッチがいる。",
+  "file": "t-light_none.mp3",
+  "sec": 3.5
+ },
+ "light_unlit": {
+  "text": "手燭に、まだ火が入っていない。地下の室の燻し炉の縁で、マッチを擦ろう。",
+  "file": "t-light_unlit.mp3",
+  "sec": 5.5
+ },
+ "light_need": {
+  "text": "手燭とマッチの両方がいる。どちらも、台所（走り庭）にあった。",
+  "file": "t-light_need.mp3",
+  "sec": 5.5
+ },
+ "lamp_need": {
+  "text": "灯明に火を移すには、手燭に火が入っていないと。[F] で手燭を灯す。",
+  "file": "t-lamp_need.mp3",
+  "sec": 4.8
+ },
+ "lamp_done": {
+  "text": "灯明に火が入った。帰り道の目印になる。",
+  "file": "t-lamp_done.mp3",
+  "sec": 3.2
+ },
+ "relight": {
+  "text": "マッチを擦って、手燭に火を入れ直した。",
+  "file": "t-relight.mp3",
+  "sec": 2.8
+ },
+ "relight_wait": {
+  "text": "マッチを擦っている……。",
+  "file": "t-relight_wait.mp3",
+  "sec": 1.3
+ },
+ "ev_comb": {
+  "text": "……奥から、何かを細かくすく音がする。カリ、カリ、と。",
+  "file": "t-ev_comb.mp3",
+  "sec": 4.9
+ },
+ "ev_hair": {
+  "text": "板のすき間に、長い黒髪がはさまっている。何本も。",
+  "file": "t-ev_hair.mp3",
+  "sec": 4
+ },
+ "ev_flame": {
+  "text": "手燭の火が、うしろへ倒れた。……奥から、風が来る。",
+  "file": "t-ev_flame.mp3",
+  "sec": 4.1
+ },
+ "ev_fall": {
+  "text": "うしろで、積んだ板が崩れた。……誰も、いない。",
+  "file": "t-ev_fall.mp3",
+  "sec": 3.7
+ },
+ "ev_low": {
+  "text": "天井が低い。しゃがまないと進めない。[C] でしゃがむ。",
+  "file": "t-ev_low.mp3",
+  "sec": 3.8
+ },
+ "ev_hands": {
+  "text": "床に、濡れた手の跡。這って進んだ跡が、奥からこちらへ続いている。",
+  "file": "t-ev_hands.mp3",
+  "sec": 5.2
+ },
+ "ev_cross": {
+  "text": "今、突き当たりを何かが横切った。",
+  "file": "t-ev_cross.mp3",
+  "sec": 2.6
+ },
+ "ev_water": {
+  "text": "水が足首まで来た。冷たい。ゆっくりしか歩けない。",
+  "file": "t-ev_water.mp3",
+  "sec": 3.9
+ },
+ "ev_splash": {
+  "text": "うしろで、水がはねた。……振り向いても、誰もいない。",
+  "file": "t-ev_splash.mp3",
+  "sec": 3.9
+ },
+ "ev_float": {
+  "text": "水の上に、長い髪の束が浮いている。ゆっくり、こちらへ流れてくる。",
+  "file": "t-ev_float.mp3",
+  "sec": 5.3
+ },
+ "ev_hum": {
+  "text": "火が、消えかけた。……誰かが、鼻歌を歌っている。",
+  "file": "t-ev_hum.mp3",
+  "sec": 4.1
+ },
+ "ev_whisper": {
+  "text": "札の回廊。壁も天井も、札で埋まっている。……札が、ざわざわと鳴った。",
+  "file": "t-ev_whisper.mp3",
+  "sec": 5.9
+ },
+ "ev_steps": {
+  "text": "湿った土に、素足の足跡。奥から来て、奥へ戻っている。",
+  "file": "t-ev_steps.mp3",
+  "sec": 4.9
+ },
+ "ev_comb2": {
+  "text": "奥の部屋から、また髪をすく音。……近い。",
+  "file": "t-ev_comb2.mp3",
+  "sec": 3.3
+ },
+ "crouch_hint": {
+  "text": "梁が低い。[C] でしゃがんで、くぐる。",
+  "file": "t-crouch_hint.mp3",
+  "sec": 2.8
+ },
+ "lesson_start": {
+  "text": "前から、来る！　柱に向いて [E] で、札を貼れ！",
+  "file": "t-lesson_start.mp3",
+  "sec": 4.2
+ },
+ "lesson_back": {
+  "text": "柱の手前（西側）まで下がって、柱に札を貼らないと止まらない。",
+  "file": "t-lesson_back.mp3",
+  "sec": 5.2
+ },
+ "lesson_again": {
+  "text": "すり抜けて、消えた。……また来る。柱に札を貼って、止めるんだ。",
+  "file": "t-lesson_again.mp3",
+  "sec": 4.9
+ },
+ "chase_go": {
+  "text": "逃げろ。走れる（Shift）。後ろに来たら、柱に [E] で札を貼る。",
+  "file": "t-chase_go.mp3",
+  "sec": 5.5
+ },
+ "chase_dark": {
+  "text": "手燭が消えた。[F] で、マッチを擦って火を入れ直せる。",
+  "file": "t-chase_dark.mp3",
+  "sec": 3.7
+ },
+ "cp_mid": {
+  "text": "低い道の入口まで戻った。",
+  "file": "t-cp_mid.mp3",
+  "sec": 1.9
+ },
+ "hide_lost": {
+  "text": "戸棚の札が、櫛を隠した。……足音が、遠ざかっていく。",
+  "file": "t-hide_lost.mp3",
+  "sec": 4.6
+ },
+ "seal_go": {
+  "text": "揚げ戸を、下から押し上げてくる！　古い札を [E] で貼れ！",
+  "file": "t-seal_go.mp3",
+  "sec": 4.3
+ },
+ "stair_shut": {
+  "text": "揚げ戸の下に、千草さんがいる。……今は、開けられない。",
+  "file": "t-stair_shut.mp3",
+  "sec": 4.2
+ },
+ "think_retry": {
+  "text": "もう一度、集めた物を見直そう。",
+  "file": "t-think_retry.mp3",
+  "sec": 2.5
+ },
+ "return_wait": {
+  "text": "櫛は、まだ返さない。",
+  "file": "t-return_wait.mp3",
+  "sec": 1.8
+ },
+ "give_wait": {
+  "text": "まだ渡さない。……作業台で、集めた物を並べて考えてからでも遅くない。",
+  "file": "t-give_wait.mp3",
+  "sec": 5.1
+ },
+ "end_free_no": {
+  "text": "帳場の格子の札をはがすのは、ハルさんの手紙を読んで、ハルさんが何を思っていたか分かってからだ。",
+  "file": "t-end_free_no.mp3",
+  "sec": 6.3
+ },
+ "letters_more": {
+  "text": "まだ足りない：",
+  "file": "t-letters_more.mp3",
+  "sec": 0.8
+ },
+ "sq2_count": {
+  "text": "壁の札をはがした。帰りに使える。",
+  "file": "t-sq2_count.mp3",
+  "sec": 2.6
+ },
+ "okumuro_shelf": {
+  "text": "棚の箱は、固い紐で結んである。",
+  "file": "t-okumuro_shelf.mp3",
+  "sec": 2.6
+ },
+ "haru_again": {
+  "text": "帳場の格子の奥で、ハルさんは背中を向けたまま動かない。……「奥の棚から、櫛を持って来い」。",
+  "file": "t-haru_again.mp3",
+  "sec": 6.5
+ },
+ "haru_wait_comb": {
+  "text": "ハルさんに渡せるものは、まだ何もない。",
+  "file": "t-haru_wait_comb.mp3",
+  "sec": 2.6
+ },
+ "front_shut": {
+  "text": "表の戸は動かない。",
+  "file": "t-front_shut.mp3",
+  "sec": 1.3
+ },
+ "seal_shut": {
+  "text": "揚げ戸には、古い札を貼った。下から叩く音は、もうしない。",
+  "file": "t-seal_shut.mp3",
+  "sec": 4.5
+ }
+}

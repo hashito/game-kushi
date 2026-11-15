@@ -4,79 +4,92 @@
       "who": "私",
       "text": "私は宮下航。訪問介護のヘルパーをしている。今日は熱を出した先輩の野口さんの代わりに、山あいの町の古い家へ来た。",
       "img": "assets/photos/op-sheet.webp",
-      "id": "opening-1"
+      "id": "opening-1",
+      "voice": "assets/voice/opening-1.mp3"
     },
     {
       "who": "私",
       "text": "十一月の夕方、五時半。利用者は櫛田ハルさん、九十六歳。むかし櫛を作って売っていた店の家に、一人で住んでいる。",
       "img": "assets/photos/op-mise.webp",
-      "id": "opening-2"
+      "id": "opening-2",
+      "voice": "assets/voice/opening-2.mp3"
     },
     {
       "who": "私",
       "text": "記録票のとおり、鍵箱の鍵で表の戸を開けて入った。……戸が、ひとりでに閉まった。押しても引いても、もう動かない。",
       "img": "assets/photos/op-door.webp",
-      "id": "opening-3"
+      "id": "opening-3",
+      "voice": "assets/voice/opening-3.mp3"
     },
     {
       "who": "私",
       "text": "店の奥に、格子で囲った帳場（店の勘定場）がある。格子の向こうの小さな灯りの前に、背中を向けた老女が座っている。",
       "img": "assets/photos/op-choba.webp",
-      "id": "opening-4"
+      "id": "opening-4",
+      "voice": "assets/voice/opening-4.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "閉めたのは、わしじゃ。……あんた、新しいヘルパーか。こっちへ来い。",
       "img": "assets/photos/op-choba.webp",
-      "id": "opening-5"
+      "id": "opening-5",
+      "voice": "assets/voice/opening-5.mp3"
     }
   ],
   "choba1": [
     {
       "who": "私",
       "text": "こんばんは。ひまわり訪問介護の宮下です。今日は野口の代わりに来ました。……あの、表の戸が開かなくて。",
-      "id": "choba1-1"
+      "id": "choba1-1",
+      "voice": "assets/voice/choba1-1.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "戸は、わしが押さえとる。あんたに頼みがあるけえ、帰すわけにはいかん。",
-      "id": "choba1-2"
+      "id": "choba1-2",
+      "voice": "assets/voice/choba1-2.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "この家のいちばん奥、作業場の床の揚げ戸（床にはめた戸）から、地下の室（むろ）へ降りる。長い通路の突き当たりの部屋の棚に、櫛がある。それを持って来い。",
-      "id": "choba1-3"
+      "id": "choba1-3",
+      "voice": "assets/voice/choba1-3.mp3"
     },
     {
       "who": "私",
       "text": "櫛、ですか。……どうして、ご自分で取りに行かないんですか。",
-      "id": "choba1-4"
+      "id": "choba1-4",
+      "voice": "assets/voice/choba1-4.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "わしは、この格子の内から出られん。足のこともあるが、それだけじゃない。……櫛を持って来るまで、表の戸は開けん。大声を出しても、ここらは誰も通らん。",
-      "id": "choba1-5"
+      "id": "choba1-5",
+      "voice": "assets/voice/choba1-5.mp3"
     },
     {
       "who": "私",
       "text": "脅されている。携帯は圏外で、外に知らせる手もない。……今は、言われたとおりにするしかない。",
-      "id": "choba1-6"
+      "id": "choba1-6",
+      "voice": "assets/voice/choba1-6.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "奥へ行く戸には、みな札が貼ってある。札は、はがしてええ。はがした札は、なくさず持って行け。帰りに要る。",
-      "id": "choba1-7"
+      "id": "choba1-7",
+      "voice": "assets/voice/choba1-7.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "まず、中の間の襖の札を一枚はがしてみい。札の端に指をかけて、そっとはがすんじゃ。",
-      "id": "choba1-8"
+      "id": "choba1-8",
+      "voice": "assets/voice/choba1-8.mp3"
     }
   ],
   "peel1_done": [
@@ -84,7 +97,8 @@
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "それでええ。はがした札は、柱に貼り直せる。土間との境の太い柱、大黒柱に、貼ってみい。",
-      "id": "peel1_done-1"
+      "id": "peel1_done-1",
+      "voice": "assets/voice/peel1_done-1.mp3"
     }
   ],
   "paste1": [
@@ -92,24 +106,28 @@
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "柱に貼った札の向こうへは、死んだもんは来られん。帰りに、何かが付いて来たら、柱に貼れ。",
-      "id": "paste1-1"
+      "id": "paste1-1",
+      "voice": "assets/voice/paste1-1.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "ただし、札は強う押されると焦げて、そのうち落ちる。落ちるまでに、逃げえ。",
-      "id": "paste1-2"
+      "id": "paste1-2",
+      "voice": "assets/voice/paste1-2.mp3"
     },
     {
       "who": "私",
       "text": "死んだもの……？　何が付いて来るんですか。",
-      "id": "paste1-3"
+      "id": "paste1-3",
+      "voice": "assets/voice/paste1-3.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "……その札は、もう一度はがして持って行け。無駄にするな。",
-      "id": "paste1-4"
+      "id": "paste1-4",
+      "voice": "assets/voice/paste1-4.mp3"
     }
   ],
   "paste1_done": [
@@ -117,19 +135,22 @@
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "行け。中の間の奥が奥の間、その先が渡り廊下、いちばん奥が作業場じゃ。",
-      "id": "paste1_done-1"
+      "id": "paste1_done-1",
+      "voice": "assets/voice/paste1_done-1.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "地下は真っ暗じゃけえ、灯りがいる。台所は、表の土間の中戸の向こう。手燭とマッチがある。",
-      "id": "paste1_done-2"
+      "id": "paste1_done-2",
+      "voice": "assets/voice/paste1_done-2.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "通路の壁の灯明（とうみょう：油の皿の灯り）にも、火を移して行け。帰りは、走ることになる。",
-      "id": "paste1_done-3"
+      "id": "paste1_done-3",
+      "voice": "assets/voice/paste1_done-3.mp3"
     }
   ],
   "phone": [
@@ -138,43 +159,50 @@
       "where": "電話の声",
       "text": "もしもし、宮下くん？　やっとつながった。何度もかけたのよ。今、どこにいるの。",
       "id": "phone-1",
-      "vfx": "phone"
+      "vfx": "phone",
+      "voice": "assets/voice/phone-1.mp3"
     },
     {
       "who": "私",
       "text": "野口さん。櫛田さんのお宅です。予定表に、十七時半の訪問があったので。",
-      "id": "phone-2"
+      "id": "phone-2",
+      "voice": "assets/voice/phone-2.mp3"
     },
     {
       "who": "野口",
       "where": "電話の声",
       "text": "……櫛田さんはね、先週の火曜に亡くなったの。病院で。訪問は全部取り消したはずなのに、予定表が直ってなかったのね。ごめん、私が言っておけば。",
       "id": "phone-3",
-      "vfx": "phone"
+      "vfx": "phone",
+      "voice": "assets/voice/phone-3.mp3"
     },
     {
       "who": "私",
       "text": "でも、今、帳場に……ハルさんがいて、話をしました。",
-      "id": "phone-4"
+      "id": "phone-4",
+      "voice": "assets/voice/phone-4.mp3"
     },
     {
       "who": "野口",
       "where": "電話の声",
       "text": "宮下くん、すぐ出て。……戸が開かない？　分かった、今から車で行く。一時間はかかる。それまで、奥へは行かないで。",
       "id": "phone-5",
-      "vfx": "phone"
+      "vfx": "phone",
+      "voice": "assets/voice/phone-5.mp3"
     },
     {
       "who": "野口",
       "where": "電話の声",
       "text": "あの家の奥はね、ハルさんが五十二年、誰も入れなかったの。お嫁さんの千草さんが家出してから、ずっと札を貼って――",
       "id": "phone-6",
-      "vfx": "phone"
+      "vfx": "phone",
+      "voice": "assets/voice/phone-6.mp3"
     },
     {
       "who": "私",
       "text": "……切れた。受話器から、もう何の音もしない。",
-      "id": "phone-7"
+      "id": "phone-7",
+      "voice": "assets/voice/phone-7.mp3"
     }
   ],
   "haru_dead": [
@@ -182,128 +210,150 @@
       "who": "ハル",
       "where": "帳場の方から",
       "text": "……聞いたか。",
-      "id": "haru_dead-1"
+      "id": "haru_dead-1",
+      "voice": "assets/voice/haru_dead-1.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の方から",
       "text": "そうよ。わしは先週、死んだ。死んだもんは、札を越えられん。わしが五十二年かけて貼った札が、今はわしを、あの格子の内に閉じこめとる。戸を押さえるくらいはできても、札の外へは一歩も出られん。",
-      "id": "haru_dead-2"
+      "id": "haru_dead-2",
+      "voice": "assets/voice/haru_dead-2.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の方から",
       "text": "じゃから、生きとるあんたに頼んどる。櫛を持って来い。あの櫛がある限り、あの女は、この家から離れん。",
-      "id": "haru_dead-3"
+      "id": "haru_dead-3",
+      "voice": "assets/voice/haru_dead-3.mp3"
     },
     {
       "who": "私",
       "text": "あの女……千草さんのことですか。",
-      "id": "haru_dead-4"
+      "id": "haru_dead-4",
+      "voice": "assets/voice/haru_dead-4.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の方から",
       "text": "……櫛を持って来い。そうしたら、戸を開けてやる。",
-      "id": "haru_dead-5"
+      "id": "haru_dead-5",
+      "voice": "assets/voice/haru_dead-5.mp3"
     },
     {
       "who": "私",
       "text": "野口さんが来るまで一時間。戸は、死んだ人に押さえられている。……奥へ行くしかない。揚げ戸の上の石臼は、梃子（てこ）になる鉄の棒があれば、どかせるだろう。",
-      "id": "haru_dead-6"
+      "id": "haru_dead-6",
+      "voice": "assets/voice/haru_dead-6.mp3"
     }
   ],
   "hatch_done": [
     {
       "who": "私",
       "text": "揚げ戸の札は、ほかのどの札よりも古い。黄ばんで、端が破れている。",
-      "id": "hatch_done-1"
+      "id": "hatch_done-1",
+      "voice": "assets/voice/hatch_done-1.mp3"
     },
     {
       "who": "私",
       "text": "墨で日付がある。「昭和四十九年霜月十四日」。霜月は、十一月のことだ。……千草さんの日記の、最後の日と同じだ。",
-      "id": "hatch_done-2"
+      "id": "hatch_done-2",
+      "voice": "assets/voice/hatch_done-2.mp3"
     },
     {
       "who": "私",
       "text": "それに、この札は、揚げ戸の上から貼ってある。……下から、上がって来られないように。",
-      "id": "hatch_done-3"
+      "id": "hatch_done-3",
+      "voice": "assets/voice/hatch_done-3.mp3"
     }
   ],
   "muro_in": [
     {
       "who": "私",
       "text": "地下の室（むろ）。櫛の材の柘植（つげ）の板を、燻して何年も寝かせておく部屋だ。真っ暗で、ほとんど何も見えない。",
-      "id": "muro_in-1"
+      "id": "muro_in-1",
+      "voice": "assets/voice/muro_in-1.mp3"
     },
     {
       "who": "私",
       "text": "手燭に火を入れよう。目の前の燻し炉の縁なら、手燭を置いてマッチを擦れる。",
-      "id": "muro_in-2"
+      "id": "muro_in-2",
+      "voice": "assets/voice/muro_in-2.mp3"
     }
   ],
   "light_done": [
     {
       "who": "私",
       "text": "手燭に火が入った。……見上げると、揚げ戸の裏板に、爪でかいた跡が何十本もある。",
-      "id": "light_done-1"
+      "id": "light_done-1",
+      "voice": "assets/voice/light_done-1.mp3"
     },
     {
       "who": "私",
       "text": "下から、誰かが開けようとした跡だ。何日も。……ここに、閉じこめられた人がいる。",
-      "id": "light_done-2"
+      "id": "light_done-2",
+      "voice": "assets/voice/light_done-2.mp3"
     },
     {
       "who": "私",
       "text": "火は小さい。足元は濡れた石と板。ここから先は、走れば転ぶ。ゆっくり行こう。",
-      "id": "light_done-3"
+      "id": "light_done-3",
+      "voice": "assets/voice/light_done-3.mp3"
     }
   ],
   "gate": [
     {
       "who": "私",
       "text": "格子戸の向こうに、誰かいる。藍の着物の女の人。膝まである濡れた黒髪で、顔が見えない。",
-      "id": "gate-1"
+      "id": "gate-1",
+      "voice": "assets/voice/gate-1.mp3"
     },
     {
       "who": "千草",
       "where": "格子戸の向こう",
       "text": "……かえして……。",
-      "id": "gate-2"
+      "id": "gate-2",
+      "voice": "assets/voice/gate-2.mp3"
     },
     {
       "who": "私",
       "text": "格子の札が煙を上げて、女の人が押し返された。……札は本当に、あれを止める。ハルさんの言った「死んだもの」は、あの人のことだ。",
-      "id": "gate-3"
+      "id": "gate-3",
+      "voice": "assets/voice/gate-3.mp3"
     },
     {
       "who": "私",
       "text": "女の人は、通路の奥へ消えた。格子戸を開けるには、真ん中の札をはがすしかない。",
-      "id": "gate-4"
+      "id": "gate-4",
+      "voice": "assets/voice/gate-4.mp3"
     }
   ],
   "post_ok": [
     {
       "who": "私",
       "text": "止まった。柱の札の向こうで、女の人が髪を振り乱している。……札が、端から黒く焦げていく。",
-      "id": "post_ok-1"
+      "id": "post_ok-1",
+      "voice": "assets/voice/post_ok-1.mp3"
     }
   ],
   "post_done": [
     {
       "who": "私",
       "text": "札が落ちた。……女の人は、すっと消えた。",
-      "id": "post_done-1"
+      "id": "post_done-1",
+      "voice": "assets/voice/post_done-1.mp3"
     },
     {
       "who": "私",
       "text": "柱の札は、焦げて落ちるまでしか持たない。帰りに追われたら、柱に貼って、焦げる間に逃げる。",
-      "id": "post_done-2"
+      "id": "post_done-2",
+      "voice": "assets/voice/post_done-2.mp3"
     },
     {
       "who": "私",
       "text": "通路の戸棚にも、扉の内側に札が貼ってあった。中に隠れれば、あの人から見えなくなるかもしれない。",
-      "id": "post_done-3"
+      "id": "post_done-3",
+      "voice": "assets/voice/post_done-3.mp3"
     }
   ],
   "okumuro": [
@@ -311,92 +361,108 @@
       "who": "私",
       "text": "通路の突き当たりの部屋。奥の壁に、小さな棚がある。その上に、紐をかけた細長い木の箱。",
       "img": "assets/photos/in-okumuro.webp",
-      "id": "okumuro-1"
+      "id": "okumuro-1",
+      "voice": "assets/voice/okumuro-1.mp3"
     },
     {
       "who": "私",
       "text": "棚の下に、藍の着物がくずれている。長い黒髪が、床に広がっている。……袖から、白い指の骨がのぞいている。",
-      "id": "okumuro-2"
+      "id": "okumuro-2",
+      "voice": "assets/voice/okumuro-2.mp3"
     },
     {
       "who": "私",
       "text": "帯留めに、字が彫ってある。「千草」。千草さんは、家出したんじゃない。ここにいたんだ。五十二年間。",
-      "id": "okumuro-3"
+      "id": "okumuro-3",
+      "voice": "assets/voice/okumuro-3.mp3"
     },
     {
       "who": "私",
       "text": "指の骨は、棚の箱のほうへ伸びている。……櫛を取ろうとして、ここで力尽きたんだ。",
-      "id": "okumuro-4"
+      "id": "okumuro-4",
+      "voice": "assets/voice/okumuro-4.mp3"
     }
   ],
   "rise": [
     {
       "who": "私",
       "text": "柘植の櫛。明るい黄色の、半月の形。婚礼の写真で、花嫁の髪に挿してあった櫛だ。",
-      "id": "rise-1"
+      "id": "rise-1",
+      "voice": "assets/voice/rise-1.mp3"
     },
     {
       "who": "千草",
       "where": "うしろで",
       "text": "……かえして……それは、わたしの……。",
-      "id": "rise-2"
+      "id": "rise-2",
+      "voice": "assets/voice/rise-2.mp3"
     },
     {
       "who": "私",
       "text": "手燭の火が、吹き消された。灯明の明かりの中で、藍の着物が起き上がる。……逃げろ。柱に札を貼りながら、揚げ戸まで。",
-      "id": "rise-3"
+      "id": "rise-3",
+      "voice": "assets/voice/rise-3.mp3"
     }
   ],
   "top": [
     {
       "who": "私",
       "text": "揚げ戸を閉めた。下から、叩く音。揚げ戸が持ち上がってくる。……札を貼らないと！",
-      "id": "top-1"
+      "id": "top-1",
+      "voice": "assets/voice/top-1.mp3"
     }
   ],
   "seal_done": [
     {
       "who": "私",
       "text": "古い札を、揚げ戸の上から貼った。叩く音が、止んだ。",
-      "id": "seal_done-1"
+      "id": "seal_done-1",
+      "voice": "assets/voice/seal_done-1.mp3"
     },
     {
       "who": "私",
       "text": "……上から貼った。五十二年前、ハルさんも、こうしたんだ。下から、上がって来られないように。",
-      "id": "seal_done-2"
+      "id": "seal_done-2",
+      "voice": "assets/voice/seal_done-2.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の方から",
       "text": "持って来たな。早う、こっちへ持って来い。",
-      "id": "seal_done-3"
+      "id": "seal_done-3",
+      "voice": "assets/voice/seal_done-3.mp3"
     },
     {
       "who": "私",
       "text": "このまま渡していいのか。作業台で、集めた物を並べて、考えをまとめよう。",
-      "id": "seal_done-4"
+      "id": "seal_done-4",
+      "voice": "assets/voice/seal_done-4.mp3"
     }
   ],
   "think_done": [
     {
       "who": "私",
       "text": "ハルさんは五十二年前、千草さんにも同じことを言った。「奥の棚から、櫛を持って来い」。",
-      "id": "think_done-1"
+      "id": "think_done-1",
+      "voice": "assets/voice/think_done-1.mp3"
     },
     {
       "who": "私",
       "text": "千草さんは、清次さんの形見の櫛を取りに降りて、閉じこめられた。そして今も、櫛を探している。",
-      "id": "think_done-2"
+      "id": "think_done-2",
+      "voice": "assets/voice/think_done-2.mp3"
     },
     {
       "who": "私",
       "text": "ハルさんに渡せば、櫛は燃やされる。戸は開く。千草さんは、二度と櫛に会えない。",
-      "id": "think_done-3"
+      "id": "think_done-3",
+      "voice": "assets/voice/think_done-3.mp3"
     },
     {
       "who": "私",
       "text": "千草さんに返すなら、揚げ戸の札をはがして、櫛を手渡す。そのあと、帳場でハルさんに戸を開けてもらう。",
-      "id": "think_done-4"
+      "id": "think_done-4",
+      "voice": "assets/voice/think_done-4.mp3"
     }
   ],
   "give": [
@@ -404,64 +470,75 @@
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "よう持って来た。……格子のすき間から、こっちへ。",
-      "id": "give-1"
+      "id": "give-1",
+      "voice": "assets/voice/give-1.mp3"
     },
     {
       "who": "私",
       "text": "櫛を、格子のすき間から差し入れた。櫛は、内側の火鉢の炭の上に落ちた。ハルさんは、それをじっと見ていた。",
-      "id": "give-2"
+      "id": "give-2",
+      "voice": "assets/voice/give-2.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "これでええ。これで、あの女は来ん。",
-      "id": "give-3"
+      "id": "give-3",
+      "voice": "assets/voice/give-3.mp3"
     },
     {
       "who": "私",
       "text": "床の下から、細い叫び声。……すぐに、何も聞こえなくなった。",
-      "id": "give-4"
+      "id": "give-4",
+      "voice": "assets/voice/give-4.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "行け。戸は、開けてやる。",
-      "id": "give-5"
+      "id": "give-5",
+      "voice": "assets/voice/give-5.mp3"
     }
   ],
   "return": [
     {
       "who": "私",
       "text": "揚げ戸の札をはがして、戸を開けた。はしごの下に、千草さんが立っている。櫛を、差し出した。",
-      "id": "return-1"
+      "id": "return-1",
+      "voice": "assets/voice/return-1.mp3"
     },
     {
       "who": "千草",
       "where": "揚げ戸の下",
       "text": "……清次さんの、櫛。",
-      "id": "return-2"
+      "id": "return-2",
+      "voice": "assets/voice/return-2.mp3"
     },
     {
       "who": "私",
       "text": "千草さんは櫛を受け取って、ゆっくり髪に挿した。髪が分かれて、はじめて顔が見えた。若い、おだやかな顔だった。",
-      "id": "return-3"
+      "id": "return-3",
+      "voice": "assets/voice/return-3.mp3"
     },
     {
       "who": "千草",
       "where": "揚げ戸の下",
       "text": "あの日、お義母さんに言われたの。櫛が欲しければ、奥の棚から持って来いって。降りたら、上で揚げ戸が閉まった。何日も叩いたけれど、誰も開けてくれなかった。",
-      "id": "return-4"
+      "id": "return-4",
+      "voice": "assets/voice/return-4.mp3"
     },
     {
       "who": "千草",
       "where": "揚げ戸の下",
       "text": "暗くて、箱の紐がほどけなかった。……やっと、手に戻った。ありがとう。わたしは、下で眠ります。見つけてもらえたから。",
-      "id": "return-5"
+      "id": "return-5",
+      "voice": "assets/voice/return-5.mp3"
     },
     {
       "who": "私",
       "text": "千草さんは、はしごの下の暗がりへ消えた。もう、叩く音はしない。……帳場へ行こう。ハルさんに、戸を開けてもらう。",
-      "id": "return-6"
+      "id": "return-6",
+      "voice": "assets/voice/return-6.mp3"
     }
   ],
   "last": [
@@ -469,24 +546,28 @@
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "……櫛を、返したんか。",
-      "id": "last-1"
+      "id": "last-1",
+      "voice": "assets/voice/last-1.mp3"
     },
     {
       "who": "私",
       "text": "はい。千草さんは、地下の奥の室にいました。五十二年前、あなたが揚げ戸に札を貼って、臼をのせて、閉じこめたんですね。",
-      "id": "last-2"
+      "id": "last-2",
+      "voice": "assets/voice/last-2.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "……清次が死んで、わしは、あの櫛のせいじゃと思うた。櫛は苦死。嫁に櫛なんぞ贈るけえ、と。櫛ごとあの子を下へ閉じこめれば、苦死も一緒に閉じこめられると思うた。",
-      "id": "last-3"
+      "id": "last-3",
+      "voice": "assets/voice/last-3.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "それから毎晩、下から髪をすく音がした。札を貼った。また貼った。……死んだら、あの子と同じ側へ行く。それが怖うて、櫛を燃やしたかった。",
-      "id": "last-4"
+      "id": "last-4",
+      "voice": "assets/voice/last-4.mp3"
     }
   ],
   "end_keep": [
@@ -494,59 +575,69 @@
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "……行け。わしは、ここにおる。",
-      "id": "end_keep-1"
+      "id": "end_keep-1",
+      "voice": "assets/voice/end_keep-1.mp3"
     },
     {
       "who": "私",
       "text": "背中のほうで、表の戸が、すっと開く音がした。",
-      "id": "end_keep-2"
+      "id": "end_keep-2",
+      "voice": "assets/voice/end_keep-2.mp3"
     }
   ],
   "end_free": [
     {
       "who": "私",
       "text": "帳場の格子の札を、一枚ずつはがした。最後の一枚がはがれると、ハルさんの白い髪が、ほどけて肩に落ちた。",
-      "id": "end_free-1"
+      "id": "end_free-1",
+      "voice": "assets/voice/end_free-1.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "……千草。",
-      "id": "end_free-2"
+      "id": "end_free-2",
+      "voice": "assets/voice/end_free-2.mp3"
     },
     {
       "who": "私",
       "text": "振り返ると、作業場のほうから、千草さんが歩いて来た。髪に、柘植の櫛。",
-      "id": "end_free-3"
+      "id": "end_free-3",
+      "voice": "assets/voice/end_free-3.mp3"
     },
     {
       "who": "千草",
       "where": "帳場の前",
       "text": "お義母さん。髪が、ほどけていますよ。",
-      "id": "end_free-4"
+      "id": "end_free-4",
+      "voice": "assets/voice/end_free-4.mp3"
     },
     {
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "……すまなんだ。すまなんだ、千草。",
-      "id": "end_free-5"
+      "id": "end_free-5",
+      "voice": "assets/voice/end_free-5.mp3"
     },
     {
       "who": "私",
       "text": "千草さんは、ハルさんの白い髪を、柘植の櫛でゆっくりとすいた。二人は、作業場の揚げ戸のほうへ、ならんで歩いていった。",
-      "id": "end_free-6"
+      "id": "end_free-6",
+      "voice": "assets/voice/end_free-6.mp3"
     }
   ],
   "letters_done": [
     {
       "who": "私",
       "text": "三通の封筒に、四枚の手紙。どれも千草さんにあてて書いて、出さなかった手紙だ。",
-      "id": "letters_done-1"
+      "id": "letters_done-1",
+      "voice": "assets/voice/letters_done-1.mp3"
     },
     {
       "who": "私",
       "text": "ハルさんは五十二年、謝れないまま、札を貼り続けていた。……帳場の格子の札をはがせば、ハルさんは千草さんのところへ謝りに行けるのかもしれない。",
-      "id": "letters_done-2"
+      "id": "letters_done-2",
+      "voice": "assets/voice/letters_done-2.mp3"
     }
   ],
   "whisper1": [
@@ -554,7 +645,8 @@
       "who": "千草",
       "where": "通路の奥",
       "text": "……どこ……。",
-      "id": "whisper1-1"
+      "id": "whisper1-1",
+      "voice": "assets/voice/whisper1-1.mp3"
     }
   ],
   "whisper2": [
@@ -562,7 +654,8 @@
       "who": "千草",
       "where": "すぐうしろ",
       "text": "……かえして……。",
-      "id": "whisper2-1"
+      "id": "whisper2-1",
+      "voice": "assets/voice/whisper2-1.mp3"
     }
   ]
 }
