@@ -251,12 +251,14 @@
       "who": "ハル",
       "where": "帳場の方から",
       "text": "……櫛を持って来い。そうしたら、戸を開けてやる。",
-      "id": "haru_dead-7"
+      "id": "haru_dead-7",
+      "voice": "assets/voice/haru_dead-7.mp3"
     },
     {
       "who": "私",
       "text": "野口さんが来るまで一時間。戸は、死んだ人に押さえられている。……奥へ行くしかない。揚げ戸の上の石臼は、梃子（てこ）になる鉄の棒があれば、どかせるだろう。",
-      "id": "haru_dead-8"
+      "id": "haru_dead-8",
+      "voice": "assets/voice/haru_dead-8.mp3"
     }
   ],
   "hatch_done": [
