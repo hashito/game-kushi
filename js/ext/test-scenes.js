@@ -23,6 +23,7 @@ export const SCENES = [
   { id: 'escape', group: '地下', label: '櫛を持って逃げる（奥の室）', tasks: [...L1, ...L2, ...L3c, 'T_BOX'], items: [...ITEMS2, 'COMB'], peeled: [...PEEL2, 'F_P1', 'F_GATE'], flags: ['gate_seen'], fuda: 6, chase: 0, at: { x: 9, z: -105, yaw: Math.PI, floor: 0 } },
   { id: 'escape-p3', group: '地下', label: '逃げる（水の道の入口）', tasks: [...L1, ...L2, ...L3c, 'T_BOX'], items: [...ITEMS2, 'COMB'], peeled: [...PEEL2, 'F_P1', 'F_GATE'], flags: ['gate_seen'], fuda: 6, chase: 12, at: { x: -17.6, z: -79, yaw: Math.PI, floor: 0 } },
   { id: 'bench', group: '家', label: '作業台（考えをまとめる）', tasks: [...L1, ...L2, ...L3c, 'T_BOX', 'T_ESCAPE', 'T_SEAL'], items: [...ITEMS2, 'COMB'], peeled: [...PEEL2, 'F_P1', 'F_GATE'], flags: ['gate_seen'], fuda: 3, at: { x: 1.6, z: 2.2, yaw: Math.PI / 2, floor: 1 } },
+  { id: 'end-give', group: '家', label: '帳場（櫛を持って戻った）', tasks: [...L1, ...L2, ...L3c, 'T_BOX', 'T_ESCAPE', 'T_SEAL'], items: [...ITEMS2, 'COMB'], peeled: [...PEEL2, 'F_P1', 'F_GATE'], flags: ['gate_seen'], fuda: 3, at: { x: 4.9, z: 23.2, yaw: -0.9, floor: 1 } },
   { id: 'end', group: '家', label: '帳場（結末の前・手紙あり）', tasks: [...L1, ...L2, ...L3c, 'T_BOX', 'T_ESCAPE', 'T_SEAL', 'T_THINK', 'T_RETURN', 'T_SQ1'], items: ITEMS2, peeled: [...PEEL2, 'F_P1', 'F_GATE'], flags: ['gate_seen', 'letters', 'returned'], fuda: 3, at: { x: 4.9, z: 23.4, yaw: -0.9, floor: 1 } },
 ];
 export function installTests(ext, G) {

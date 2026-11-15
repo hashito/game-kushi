@@ -10,5 +10,5 @@
 /* the hatch pushed up from below (top centre) */
 .kc-seal { padding: 6px 12px; border-radius: 6px; background: rgba(30, 6, 4, 0.82); color: #ffd9c8; font-size: 15px; text-align: center; min-width: 220px; border: 1px solid rgba(255, 140, 110, 0.5); }
 .kc-seal p { margin: 0 0 4px; }
-.kc-seal-bar { height: 8px; background: rgba(255, 255, 255, 0.15); border-radius: 4px; overflow: hidden; }
-.kc-seal-bar i { display: block; height: 100%; width: 0; background: #e0533a; }
+.kc-seal-bar { height: 8px; background: rgba(255, 255, 255, 0.15); border-radius: 4px; overflow: hidden; } /* pair-ok */
+.kc-seal-bar i { display: block; height: 100%; width: 0; background: #e0533a; } /* pair-ok */

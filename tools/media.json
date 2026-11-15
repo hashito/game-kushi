@@ -85,7 +85,7 @@
     {
       "key": "doc-todoke",
       "size": "768x768",
-      "prompt": "an old folded official paper document in a wooden chest drawer, yellowed, seen from an angle, out of focus, no readable text"
+      "prompt": "an old yellowed paper folded closed and tied with a thin string, lying inside an open wooden chest drawer, only the blank outside of the fold visible, shallow focus"
     },
     {
       "key": "doc-diary",
@@ -100,12 +100,12 @@
     {
       "key": "doc-wedding",
       "size": "768x768",
-      "prompt": "an old black and white wedding photograph in a wooden frame on a Buddhist altar, a young Japanese groom in a black kimono and a bride in white wedding kimono with a half-moon comb in her hair"
+      "prompt": "an old black and white wedding photograph in a plain wooden frame standing on a plain dark wooden shelf, a young Japanese groom in a black kimono and a bride in white wedding kimono with a half-moon comb in her hair, plain shelf without plaque"
     },
     {
       "key": "room-mise",
       "size": "1344x768",
-      "prompt": "a dark empty old Japanese comb shop room, empty glass display cases, worn wooden floor, a plain wooden signboard without letters on the wall, a lattice booth in the corner"
+      "prompt": "a dark empty old Japanese shop room, empty old wooden display cases with glass, worn wooden floor, bare plaster walls with nothing hanging on them, a wooden lattice booth in the corner"
     },
     {
       "key": "in-okumuro",
@@ -120,7 +120,7 @@
     {
       "key": "end-e1",
       "size": "1344x768",
-      "prompt": "a traditional Japanese charcoal brazier with a yellow wooden comb burning in it, flames, behind a wooden lattice an old woman with long white hair sits with her back turned, dark room"
+      "prompt": "close-up of a round ceramic charcoal brazier, glowing red charcoal, a small dark brown boxwood comb catching fire with small flames, in the blurred background behind a dark wooden lattice the hunched back of a very old Japanese woman in a dark kimono with long pure white hair"
     },
     {
       "key": "end-e2",

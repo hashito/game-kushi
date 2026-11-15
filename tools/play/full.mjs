@@ -10,6 +10,8 @@ export default async (api) => {
   const st = async (tag) => log(tag, await G(`({ room: g.state.room, n: g.state.tasks.length, last: g.state.tasks.slice(-3), level: g.prog.index, fuda: kc.fuda, prompt: document.getElementById('prompt').textContent, ended: g.state.ended })`));
   const must = async (task) => { const ok = await G(`g.state.tasks.includes('${task}')`); if (!ok) throw new Error(`ERROR ${task} not done: ${JSON.stringify(await G('({ room: g.state.room, tasks: g.state.tasks, prompt: document.getElementById("prompt").textContent })'))}`); };
   const choose = async (id) => { for (let i = 0; i < 40; i++) { const ok = await G(`(() => { const b = document.querySelector('.gf-talk-choice[data-id="${id}"]'); if (b) { b.click(); return true; } return false; })()`); if (ok) return true; await sleep(250); } log('  no choice', id); return false; };
+  // ?qa=1: ctx.choose opens nothing and answers window.__gfChoice at once, so the answers are queued before the [E] that asks
+  const pre = (ids) => G(`(window.__gfQ = ${JSON.stringify(ids)}, Object.getOwnPropertyDescriptor(window, '__gfChoice') || Object.defineProperty(window, '__gfChoice', { configurable: true, get() { return (window.__gfQ || []).shift(); } }), 1)`);
   const use = async (x, z, y, tag) => { const pr = await H.use(x, z, y); log(' ', tag || 'use', '|', pr); return pr; };
   const peel = async (x, z, y = 1.45) => { const pr = await H.use(x, z, y, { wait: 1400 }); log('  peel |', pr); };
   const where = async () => log('  at', JSON.stringify(await H.pos()));
@@ -97,15 +99,15 @@ export default async (api) => {
   // ---- L5 ----
   if (END === 'give') {
     await H.route([[5.3, 4.0], [5.3, 5.75], [5.3, 7.4], [5.3, 12.0], [5.3, 14.0], [3.9, 19.0], [3.9, 21.0], [4.9, 23.2]]);
-    await H.face(5.7, 22.5, 1.0); await p.key('KeyE'); await sleep(800); await choose('give'); await H.idle();
+    await H.face(5.7, 22.5, 1.0); await pre(['give']); await p.key('KeyE'); await sleep(800); await H.idle();
   } else {
-    await H.walkTo(1.6, 2.2); await H.face(0.75, 2.2, 0.9); await p.key('KeyE'); await sleep(800);
+    await H.walkTo(1.6, 2.2); await H.face(0.75, 2.2, 0.9); await pre(['away', 'muro', 'shut', 'haru', 'burn']); await p.key('KeyE'); await sleep(800);
     await H.idle(1500);
-    for (const id of ['away', 'muro', 'shut', 'haru', 'burn']) { await choose(id); await sleep(400); await H.idle(1500); }
+    await H.idle(1500); log('  think answers left', await G('window.__gfQ.length'));
     await H.idle(); await must('T_THINK'); await shot('think-done');
-    await H.walkTo(6.6, 1.0); await H.face(6.6, -0.5, 0.1); await p.key('KeyE'); await sleep(800); await choose('yes'); await H.idle(); await must('T_RETURN'); await shot('returned');
+    await H.walkTo(6.6, 1.0); await H.face(6.6, -0.5, 0.1); await pre(['yes']); await p.key('KeyE'); await sleep(800); await H.idle(); await must('T_RETURN'); await shot('returned');
     await H.route([[5.3, 4.0], [5.3, 5.75], [5.3, 7.4], [5.3, 12.0], [5.3, 14.0], [3.9, 19.0], [3.9, 21.0], [4.9, 23.2]]);
-    await H.face(5.7, 22.5, 1.0); await p.key('KeyE'); await sleep(800); await H.idle(3000); await choose(END); await H.idle();
+    await H.face(5.7, 22.5, 1.0); await pre([END]); await p.key('KeyE'); await sleep(800); await H.idle(3000); await H.idle();
   }
   await sleep(1500); await shot('ending');
   await st('end'); log('ending', await G('g.state.ended && (g.state.endingId || g.state.ending || true)'), await G('g.state.flags.filter((f) => /^end_/.test(f))'));
