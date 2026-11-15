@@ -1,5 +1,5 @@
 // Resume: play to the hashiri (charms peeled, the candlestick taken), reload, "つづきから", and check the world agrees with the save.
-//   node tools/probe.mjs --out D:/kushi-stages/resume --steps tools/play/resume.mjs
+//   node tools/probe.mjs --qa --out D:/kushi-stages/resume --steps tools/play/resume.mjs
 import { helpers } from './lib.mjs';
 export default async (api) => {
   const { p, G, sleep, log, shot, base } = api, H = helpers(api);
@@ -11,10 +11,10 @@ export default async (api) => {
   await H.walkTo(3.6, 22.8); await H.walkTo(1.4, 21.2); await H.use(1.88, 20.08, 1.45, { wait: 1400 }); await H.idle();
   await H.walkTo(1.3, 19.2); await H.walkTo(1.5, 17.7); await H.use(2.25, 17.7, 1.0); await H.idle();
   await sleep(1500); const a = await st(); log('before', JSON.stringify(a)); await shot('before-reload');
-  await p.goto(base); await p.waitFor("document.getElementById('continue-btn') && !document.getElementById('start-btn').disabled", 120000);
+  await p.goto(base + '?qa=1'); await p.waitFor("document.getElementById('continue-btn') && !document.getElementById('start-btn').disabled", 120000);
   await shot('title-continue');
   await G(`(document.getElementById('continue-btn').click(), 1)`); await sleep(2500); await H.idle();
   const b = await st(); log('after', JSON.stringify(b)); await shot('after-resume');
   for (const k of ['tasks', 'inv', 'fuda', 'peeled']) log(k, a[k] === b[k] ? 'same' : `DIFF ${a[k]} -> ${b[k]}`);
-  log('doors open', await G('[...g.world.doors.values()].filter((d) => d.isOpen ? d.isOpen() : d.open === true).length'));
+
 };
