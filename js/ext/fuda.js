@@ -132,6 +132,8 @@ export function installFuda(ext, G) {
     }, 900);
   }
   G.peel = peel;
+  // [E] on a charmed door peels its charm (the charm is small: the door around it is what the eye lands on)
+  ext.on('player:interact', ({ kind, id }) => { if (kind !== 'door' || !ctx) return; for (const [cid, C] of charms) if (C.door === id && !G.peeled.includes(cid) && G.canPeel(cid) === true) { peel(cid); break; } });
   G.peelQuiet = (id) => { const C = charms.get(id); if (!C) return; if (!G.peeled.includes(id)) G.peeled.push(id); C.mesh.visible = false; const i = ctx.world.interactables.indexOf(C.hit); if (i >= 0) ctx.world.interactables.splice(i, 1); };
   function postRun(id) {
     const P = posts.get(id); if (!P) return;

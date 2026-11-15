@@ -1,0 +1,75 @@
+{
+ "game": "game-kushi",
+ "commit": "343fd3e",
+ "date": "2026-11-15T14:48:18.562Z",
+ "node": "v24.11.1",
+ "total": 8,
+ "pass": 3,
+ "fail": 1,
+ "warn": 4,
+ "skip": 0,
+ "ms": 262755,
+ "results": [
+  {
+   "name": "smoke",
+   "status": "warn",
+   "ms": 41666,
+   "detail": " 16.9s ok   Esc closes the tab menu (and does not open the pause menu at once)\n 17.2s ok   Esc opens the pause menu\n 17.6s ok   Esc resumes\n 22.8s ok   task T_CHOBA done (帳場の格子の前で、ハルさんと話す)\n 24.9s ok   reload restores tasks, documents and inventory\n 24.9s FAIL station:undefined: no such object\n 40.0s FAIL timeout: __game.state.tasks.includes(\"T_PEEL1\")\nSMOKE FAILED: the player starts inside a room",
+   "optional": true,
+   "command": "node tools/smoke.mjs"
+  },
+  {
+   "name": "npm test",
+   "status": "fail",
+   "ms": 66583,
+   "detail": "      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: 1,\n    expected: 0,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }",
+   "optional": false,
+   "command": "npm test --silent"
+  },
+  {
+   "name": "check-game-data",
+   "status": "pass",
+   "ms": 304,
+   "optional": false,
+   "command": "node tools/check-game-data.mjs ."
+  },
+  {
+   "name": "check-plan",
+   "status": "pass",
+   "ms": 187,
+   "optional": false,
+   "command": "node tools/check-plan.mjs data/plan.json --strict"
+  },
+  {
+   "name": "check-text-contrast",
+   "status": "warn",
+   "ms": 156,
+   "detail": "usage: check-text-contrast.mjs <url|file> [--theme a,b] [--viewport 390x844,1920x1080] [--hooks f.mjs] [--shots DIR] [--json f] [--min 4.5] [--warn]",
+   "optional": true,
+   "command": "node tools/check-text-contrast.mjs"
+  },
+  {
+   "name": "check-hud-overlap",
+   "status": "warn",
+   "ms": 191,
+   "detail": "usage: node tools/check-hud-overlap.mjs <dir|url> [--page p] [--query q] [--require ids]",
+   "optional": true,
+   "command": "node tools/check-hud-overlap.mjs"
+  },
+  {
+   "name": "check-select-range",
+   "status": "warn",
+   "ms": 153212,
+   "detail": "select-range: could not drive the page: timeout: (() => { const G = (window.game || window.__game); return !!G && (G.started); })()",
+   "optional": true,
+   "command": "node tools/check-select-range.mjs"
+  },
+  {
+   "name": "check-no-emoji",
+   "status": "pass",
+   "ms": 396,
+   "optional": true,
+   "command": "node tools/check-no-emoji.mjs"
+  }
+ ]
+}
