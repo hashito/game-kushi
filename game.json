@@ -2,10 +2,25 @@
   "id": "kushi",
   "title": "札の家 ― 奥の棚の櫛",
   "subtitle": "お札をはがして、奥の棚の櫛を持って来い",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "standard": "1.16",
   "theme": "dark-industrial candle-room",
-  "preset": "office",
+  "preset": {
+    "base": "horror",
+    "fog": {
+      "type": "exp2",
+      "color": 657414,
+      "density": 0.055
+    },
+    "far": 55,
+    "background": 328707,
+    "hemi": {
+      "sky": 2761760,
+      "ground": 1051658,
+      "intensity": 0.26
+    },
+    "exposure": 0.8
+  },
   "modules": [
     "game-core",
     "ext",
@@ -32,7 +47,12 @@
     "step-guide",
     "analytics"
   ],
-  "minigames": [],
+  "minigames": [
+    "trace-path",
+    "timing",
+    "order-steps",
+    "steady-hand"
+  ],
   "entry": {
     "html": "index.html",
     "main": "js/main.js"
@@ -50,13 +70,22 @@
     "releaseNotes": "data/release-notes.json",
     "monsters": "data/monsters.json",
     "things": "data/things.json",
-    "terminals": "data/terminals.json",
-    "talk": "data/talk.json"
+    "talk": "data/talk.json",
+    "fuda": "data/fuda.json"
   },
   "media": {
     "dir": "assets"
   },
-  "fx": "old-tv",
+  "fx": {
+    "preset": "horror",
+    "noise": 0.02,
+    "scanlines": 0,
+    "vignette": 1,
+    "saturation": 0.6,
+    "glitch": false,
+    "dangerTint": true,
+    "mist": true
+  },
   "recipes": {
     "props": true,
     "textures": "assets/textures/"
@@ -65,6 +94,76 @@
   "things": true,
   "controls": {
     "crouch": true,
-    "flashlight": true
+    "flashlight": {
+      "color": 16756838,
+      "intensity": 2.2,
+      "distance": 9,
+      "angle": 0.75
+    },
+    "fov": 72,
+    "far": 55,
+    "gate": {
+      "crouch": "L3",
+      "light": "L3"
+    },
+    "touch": [
+      {
+        "k": "KeyE",
+        "label": "操作",
+        "cls": "big"
+      },
+      {
+        "k": "KeyF",
+        "label": "手燭"
+      }
+    ],
+    "gateText": "今は、まだ使えない。先に、いまの目的を進めよう。"
+  },
+  "portraits": {
+    "ハル": "assets/photos/face-haru.webp",
+    "千草": "assets/photos/face-chigusa.webp",
+    "野口": "assets/photos/face-noguchi.webp"
+  },
+  "deaths": {
+    "default": {
+      "text": "つかまった。",
+      "sub": "最後に作業を終えた場所から、やり直す。",
+      "retry": "やり直す"
+    },
+    "chigusa": {
+      "text": "髪に、からめとられた。",
+      "sub": "千草さんは、櫛を持った者のところへ来る。後ろに来たら、柱に向いて［E］で札を貼る。札が焦げて落ちるまでに、先へ逃げる。札を貼った戸棚に隠れてもよい。",
+      "photo": "assets/photos/mon-close.webp",
+      "retry": "やり直す"
+    },
+    "seal": {
+      "text": "揚げ戸が、下から押し開けられた。",
+      "sub": "はしごを上がったら、足もとの揚げ戸に向いて、すぐに［E］で札を貼る。",
+      "photo": "assets/photos/mon-close.webp",
+      "retry": "やり直す"
+    }
+  },
+  "titleImage": "assets/photos/title.webp",
+  "hud": {
+    "quietFor": 60,
+    "dimInDanger": true
+  },
+  "approach": {
+    "vignette": true,
+    "heartbeat": true,
+    "shake": true,
+    "dizzy": false,
+    "presence": "breath",
+    "catchImage": "assets/photos/mon-close.webp",
+    "catchOn": [
+      "chigusa",
+      "seal"
+    ]
+  },
+  "share": {
+    "tags": [
+      "札の家",
+      "ホラーゲーム"
+    ]
   }
 }
