@@ -1,5 +1,5 @@
 # assets/og-image.png (1200x630): the title picture with the real title drawn over it (no letters come from the image model),
-# and favicon.svg (a white charm with a red seal). python tools/make-og.py
+# and assets/favicon.svg (a white charm with a red seal). python tools/make-og.py
 import sys
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 src = 'tools/_raw/title.png'
@@ -22,5 +22,5 @@ text((330, 452), '― 奥の棚の櫛', sub, (232, 220, 196))
 text((72, 530), 'お札をはがして、奥の棚の櫛を持って来い。一人称3Dホラー', small, (214, 200, 176))
 im.save('assets/og-image.png', optimize=True)
 svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="10" fill="#120e0a"/><rect x="20" y="6" width="24" height="52" fill="#ece4cf"/><circle cx="32" cy="16" r="6.5" fill="#9e1b17"/><rect x="29" y="27" width="6" height="22" fill="#1a120c"/></svg>\n'
-open('favicon.svg', 'w', newline='\n', encoding='utf-8').write(svg)
+open('assets/favicon.svg', 'w', newline='\n', encoding='utf-8').write(svg)
 print('ok')
