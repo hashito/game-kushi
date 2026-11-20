@@ -109,8 +109,9 @@ export function installFuda(ext, G) {
     return inR(a) ? a.id : b.id;
   }
   // a point on the door frame's post, flush on its face: the kit's frame post is 0.08 wide from the opening edge and (wall 0.16 + 0.05) deep,
-  // so the face is 0.105 from the wall centre; 0.112 puts the paper a few mm in front of it (2.0 #2/#4: 0.095 hid it inside the frame)
-  const FRAME_FACE = 0.112;
+  // so the face is 0.105 from the wall centre, and the door leaf and the wall's paper panel reach 0.13; 0.136 puts the paper a few mm in front
+  // of all of them (2.0 #2/#4: 0.095 hid it inside the frame, 0.112 half under the leaf; tools/check-playtest.mjs P10 checks it)
+  const FRAME_FACE = 0.136;
   function seam(d, side, y = 1.42) {
     const n = NORMAL[side], alongX = n[0] === 0, w = (d.width || 1.1) / 2;
     return { room: sideRoom(d, side), x: alongX ? d.x + w + 0.04 : d.x + n[0] * FRAME_FACE, y, z: alongX ? d.z + n[1] * FRAME_FACE : d.z + w + 0.04 };

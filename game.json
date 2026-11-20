@@ -4,7 +4,8 @@
   "subtitle": "お札をはがして、奥の棚の櫛を持って来い",
   "version": "2.0.0",
   "noPrewarm": true,
-  "standard": "1.16",
+  "itemKinds": ["tsuge_comb"],
+  "standard": "1.17",
   "theme": "dark-industrial candle-room",
   "preset": {
     "base": "horror",

@@ -26,6 +26,8 @@ function grainTexture(base = '#a8823f', line = 'rgba(90,55,20,0.45)') {
 }
 
 export function installHouse(ext, G) {
+  // 清次さんの作りかけの櫛: a boxwood comb (the kit's comb is black lacquer and vanished on the dark bench and rack, #7)
+  ext.registerItemKind('tsuge_comb', (o = {}) => { const g = makeItemModel('comb', { scale: 1 }); const m = new THREE.MeshStandardMaterial({ color: 0xd2a868, roughness: 0.55 }); g.traverse((x) => { if (x.isMesh) x.material = m; }); return g; }, '柘植の櫛');
   ext.on('game:ready', (ctx) => {
     const W = ctx.world, grp = new THREE.Group(); grp.name = 'kc-house'; W.group.add(grp);
     const std = (color, o = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.8, ...o });
@@ -154,7 +156,7 @@ export function installHouse(ext, G) {
     box('HASHIRI', 0.42, 15.8, 0.75, 0.75, 1.2, M.clay); for (const dz of [-0.3, 0.3]) { cyl('HASHIRI', 0.42, 15.8 + dz, 0.2, 0.16, 0.2, M.iron, 0.75); box('HASHIRI', 0.81, 15.8 + dz, 0.02, 0.2, 0.22, M.soot, 0.15, false); }
     box('HASHIRI', 0.35, 12.2, 0.6, 0.8, 1.4, M.stone); box('HASHIRI', 0.35, 12.2, 0.4, 0.05, 1.0, M.soot, 0.78, false);
     box('HASHIRI', 2.28, 18.4, 0.55, 1.7, 1.2, M.wood); box('HASHIRI', 2.0, 18.4, 0.02, 0.6, 1.0, M.glass, 0.95, false);
-    box('HASHIRI', 2.28, 17.7, 0.5, 0.9, 0.3, M.dark, 0, false);
+    box('HASHIRI', 2.28, 17.7, 0.5, 0.9, 0.3, M.dark, 0);   // the small chest the candlestick and letter one sit on (solid: not walked through)
     cyl('HASHIRI', 1.3, 9.0, 0.5, 0.52, 0.55, M.stone, 0, true, 20); cyl('HASHIRI', 1.3, 9.0, 0.48, 0.48, 0.04, M.wood, 0.55, false, 20);
     for (let i = 0; i < 3; i++) { const c = new THREE.Mesh(G.charmGeo, G.paperM); c.rotation.set(-Math.PI / 2, 0, i * 0.5 - 0.5); c.position.set(1.0 + i * 0.3, fy('HASHIRI') + 0.596, 9.12 + (i - 1) * 0.08); grp.add(c); }
     // 2.0: a bucket by the well, a water jar, a charcoal stove, firewood along the east wall, a basket on the sink
@@ -272,7 +274,7 @@ export function installHouse(ext, G) {
       for (const s of [-1, 1]) box('IBUSHI', 9.33, -9.0 + s * 0.78, 0.36, 1.8, 0.05, M.dark, 0, false);
       W.colliders.push({ box: new THREE.Box3(new THREE.Vector3(9.15, y0, -9.83), new THREE.Vector3(9.51, y0 + 1.8, -8.17)), off: false });
       G.lureAt = { x: 9.3, z: -9.0, y: y0 + 0.94 };
-      G.lure = makeItemModel('comb', { scale: 1.8 }); if (G.lure) { G.lure.position.set(9.3, y0 + 0.94, -9.0); G.lure.rotation.y = Math.PI / 2; G.lure.visible = false; grp.add(G.lure); }
+      G.lure = makeItemModel('tsuge_comb', { scale: 2.6 }); if (G.lure) { G.lure.position.set(9.3, y0 + 0.94, -9.0); G.lure.rotation.y = Math.PI / 2; G.lure.visible = false; grp.add(G.lure); }
     }
     // the two flue mouths: a stone frame, black inside (only the dead go through)
     const flueMouth = (room, x, z, facing) => {

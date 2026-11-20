@@ -10,7 +10,10 @@ export default async (api) => {
   const scene = async (id) => { await p.goto(`${base}?qa=1&scene=${id}`); await p.waitFor('window.__game && window.__game.state && window.__game.state.started', 60000); await sleep(2500); await H.idle(); log(`scene ${id}`, JSON.stringify(await H.pos())); };
 
   // 1. the very start: the front door, a door charm before talking to Haru, the back of the shop
-  await G(`(document.getElementById('start-btn').click(), 1)`); await sleep(1800); await H.idle(); await sleep(400);
+  await G(`(document.getElementById('start-btn').click(), 1)`); await sleep(1800);
+  // the map guide's primary button opens the map: a player who just wants to walk presses 歩き出す
+  for (let i = 0; i < 20; i++) { await G(`([...document.querySelectorAll('button')].filter((b) => b.offsetParent && /歩き出す/.test(b.textContent)).forEach((b) => b.click()), 1)`); if (!(await G('g.blocked()'))) break; await H.closeWindows(); await sleep(400); }
+  await H.idle(); await sleep(400);
   await tryE(0.2, 24.6, 1.2, 'front-door');
   await H.walkTo(3.6, 23.2); await H.walkTo(4.2, 21.2);
   await tryE(4.43, 20.08, 1.45, 'peel-before-haru');

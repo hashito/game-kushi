@@ -55,7 +55,8 @@
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "この家のいちばん奥、作業場の床の揚げ戸（床にはめた戸）から、地下の室（むろ）へ降りる。その奥の部屋の棚に、櫛がある。それを持って来い。",
-      "id": "choba1-3"
+      "id": "choba1-3",
+      "voice": "assets/voice/choba1-3.mp3"
     },
     {
       "who": "私",
@@ -80,7 +81,8 @@
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "奥へ行く戸には、みな札が貼ってある。札は、はがしてええ。はがした札は、なくさず持って行け。下で要る。",
-      "id": "choba1-7"
+      "id": "choba1-7",
+      "voice": "assets/voice/choba1-7.mp3"
     },
     {
       "who": "ハル",
@@ -95,7 +97,8 @@
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "それでええ。はがした札は、また貼れる。その襖に、貼り直してみい。",
-      "id": "peel1_done-1"
+      "id": "peel1_done-1",
+      "voice": "assets/voice/peel1_done-1.mp3"
     }
   ],
   "paste1": [
@@ -103,7 +106,8 @@
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "戸に貼った札の向こうへは、死んだもんは来られん。下で何かが来たら、戸に貼れ。",
-      "id": "paste1-1"
+      "id": "paste1-1",
+      "voice": "assets/voice/paste1-1.mp3"
     },
     {
       "who": "ハル",
@@ -115,7 +119,8 @@
     {
       "who": "私",
       "text": "死んだもの……？　何が来るんですか。",
-      "id": "paste1-3"
+      "id": "paste1-3",
+      "voice": "assets/voice/paste1-3.mp3"
     },
     {
       "who": "ハル",
@@ -144,7 +149,8 @@
       "who": "ハル",
       "where": "帳場の格子の奥",
       "text": "室の棚に、わしの帳面がある。降りたら、まず読め。どの戸に、なんで札を貼ったか、書いてある。",
-      "id": "paste1_done-3"
+      "id": "paste1_done-3",
+      "voice": "assets/voice/paste1_done-3.mp3"
     }
   ],
   "phone": [
@@ -305,7 +311,8 @@
     {
       "who": "私",
       "text": "西の壁の棚に、紐で綴じた帳面がある。ハルさんの言った帳面だ。先に読もう。",
-      "id": "light_done-3"
+      "id": "light_done-3",
+      "voice": "assets/voice/light_done-3.mp3"
     }
   ],
   "okumuro": [
@@ -313,7 +320,8 @@
       "who": "私",
       "text": "奥の室。奥の壁に、小さな棚がある。その上に、紐をかけた細長い木の箱。",
       "img": "assets/photos/in-okumuro.webp",
-      "id": "okumuro-1"
+      "id": "okumuro-1",
+      "voice": "assets/voice/okumuro-1.mp3"
     },
     {
       "who": "私",
@@ -336,7 +344,8 @@
     {
       "who": "私",
       "text": "東の壁にも、黒い煙道の口がある。燻しの間に続いている。……櫛を取ったら、千草さんはここから来る。先に、この口に札を貼っておこう。",
-      "id": "okumuro-5"
+      "id": "okumuro-5",
+      "voice": "assets/voice/okumuro-5.mp3"
     }
   ],
   "rise": [
@@ -356,7 +365,8 @@
     {
       "who": "私",
       "text": "手燭の火が、吹き消された。廊下の向こうで、戸の札が焦げる匂い。……走れ。札が落ちる前に、はしごまで。",
-      "id": "rise-3"
+      "id": "rise-3",
+      "voice": "assets/voice/rise-3.mp3"
     }
   ],
   "top": [
@@ -608,113 +618,133 @@
     {
       "who": "私",
       "text": "ハルさんの「札の控え」。五十二年前から、地下のどこに札を貼ったかが書いてある。",
-      "id": "hikae-1"
+      "id": "hikae-1",
+      "voice": "assets/voice/hikae-1.mp3"
     },
     {
       "who": "私",
       "text": "奥の室の格子戸の札は、蝋で塗りこめてある。死んだ者の手では、はがせない。手燭の火なら、とける。",
-      "id": "hikae-2"
+      "id": "hikae-2",
+      "voice": "assets/voice/hikae-2.mp3"
     },
     {
       "who": "私",
       "text": "燻しの間と奥の室は、煙道でつながっている。死んだ者は、煙道を這って通る。",
-      "id": "hikae-3"
+      "id": "hikae-3",
+      "voice": "assets/voice/hikae-3.mp3"
     },
     {
       "who": "私",
       "text": "そして、最後に一行。「あの子は、清次の櫛のある所へ来る」。……あの子。千草さんのことだ。",
-      "id": "hikae-4"
+      "id": "hikae-4",
+      "voice": "assets/voice/hikae-4.mp3"
     }
   ],
   "koshi": [
     {
       "who": "私",
       "text": "格子戸の向こうに、誰かいる。藍の着物の女の人。膝まである黒髪で、顔が見えない。",
-      "id": "koshi-1"
+      "id": "koshi-1",
+      "voice": "assets/voice/koshi-1.mp3"
     },
     {
       "who": "千草",
       "where": "格子戸の向こう",
       "text": "……かえして……。",
-      "id": "koshi-2"
+      "id": "koshi-2",
+      "voice": "assets/voice/koshi-2.mp3"
     },
     {
       "who": "私",
       "text": "格子の札が煙を上げて、女の人が押し返された。……札は本当に、あれを止める。",
-      "id": "koshi-3"
+      "id": "koshi-3",
+      "voice": "assets/voice/koshi-3.mp3"
     },
     {
       "who": "私",
       "text": "格子の札は、蝋で塗りこめてある。手燭の火でとかせば、はがせる。……でも今はがしたら、あの人がそのまま出てくる。",
-      "id": "koshi-4"
+      "id": "koshi-4",
+      "voice": "assets/voice/koshi-4.mp3"
     },
     {
       "who": "私",
       "text": "控えに書いてあった。千草さんは、清次さんの櫛のある所へ来る。燻しの間と奥の室は、煙道でつながっている。",
-      "id": "koshi-5"
+      "id": "koshi-5",
+      "voice": "assets/voice/koshi-5.mp3"
     },
     {
       "who": "私",
       "text": "作業場の、清次さんの作りかけの櫛。あれを燻しの間に置いて、煙道の札をはがせば、千草さんは櫛のほうへ行く。",
-      "id": "koshi-6"
+      "id": "koshi-6",
+      "voice": "assets/voice/koshi-6.mp3"
     },
     {
       "who": "私",
       "text": "燻しの間を出て、廊下から戸に札を貼れば……閉じこめられる。",
-      "id": "koshi-7"
+      "id": "koshi-7",
+      "voice": "assets/voice/koshi-7.mp3"
     },
     {
       "who": "私",
       "text": "ハルさんがしたのと、同じことだ。……でも今は、そうするしかない。",
-      "id": "koshi-8"
+      "id": "koshi-8",
+      "voice": "assets/voice/koshi-8.mp3"
     }
   ],
   "lure_done": [
     {
       "who": "私",
       "text": "作りかけの櫛を、干し棚に置いた。半分だけの歯が、手燭の火で黄色く光る。",
-      "id": "lure_done-1"
+      "id": "lure_done-1",
+      "voice": "assets/voice/lure_done-1.mp3"
     },
     {
       "who": "私",
       "text": "北の壁の煙道の口に、札が一枚。これをはがせば、千草さんが来る。",
-      "id": "lure_done-2"
+      "id": "lure_done-2",
+      "voice": "assets/voice/lure_done-2.mp3"
     },
     {
       "who": "私",
       "text": "はがしたら、すぐに廊下へ出て、燻しの間の戸に札を貼る。廊下の側からだ。",
-      "id": "lure_done-3"
+      "id": "lure_done-3",
+      "voice": "assets/voice/lure_done-3.mp3"
     }
   ],
   "trap": [
     {
       "who": "私",
       "text": "戸の向こうで、鈴が鳴った。……千草さんが、煙道から出てきた。",
-      "id": "trap-1"
+      "id": "trap-1",
+      "voice": "assets/voice/trap-1.mp3"
     },
     {
       "who": "私",
       "text": "戸の板のすき間から見える。干し棚の前に座りこんで、作りかけの櫛を、両手で包んでいる。",
-      "id": "trap-2"
+      "id": "trap-2",
+      "voice": "assets/voice/trap-2.mp3"
     },
     {
       "who": "私",
       "text": "今のうちに、格子戸の蝋をとかそう。手燭を灯して、格子戸の札に [E]。",
-      "id": "trap-3"
+      "id": "trap-3",
+      "voice": "assets/voice/trap-3.mp3"
     }
   ],
   "koshi_open": [
     {
       "who": "私",
       "text": "札がはがれた。格子戸が、きしみながら横へすべった。……奥の室だ。",
-      "id": "koshi_open-1"
+      "id": "koshi_open-1",
+      "voice": "assets/voice/koshi_open-1.mp3"
     }
   ],
   "flue2_done": [
     {
       "who": "私",
       "text": "煙道の口に、札を貼った。……これで、来る道は燻しの間の戸だけだ。櫛を取ったら、戸の札が焦げ落ちる前に、廊下を抜けて、はしごまで走る。",
-      "id": "flue2_done-1"
+      "id": "flue2_done-1",
+      "voice": "assets/voice/flue2_done-1.mp3"
     }
   ]
 }

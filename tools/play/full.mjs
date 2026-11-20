@@ -40,19 +40,19 @@ export default async (api) => {
   // ---- L2: the kitchen ----
   await H.walkTo(3.6, 22.8); await H.walkTo(1.4, 21.2); await peel(1.88, 20.08); await H.idle();
   await H.walkTo(1.3, 19.2); await H.walkTo(1.5, 17.7); await shot('hashiri');
-  await use(2.25, 17.7, 1.0, 'TESHOKU'); await H.idle();
-  if (LET) { await H.walkTo(1.5, 18.4); await use(2.25, 18.4, 0.62, 'LETTER1'); await H.idle(); }
+  await use(2.14, 17.7, 0.98, 'TESHOKU'); await H.idle();
+  if (LET) { await H.walkTo(1.5, 17.9); await use(2.4, 17.7, 0.93, 'LETTER1'); await H.idle(); }
   await H.walkTo(1.4, 15.4); await use(0.5, 15.4, 0.85, 'MATCHES'); await H.idle(); await must('T_HASHIRI');
   // the back rooms
   await H.route([[1.3, 19.4], [1.3, 21.0], [1.7, 23.0], [3.6, 23.0], [3.9, 21.0], [3.9, 19.0]]);
   await shot('naka');
   await H.walkTo(5.4, 14.0); await peel(5.83, 13.08); await H.idle(); await H.walkTo(5.3, 12.0);
-  await H.walkTo(6.5, 11.6); await use(7.35, 11.6, 0.42, 'DOC_DIARY'); await H.idle(); await must('T_OKU'); await shot('oku');
+  await H.walkTo(6.5, 11.6); await use(7.35, 11.6, 0.38, 'DOC_DIARY'); await H.idle(); await must('T_OKU'); await shot('oku');
   if (LET) { await H.walkTo(3.0, 8.0); await use(3.3, 7.05, 1.05, 'LETTER2'); await H.idle(); }
   await H.walkTo(5.4, 7.4); await peel(5.83, 6.58); await H.idle(); await H.walkTo(5.3, 5.75);
   await H.walkTo(5.0, 5.9); await peel(5.83, 5.08); await H.idle(); await H.walkTo(5.3, 4.0); await H.idle();
   await must('T_SAGYO'); await shot('sagyo');
-  await H.walkTo(6.6, 3.9); await use(7.5, 3.9, 0.9, 'KOTEKO'); await H.idle();
+  await H.walkTo(6.6, 3.9); await use(7.6, 3.9, 0.08, 'KOTEKO'); await H.idle();
   await H.walkTo(1.3, 1.6); await H.face(0.45, 1.6, 0.86); await sleep(300); await shot('kakekushi'); await use(0.45, 1.6, 0.86, 'KAKE_KUSHI'); await H.idle();
   if (LET) { await H.walkTo(2.6, 3.6); await use(2.6, 4.5, 0.75, 'LETTER3'); await H.idle(); }
   // the phone
