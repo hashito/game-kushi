@@ -40,8 +40,8 @@ the door and puts the charm in your hand; pasting it on a post in the passage st
 |---|---|---|
 | 表の土間（はじまり） | [omote](https://kushi.autoarticles.net/?scene=omote) | [local](http://localhost:8000/?scene=omote) |
 | 帳場の格子の前 | [choba](https://kushi.autoarticles.net/?scene=choba) | [local](http://localhost:8000/?scene=choba) |
-| 大黒柱（札の練習） | [daikoku](https://kushi.autoarticles.net/?scene=daikoku) | [local](http://localhost:8000/?scene=daikoku) |
-| 中の間（仏壇・黒電話） | [naka](https://kushi.autoarticles.net/?scene=naka) | [local](http://localhost:8000/?scene=naka) |
+| 中の間の襖（札を貼る練習） | [practice](https://kushi.autoarticles.net/?scene=practice) | [local](http://localhost:8000/?scene=practice) |
+| 中の間（仏壇・黒電話・箪笥） | [naka](https://kushi.autoarticles.net/?scene=naka) | [local](http://localhost:8000/?scene=naka) |
 | 走り庭（台所） | [hashiri](https://kushi.autoarticles.net/?scene=hashiri) | [local](http://localhost:8000/?scene=hashiri) |
 | 奥の間 | [oku](https://kushi.autoarticles.net/?scene=oku) | [local](http://localhost:8000/?scene=oku) |
 | 作業場（揚げ戸と臼） | [sagyo](https://kushi.autoarticles.net/?scene=sagyo) | [local](http://localhost:8000/?scene=sagyo) |
@@ -51,14 +51,16 @@ the door and puts the charm in your hand; pasting it on a post in the passage st
 | 場面 | 公開版 | 手元 (npm run serve) |
 |---|---|---|
 | 室（手燭に火を入れる） | [muro](https://kushi.autoarticles.net/?scene=muro) | [local](http://localhost:8000/?scene=muro) |
-| 板の道 | [p1](https://kushi.autoarticles.net/?scene=p1) | [local](http://localhost:8000/?scene=p1) |
-| 低い道（しゃがむ） | [p2](https://kushi.autoarticles.net/?scene=p2) | [local](http://localhost:8000/?scene=p2) |
-| 水の道 | [p3](https://kushi.autoarticles.net/?scene=p3) | [local](http://localhost:8000/?scene=p3) |
-| 札の回廊（格子戸） | [gate](https://kushi.autoarticles.net/?scene=gate) | [local](http://localhost:8000/?scene=gate) |
-| 結界の柱（練習） | [lesson](https://kushi.autoarticles.net/?scene=lesson) | [local](http://localhost:8000/?scene=lesson) |
+| 土の廊下 | [doro](https://kushi.autoarticles.net/?scene=doro) | [local](http://localhost:8000/?scene=doro) |
+| 奥の室の格子戸（はじめて見る） | [koshi](https://kushi.autoarticles.net/?scene=koshi) | [local](http://localhost:8000/?scene=koshi) |
+| 板の間（壁の札） | [ita](https://kushi.autoarticles.net/?scene=ita) | [local](http://localhost:8000/?scene=ita) |
+| 燻しの間（櫛を置く） | [ibushi](https://kushi.autoarticles.net/?scene=ibushi) | [local](http://localhost:8000/?scene=ibushi) |
+| 燻しの間（煙道の札をはがす前） | [flue](https://kushi.autoarticles.net/?scene=flue) | [local](http://localhost:8000/?scene=flue) |
+| 格子戸の蝋をとかす | [wax](https://kushi.autoarticles.net/?scene=wax) | [local](http://localhost:8000/?scene=wax) |
 | 奥の室（奥の棚） | [okumuro](https://kushi.autoarticles.net/?scene=okumuro) | [local](http://localhost:8000/?scene=okumuro) |
+| 奥の棚の前（櫛を取る前） | [shelf](https://kushi.autoarticles.net/?scene=shelf) | [local](http://localhost:8000/?scene=shelf) |
 | 櫛を持って逃げる（奥の室） | [escape](https://kushi.autoarticles.net/?scene=escape) | [local](http://localhost:8000/?scene=escape) |
-| 逃げる（水の道の入口） | [escape-p3](https://kushi.autoarticles.net/?scene=escape-p3) | [local](http://localhost:8000/?scene=escape-p3) |
+| 逃げる（燻しの間の戸の前） | [escape-doro](https://kushi.autoarticles.net/?scene=escape-doro) | [local](http://localhost:8000/?scene=escape-doro) |
 
 ### 家
 
@@ -74,8 +76,8 @@ the door and puts the charm in your hand; pasting it on a post in the passage st
 |---|---|---|
 | 1. 帳場のハルさんの話を聞き、札のはがし方と貼り方を覚える | [stage:L1](https://kushi.autoarticles.net/?scene=stage:L1) | [local](http://localhost:8000/?scene=stage:L1) |
 | 2. 札をはがしながら奥へ進み、作業場の揚げ戸を開ける | [stage:L2](https://kushi.autoarticles.net/?scene=stage:L2) | [local](http://localhost:8000/?scene=stage:L2) |
-| 3. 地下の室で手燭に火を入れ、灯明に火を移しながら、通路の奥の室まで行く | [stage:L3](https://kushi.autoarticles.net/?scene=stage:L3) | [local](http://localhost:8000/?scene=stage:L3) |
-| 4. 奥の棚の櫛を取り、追ってくる千草さんを柱の札で止めながら、揚げ戸まで戻る | [stage:L4](https://kushi.autoarticles.net/?scene=stage:L4) | [local](http://localhost:8000/?scene=stage:L4) |
+| 3. 地下の室で手燭に火を入れ、札の控えを読み、奥の室の格子戸を開ける | [stage:L3](https://kushi.autoarticles.net/?scene=stage:L3) | [local](http://localhost:8000/?scene=stage:L3) |
+| 4. 奥の棚の櫛を取り、焦げていく札が落ちる前に、揚げ戸まで戻る | [stage:L4](https://kushi.autoarticles.net/?scene=stage:L4) | [local](http://localhost:8000/?scene=stage:L4) |
 | 5. 作業台で考えをまとめ、櫛をどうするか決める | [stage:L5](https://kushi.autoarticles.net/?scene=stage:L5) | [local](http://localhost:8000/?scene=stage:L5) |
 
 <!-- scene-links:end -->

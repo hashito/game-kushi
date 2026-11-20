@@ -16,10 +16,14 @@
 //   P10 a flat paper / charm / poster whose middle is inside a wall, a post or a door frame (札の家 #2 #4 #14): use js/wall-paste.js
 //   P11 a plain box with no texture, 0.25-2.4 m (札の家 #9)    P12 something standing in a doorway (札の家 #3)
 //   P13 a thing to look at with nothing under it: floating (札の家 #1 #6)
+//   P14 a paper high on a wall (a doc at 1 m or more) still lying flat: a sheet sticking out of the plaster (鏡屋 #1; the kit stands it since 1.18.0)
+//   P15 a reason the game passes to ctx.die / ctx.hurt with no card of its own in game.json "deaths" (鏡屋: the hands and the woman of the
+//       washroom said the same words)    P16 a room on the map too small for three characters of its name (鏡屋: 地下室 clipped)
 // Exit 1 on an error (P4, P7, P9) or, with --strict, on a warning. The play scripts of a game check the rest (contact, speed, softlocks).
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { launch } from './cdp.mjs';
 
 const args = process.argv.slice(2), arg = (k, d) => (args.includes(k) ? args[args.indexOf(k) + 1] : d);
@@ -43,7 +47,24 @@ const data = game.data || {};
   for (const w of who) { const base = w.replace(/[（(].*$/, '').trim(); if (!self.has(w) && !self.has(base) && !portraits[w] && !portraits[base] && !/声|放送|無線の雑音|アナウンス|？/.test(w)) Wn('P6', `speaker "${w}" has no portrait (game.json portraits)`); }
   const things = data.things ? readJson(data.things) : null;
   const n = (x) => String(x || '').replace(/[\s「」『』（）()、。・…！？!?\-ー―*]/g, '');
-  for (const t of things || []) { const tx = [].concat(t.text || []); if (t.feeling && tx.some((x) => n(x) && (n(x) === n(t.feeling) || (n(t.feeling).length > 8 && n(x).includes(n(t.feeling)))))) Wn('P8', `thing "${t.id}": ひとこと repeats the text`); }
+  for (const t of (Array.isArray(things) ? things : (things && things.things) || [])) {   /* 1.17.2: things.json may be { photos, things } */ const tx = [].concat(t.text || []); if (t.feeling && tx.some((x) => n(x) && (n(x) === n(t.feeling) || (n(t.feeling).length > 8 && n(x).includes(n(t.feeling)))))) Wn('P8', `thing "${t.id}": ひとこと repeats the text`); }
+}
+
+// P15: every death reason in the game's code has its own card (the default card says nothing about what caught you)
+if (game.deaths) {
+  const reasons = new Map(), walkJs = (d) => { for (const f of fs.existsSync(d) ? fs.readdirSync(d, { withFileTypes: true }) : []) { const q = path.join(d, f.name); if (f.isDirectory()) { if (f.name !== 'kit' && f.name !== 'vendor') walkJs(q); } else if (/\.m?js$/.test(f.name)) { const src = fs.readFileSync(q, 'utf8'); for (const m of src.matchAll(/\b(?:die|hurt)\(\s*['"]([\w-]+)['"]/g)) reasons.set(m[1], path.relative(dir, q)); } } };
+  walkJs(path.join(dir, 'js'));
+  for (const [r, f] of reasons) if (!game.deaths[r]) Wn('P15', `death reason "${r}" (${f}) has no card in game.json "deaths": the player is not told what caught them`);
+}
+// P16: room names that do not fit their room on the map
+{
+  const plan = data.plan ? readJson(data.plan) : null;
+  const ms = [path.join(dir, 'js', 'kit', 'map-svg.js'), path.join(import.meta.dirname, '..', 'js', 'map-svg.js')].find((f) => fs.existsSync(f));
+  if (plan && ms) {
+    const { fitLabel, roomSpan } = await import(pathToFileURL(ms).href);
+    // a game whose js/kit/map-svg.js is kept older (edited in the game, skipped by kit-sync) has no fitLabel: P16 is left out there
+    if (typeof fitLabel === 'function' && typeof roomSpan === 'function') for (const r of plan.rooms || []) { const name = String(r.name || ''), fit = fitLabel(name, roomSpan(r, 16), 12); if ([...name].length > 3 && [...fit].length < 4) Wn('P16', `room "${r.id}" (${name}) shows as 「${fit}」 on the map: too small for its name (a shorter name, or "mapName")`); }
+  }
 }
 
 // ---- in the page ----
@@ -110,7 +131,7 @@ try {
         if (free < Math.max(1.2, narrow * 0.7)) { out.p3.push(r.id + ' (' + (r.name || '') + ') free ' + free.toFixed(2) + ' m at ' + (alongX ? 'x ' + x.toFixed(1) : 'z ' + z.toFixed(1))); t += 2; }
       }
     }
-    // 1.17.2 (札の家 #1 #2 #3 #4 #6 #9 #14): what the eye found wrong in a built house
+    // 1.17.3 (札の家 #1 #2 #3 #4 #6 #9 #14): what the eye found wrong in a built house
     const axisOk = (m) => { const e = m.matrixWorld.elements; for (const c of [[e[0], e[1], e[2]], [e[4], e[5], e[6]], [e[8], e[9], e[10]]]) { const L = Math.hypot(...c) || 1; if (Math.max(...c.map((v) => Math.abs(v) / L)) < 0.995) return false; } return true; };
     const solid = meshes.filter(({ m, s }) => !m.isSprite && !m.isInstancedMesh && Math.min(s.x, s.y, s.z) > 0.04 && axisOk(m) && ![].concat(m.material).some((mt) => mt && (mt.transparent || mt.visible === false || mt.colorWrite === false)));
     const near = (a, b) => { for (let x = a; x; x = x.parent) if (x === b) return true; for (let x = b; x; x = x.parent) if (x === a) return true; return a.parent && a.parent === b.parent && a.parent !== W.group && a.parent !== g.scene; };
@@ -165,6 +186,13 @@ try {
       const h = rc.intersectObjects(others, false)[0];
       if (h && h.distance > 0.06 && !(h.object.userData && h.object.userData.interact)) out.p13.push(u.kind + ':' + u.id + ' ' + h.distance.toFixed(2) + ' m above ' + (h.object.name || h.object.geometry.type) + ' at ' + c.x.toFixed(1) + ',' + c.z.toFixed(1));
     }
+    // P14: a paper above 1 m lying flat (a doc pickup whose model is a horizontal sheet)
+    out.p14 = [];
+    for (const it of W.interactables || []) {
+      const u = it.userData && it.userData.interact, def = it.userData && it.userData.def; if (!u || u.kind !== 'doc' || !def || !(def.y >= 1) || def.wall === false) continue;
+      const md = it.userData.model || it, b = new T.Box3().setFromObject(md), s = b.getSize(new T.Vector3());
+      if (isFinite(s.y) && s.y < 0.05 && Math.max(s.x, s.z) > 0.1) out.p14.push(u.id + ' at ' + it.position.x.toFixed(1) + ',' + it.position.y.toFixed(1) + ',' + it.position.z.toFixed(1));
+    }
     // P4: low zones
     for (const Z of g.lowZones || []) if (!Z.standingBlocked()) out.p4.push(Z.id);
     out.jumps = window.__gfNpcJumps || [];
@@ -179,6 +207,7 @@ try {
   for (const x of audit.p10.slice(0, 20)) Wn('P10', `a paper / charm with something on its face (inside a wall / a frame, or under another paper): ${x}`);
   for (const x of audit.p11.slice(0, 20)) Wn('P11', `a plain untextured box (a placeholder look; userData.plainOk if meant): ${x}`);
   for (const x of audit.p12) Wn('P12', `a doorway half blocked: ${x}`);
+  for (const x of audit.p14) Wn('P14', `a paper on the wall lies flat (sticks out of the plaster): ${x}`);
   for (const x of audit.p13.slice(0, 20)) Wn('P13', `a thing floating in the air: ${x}`);
   // P9: 操作方法 in the menu
   const ctl = await G(`(async () => { if (!g.pm) return 'no menu'; g.pm.open(); await new Promise((r) => setTimeout(r, 400)); const ok = [...document.querySelectorAll('.wm-layer button, .pm button')].some((b) => /操作方法/.test(b.textContent)); g.pm.close && g.pm.close(); return ok; })()`);

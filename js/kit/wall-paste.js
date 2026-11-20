@@ -1,5 +1,5 @@
-/* game-kit d0a2f32: js/wall-paste.js — edit in game-kit and run tools/kit-sync.js */
-// Pasting a flat thing (a charm, a notice, a poster, a calendar) on a wall, a post or a door frame (standard 1.17.2, 札の家 #2 #4 #14).
+/* game-kit 19a0634: js/wall-paste.js — edit in game-kit and run tools/kit-sync.js */
+// Pasting a flat thing (a charm, a notice, a poster, a calendar) on a wall, a post or a door frame (standard 1.17.3, 札の家 #2 #4 #14).
 // Hand-typed coordinates put papers inside walls, inside the frame posts of a door, or 5 cm in the air. pasteOn() finds the surface
 // itself: it casts a ray from a point in the room toward the wall, sits the paper on the first surface it meets (a frame post in front of
 // the wall counts), a hair off it, facing out, and moves it sideways off another paper already there (no two papers in one spot).

@@ -48,6 +48,7 @@
   },
   {
     "id": "DOC_HIKAE",
+    "wall": false,
     "photo": "assets/photos/doc-hikae.webp",
     "title": "札の控え（ハルの帳面）",
     "room": "MURO",
