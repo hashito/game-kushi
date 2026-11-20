@@ -275,12 +275,12 @@
     {
       "key": "doc-hikae",
       "size": "1344x768",
-      "prompt": "an old thin Japanese notebook bound with string, open on a dusty wooden shelf in a dark cellar, its pages covered with faint brush strokes that are blurred and unreadable, a small candlestick beside it, candle light, no readable text"
+      "prompt": "an old thin closed Japanese notebook with a plain brown paper cover and no label, bound with white string, lying shut on a dusty wooden shelf in a dark cellar, a small candlestick beside it, candle light, blank cover"
     },
     {
       "key": "th-muro-bellpull",
       "size": "768x768",
-      "prompt": "a single old straw rope hanging from a small hole in a dark earthen cellar ceiling, ending in a worn black wooden grip, candle light from below, dust in the air"
+      "prompt": "a single old straw rope hanging from a small hole in a dark earthen cellar ceiling, ending in a short straight worn black wooden handle, like an old bell pull, no loop, candle light from below, dust in the air"
     },
     {
       "key": "th-doro-bells",

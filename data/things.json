@@ -377,6 +377,7 @@
   {
     "size": 0.7,
     "id": "MURO_BELLPULL",
+    "photo": "assets/photos/th-muro-bellpull.webp",
     "room": "MURO",
     "position": [
       3.6,
@@ -393,6 +394,7 @@
   {
     "size": 0.7,
     "id": "DORO_BELLS",
+    "photo": "assets/photos/th-doro-bells.webp",
     "room": "DORO",
     "position": [
       3.3,
@@ -408,6 +410,7 @@
   {
     "size": 0.7,
     "id": "ITA_WRITING",
+    "photo": "assets/photos/th-ita-writing.webp",
     "room": "ITA",
     "position": [
       -0.8,
@@ -423,6 +426,7 @@
   {
     "size": 0.7,
     "id": "IBUSHI_FLUE",
+    "photo": "assets/photos/th-ibushi-flue.webp",
     "room": "IBUSHI",
     "position": [
       7.5,
