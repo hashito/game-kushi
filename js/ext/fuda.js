@@ -1,12 +1,17 @@
-// The charms (お札): the one rule of the game (docs/brief.md) - この家のお札は、死んだ者を通さない。
+// The charms (お札): the one rule of the game (docs/brief.md) - この家のお札は、死んだ者を通さない。千草さんは、櫛のある所へ来る。
 //   - a charm across a door and its post keeps the door shut; [E] peels it off (a short peel), the door opens, the charm goes into your hand;
-//   - a charm in your hand can be pasted on a post (結界の柱); the dead cannot pass it. While 千草さん presses on it, it chars and falls;
-//   - the spare charms on the walls of the charm corridor can be peeled too (a side quest: more charms for the way back).
-// The count is in the HUD (「札 ×N」, top right). Everything is built once at game:ready (one shared paper texture; one material per post).
+//   - a charm in your hand can be pasted on a seal spot (data/fuda.json "seals": a door seam or the mouth of the flue). A pasted door is shut
+//     again, and the dead cannot pass it. Up to `max` charms stack on one spot (side by side, never on top of each other);
+//   - while 千草さん presses on a seal it chars: from the bottom edge up, brown, then black with an ember line, smoke rising, and when it is
+//     burnt through it drops off (2.0: 「徐々に暗くなっていく感じが良いです」). The next charm on the same spot starts then;
+//   - wall charms (data/fuda.json "walls") are peeled the same way; one is fixed with candle wax (the lattice door): it needs the flame.
+// Every charm sits flush on its wall (half the wall thickness + a hair). The count is in the HUD (「札 ×N」, top right). Everything is built
+// once at game:ready; every charm uses one shared shader (the burn is a uniform per charm), so pasting or burning never compiles anything.
 import * as THREE from 'three';
 
 const NORMAL = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0] };
 const YAW = { s: 0, n: Math.PI, e: Math.PI / 2, w: -Math.PI / 2 };
+export const BURN = { life: 22, calm: 38 };   // seconds one charm holds while she presses
 
 /** the paper of a charm: real brush-style text drawn on a canvas (no generated picture carries letters) */
 function charmTexture(old = false) {
@@ -23,17 +28,45 @@ function charmTexture(old = false) {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
 }
 
+/** a charm material that can char: userData.burn.value 0 (white paper) .. 1 (burnt through). One program for all (customProgramCacheKey). */
+export function burnMaterial(map) {
+  const m = new THREE.MeshStandardMaterial({ map, side: THREE.DoubleSide, roughness: 1 });
+  m.userData.burn = { value: 0 }; m.userData.glow = { value: 1 };
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.uBurn = m.userData.burn; sh.uniforms.uGlow = m.userData.glow;
+    sh.fragmentShader = 'uniform float uBurn;\nuniform float uGlow;\n' + sh.fragmentShader
+      .replace('#include <map_fragment>', `#include <map_fragment>
+        vec2 kuv = vMapUv;
+        float kn = fract(sin(dot(floor(kuv * vec2(18.0, 54.0)), vec2(12.9898, 78.233))) * 43758.5453);
+        float kn2 = fract(sin(dot(floor(kuv * vec2(6.0, 18.0)), vec2(39.3468, 11.135))) * 24634.6345);
+        float ke = (1.0 - kuv.y) * 0.62 + abs(kuv.x - 0.5) * 0.5 + kn * 0.12 + kn2 * 0.16;
+        float kf = uBurn * 1.25 - 0.08;
+        float kd = ke - kf;
+        if (uBurn > 0.001 && kd < -0.22) discard;
+        float kbrown = uBurn > 0.001 ? 1.0 - smoothstep(0.0, 0.32, kd) : 0.0;
+        diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vec3(0.55, 0.38, 0.22), kbrown * 0.85);
+        float kblack = uBurn > 0.001 ? 1.0 - smoothstep(-0.02, 0.05, kd) : 0.0;
+        diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.025, 0.02, 0.018), kblack);
+        float kember = uBurn > 0.001 ? (smoothstep(-0.05, 0.0, kd) - smoothstep(0.0, 0.05, kd)) : 0.0;`)
+      .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+        totalEmissiveRadiance += vec3(1.0, 0.35, 0.06) * kember * 2.2 * uGlow;`);
+  };
+  m.customProgramCacheKey = () => 'kc-burn-charm';
+  return m;
+}
+
 export function installFuda(ext, G) {
   let ctx = null;
   const hidden = new THREE.MeshBasicMaterial({ visible: false });
   const geo = new THREE.PlaneGeometry(0.1, 0.3);
   geo.translate(0, -0.15, 0);   // hinged at its top edge: the peel turns it down and away
-  let paperM = null, oldM = null;
+  let tex = null, oldM = null, fallM = null;
   const charms = G.charms = new Map();   // id -> { def, mesh, hit, door?, wall? }
-  const posts = new Map();    // id -> { def, charm, mat, hit, on, burn, press }
-  const peeling = [];
+  const seals = G.seals = new Map();     // id -> { def, slots[], n, burn, press, hit, room, door? }
+  const peeling = [], falling = [];
+  const W2 = { pressed: '向こうから、強く押されている。札が焦げている。……今はがしたら、すぐに来る。' };
 
-  G.fuda = G.fuda || 0; G.peeled = G.peeled || []; G.postsOn = G.postsOn || {}; G.posts = posts; G.charms = charms;
+  G.fuda = G.fuda || 0; G.peeled = G.peeled || [];
 
   // ---------------- HUD ----------------
   let chip = null;
@@ -44,26 +77,29 @@ export function installFuda(ext, G) {
   };
   G.addFuda = (n) => { G.fuda = Math.max(0, G.fuda + n); G.showFuda(); };
 
+  // ---------------- smoke from a charring charm (a small pool of sprites) ----------------
+  let smoke = [];
+  function smokeTex() {
+    const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+    const r = g.createRadialGradient(32, 32, 2, 32, 32, 30); r.addColorStop(0, 'rgba(70,64,58,0.55)'); r.addColorStop(1, 'rgba(70,64,58,0)');
+    g.fillStyle = r; g.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c);
+  }
+  function puff(pos) {
+    const s = smoke.find((p) => p.t <= 0); if (!s) return;
+    s.t = 1.8; s.spr.position.copy(pos).add(new THREE.Vector3((Math.random() - 0.5) * 0.06, 0, (Math.random() - 0.5) * 0.06)); s.spr.visible = true; s.spr.scale.setScalar(0.08);
+  }
+
   // ---------------- building ----------------
+  const floorOf = (room) => { const R = ctx.world.rooms.get(room); return (R && R.y) || 0; };
+  const makeMat = () => burnMaterial(tex);
   function charmAt(room, x, y, z, face, mat, id, label) {
-    const R = ctx.world.rooms.get(room), fy = (R && R.y) || 0;
+    const fy = floorOf(room);
     const m = new THREE.Mesh(geo, mat); m.position.set(x, fy + y + 0.15, z); m.rotation.y = YAW[face]; m.name = `fuda:${id}`;
     ctx.world.group.add(m);
     const hit = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.7, 0.16), hidden);
     hit.position.set(x, fy + y, z); hit.rotation.y = YAW[face]; hit.name = `fudahit:${id}`; hit.userData.interact = { kind: 'fuda', id, label };
     ctx.world.group.add(hit); ctx.world.interactables.push(hit);
-    return { mesh: m, hit };
-  }
-  function doorCharm(def) {
-    const d = ctx.data.plan.doors.find((x) => x.id === def.door);
-    const n = NORMAL[def.side], alongX = n[0] === 0;
-    const room = n[1] > 0 || n[0] > 0 ? (sideRoom(d, def.side)) : sideRoom(d, def.side);
-    const w = (d.width || 1.1) / 2;
-    // on the seam between the door and its post (the charm holds both)
-    const x = alongX ? d.x + w - 0.02 : d.x + n[0] * 0.13, z = alongX ? d.z + n[1] * 0.13 : d.z + w - 0.02;
-    const c = charmAt(room, x, 1.42, z, def.side, paperM, def.id, def.label);
-    charms.set(def.id, { def, ...c, door: d.id });
-    ctx.lockDoor(d.id, () => !G.peeled.includes(def.id), () => G.doorHint(def));
+    return { mesh: m, hit, home: m.position.clone() };
   }
   // the room on the side the charm faces
   function sideRoom(d, side) {
@@ -72,56 +108,77 @@ export function installFuda(ext, G) {
     const inR = (r) => px >= r.x && px <= r.x + r.w && pz >= r.z && pz <= r.z + r.d;
     return inR(a) ? a.id : b.id;
   }
-  const rope = new THREE.MeshStandardMaterial({ color: 0xb8a77a, roughness: 1 });
-  const wood = new THREE.MeshStandardMaterial({ color: 0x2a1c12, roughness: 0.9 });
-  const shide = new THREE.MeshStandardMaterial({ color: 0xe6e0cc, roughness: 1, side: THREE.DoubleSide });
-  function buildPost(def) {
-    const R = ctx.world.rooms.get(def.room), fy = (R && R.y) || 0, room = R.room;
-    const grp = new THREE.Group(); grp.name = `post:${def.id}`; ctx.world.group.add(grp);
-    const add = (g, m, x, y, z) => { const o = new THREE.Mesh(g, m); o.position.set(x, y, z); grp.add(o); return o; };
-    const mat = paperM.clone();   // its own copy: it chars on its own (same shader: no new program)
-    let charm, hitPos, face;
-    if (def.kind === 'pillar') {   // the 大黒柱: one thick post; the charm on its east face
-      add(new THREE.BoxGeometry(0.3, 3.0, 0.3), wood, def.x, fy + 1.5, def.z);
-      ctx.world.colliders.push({ box: new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(def.x, fy + 1.5, def.z), new THREE.Vector3(0.3, 3, 0.3)), off: false });
-      face = 'e'; charm = add(geo, mat, def.x + 0.16, fy + 1.55, def.z); charm.rotation.y = YAW.e; hitPos = [def.x + 0.2, def.z];
-    } else {
-      // two posts at the sides of the passage, a straw rope across with paper streamers; the charm hangs in the middle of the rope
-      const across = def.along === 'z' ? room.w : room.d, half = across / 2 - 0.12;
-      for (const s of [-1, 1]) {
-        const px = def.along === 'z' ? def.x + s * half : def.x, pz = def.along === 'z' ? def.z : def.z + s * half;
-        add(new THREE.BoxGeometry(0.14, 2.3, 0.14), wood, px, fy + 1.15, pz);
-        ctx.world.colliders.push({ box: new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(px, fy + 1.15, pz), new THREE.Vector3(0.14, 2.3, 0.14)), off: false });
-      }
-      const r = add(new THREE.CylinderGeometry(0.03, 0.03, across - 0.2, 6), rope, def.x, fy + 1.95, def.z);
-      if (def.along === 'z') r.rotation.z = Math.PI / 2; else r.rotation.x = Math.PI / 2;
-      for (const t of [-0.6, 0.6]) { const sh = add(new THREE.PlaneGeometry(0.08, 0.22), shide, def.along === 'z' ? def.x + t : def.x, fy + 1.8, def.along === 'z' ? def.z : def.z + t); sh.rotation.y = def.along === 'z' ? 0 : Math.PI / 2; }
-      face = def.along === 'z' ? 'n' : 'e';
-      charm = add(geo, mat, def.x, fy + 1.92, def.z); charm.rotation.y = def.along === 'z' ? 0 : Math.PI / 2; hitPos = [def.x, def.z];
-    }
-    charm.visible = false;
-    const hit = new THREE.Mesh(new THREE.BoxGeometry(def.kind === 'pillar' ? 0.3 : 0.6, 1.0, def.kind === 'pillar' ? 0.5 : 0.6), hidden);
-    hit.position.set(hitPos[0], fy + 1.35, hitPos[1]); hit.name = `posthit:${def.id}`; hit.userData.interact = { kind: 'post', id: def.id };
-    ctx.world.group.add(hit); ctx.world.interactables.push(hit);
-    const P = { def, charm, mat, hit, on: false, burn: 0, press: false, fall: -1, fy };
-    posts.set(def.id, P);
-    return P;
+  // a point on the door frame's post, flush on its face: the kit's frame post is 0.08 wide from the opening edge and (wall 0.16 + 0.05) deep,
+  // so the face is 0.105 from the wall centre; 0.112 puts the paper a few mm in front of it (2.0 #2/#4: 0.095 hid it inside the frame)
+  const FRAME_FACE = 0.112;
+  function seam(d, side, y = 1.42) {
+    const n = NORMAL[side], alongX = n[0] === 0, w = (d.width || 1.1) / 2;
+    return { room: sideRoom(d, side), x: alongX ? d.x + w + 0.04 : d.x + n[0] * FRAME_FACE, y, z: alongX ? d.z + n[1] * FRAME_FACE : d.z + w + 0.04 };
   }
-  G.setPost = (id, on, burn = 0) => {
-    const P = posts.get(id); if (!P) return;
-    P.on = on; P.burn = burn; P.fall = -1; P.charm.visible = on; P.charm.rotation.x = 0; P.charm.position.y = P.fy + (P.def.kind === 'pillar' ? 1.55 : 1.92);
-    P.mat.color.setRGB(1, 1, 1); P.mat.emissive.setRGB(0, 0, 0);
-    G.postsOn[id] = on;
+  G.seam = (doorId, side, y) => seam(ctx.data.plan.doors.find((x) => x.id === doorId), side, y);
+  function doorCharm(def) {
+    const d = ctx.data.plan.doors.find((x) => x.id === def.door);
+    const p = seam(d, def.side);
+    const c = charmAt(p.room, p.x, p.y, p.z, def.side, makeMat(), def.id, def.label);
+    charms.set(def.id, { def, ...c, door: d.id });
+    ctx.lockDoor(d.id, () => !G.peeled.includes(def.id), () => G.doorHint(def));
+  }
+
+  function buildSeal(def) {
+    const d = def.door ? ctx.data.plan.doors.find((x) => x.id === def.door) : null;
+    const p = d ? seam(d, def.side, 1.62) : { room: def.room, x: def.x, y: def.y ?? 0.9, z: def.z };
+    const face = d ? def.side : def.face, fy = floorOf(p.room), max = def.max || 1;
+    const alongX = NORMAL[face][0] === 0;
+    const slots = [];
+    for (let i = 0; i < max; i++) {
+      const mat = makeMat(), m = new THREE.Mesh(geo, mat);
+      // down the post (a door) or side by side over the mouth (the flue): never on top of each other
+      const off = d ? 0 : (i - (max - 1) / 2) * 0.14, dy = d ? -i * 0.34 : 0;
+      m.position.set(p.x + (alongX ? off : 0), fy + p.y + dy + 0.15, p.z + (alongX ? 0 : off)); m.rotation.y = YAW[face]; m.visible = false; m.name = `seal:${def.id}:${i}`;
+      ctx.world.group.add(m); slots.push({ mesh: m, mat, home: m.position.clone() });
+    }
+    const hit = new THREE.Mesh(new THREE.BoxGeometry(d ? 0.5 : 0.8, d ? 1.1 : 0.6, 0.25), hidden);
+    hit.position.set(p.x, fy + (d ? 1.25 : p.y + 0.05), p.z); hit.rotation.y = YAW[face]; hit.name = `sealhit:${def.id}`; hit.userData.interact = { kind: 'seal', id: def.id };
+    ctx.world.group.add(hit);
+    const S = { def, slots, n: 0, burn: 0, press: false, hit, room: p.room, door: d ? d.id : null, pos: new THREE.Vector3(p.x, fy + p.y, p.z) };
+    seals.set(def.id, S);
+    if (d) ctx.lockDoor(d.id, () => S.n > 0, () => (S.press ? W2.pressed : `${def.label}に、札を貼った。はがせば開く。`));
+    return S;
+  }
+  /** a seal spot is offered ([E]) only when the story allows it: G.sealOpen(id) (story.js) */
+  G.sealOpen = () => true;
+  G.sealRefresh = () => {
+    if (!ctx) return;
+    for (const S of seals.values()) {
+      const want = G.sealOpen(S.def.id) || S.n > 0;
+      const I = ctx.world.interactables, i = I.indexOf(S.hit);
+      if (want && i < 0) I.push(S.hit); if (!want && i >= 0) I.splice(i, 1);
+      // a door with a seal spot: while the seal is offered, the door's own [E] is the seal (aiming at the leaf or at the post both paste)
+      if (S.door) for (const o of I) { const it = o.userData && o.userData.interact; if (!it || it.id !== S.door || !(it.kind === 'door' || it.kind === 'sealdoor')) continue; it.kind = want ? 'sealdoor' : 'door'; it.seal = S.def.id; }
+    }
   };
+  function showSeal(S) {
+    S.slots.forEach((sl, i) => { sl.mesh.visible = i < S.n; sl.mesh.position.copy(sl.home); sl.mesh.rotation.set(0, sl.mesh.rotation.y, 0); sl.mat.userData.burn.value = i === S.n - 1 ? S.burn : 0; });
+  }
+  G.setSeal = (id, n, burn = 0) => {
+    const S = seals.get(id); if (!S) return;
+    S.n = Math.max(0, Math.min(S.def.max || 1, n)); S.burn = S.n ? burn : 0; S.press = false; showSeal(S);
+    if (S.door && S.n > 0) { const dd = ctx.world.doors.get(S.door); if (dd && dd.isOpen && dd.close) dd.close(); }
+    G.sealRefresh();
+  };
+  G.sealN = (id) => (seals.get(id) || { n: 0 }).n;
 
   // ---------------- peel / paste ----------------
-  G.canPeel = (id) => true;   // story.js sets the real rule (who may peel what, when)
+  G.canPeel = () => true;    // story.js sets the real rule (who may peel what, when)
+  G.canPaste = () => true;
+  G.onWax = null;            // story.js: the wax charm needs the flame (a mini game), then calls G.peel(id, { force: true })
   G.doorHint = () => '札が戸と柱にまたがって貼ってある。札をはがさないと開かない。';
-  function peel(id) {
+  function peel(id, o = {}) {
     const C = charms.get(id); if (!C || G.peeled.includes(id)) return;
-    const ok = G.canPeel(id); if (ok !== true) { ctx.answer(ok); return; }
+    if (!o.force) { const ok = G.canPeel(id); if (ok !== true) { ctx.answer(ok); return; } }
+    if (C.def.wax && !o.force && G.onWax) { G.onWax(id); return; }
     G.peeled.push(id);
-    ctx.world.interactables.splice(ctx.world.interactables.indexOf(C.hit), 1);
+    const i = ctx.world.interactables.indexOf(C.hit); if (i >= 0) ctx.world.interactables.splice(i, 1);
     if (C.door) G.doorPlain(C.door);
     peeling.push({ m: C.mesh, t: 0 });
     ctx.sound('paper');
@@ -129,41 +186,58 @@ export function installFuda(ext, G) {
       G.addFuda(1);
       if (C.door) { const d = ctx.world.doors.get(C.door); if (d && d.open) d.open(); }
       ext.emit('kushi:peel', { id });
+      G.sealRefresh();   // a peel can open a seal spot (the flue charm off: 燻しの間's door takes a charm)
       ctx.save();
     }, 900);
   }
   G.peel = peel;
   G.doorPlain = (doorId) => { for (const o of ctx.world.interactables) { const it = o.userData && o.userData.interact; if (it && it.kind === 'charmdoor' && it.id === doorId) it.kind = 'door'; } };
   G.peelQuiet = (id) => { const C = charms.get(id); if (!C) return; if (!G.peeled.includes(id)) G.peeled.push(id); if (C.door) G.doorPlain(C.door); C.mesh.visible = false; const i = ctx.world.interactables.indexOf(C.hit); if (i >= 0) ctx.world.interactables.splice(i, 1); };
-  function postRun(id) {
-    const P = posts.get(id); if (!P) return;
-    if (P.on) {
-      if (P.press) { ctx.answer('札が押されて、焦げている。今はがしたら、すぐに来る。'); return; }
-      G.setPost(id, false); G.addFuda(1); ctx.sound('paper');
-      ext.emit('kushi:unpaste', { id }); ctx.save(); return;
+  /** put a peeled charm back where it was (a reset after a catch) */
+  G.unpeel = (id) => {
+    const C = charms.get(id); if (!C) return; const k = G.peeled.indexOf(id); if (k < 0) return;
+    G.peeled.splice(k, 1); C.mesh.visible = true; C.mesh.position.copy(C.home); C.mesh.rotation.set(0, C.mesh.rotation.y, 0); C.mesh.material.userData.burn.value = 0;
+    if (!ctx.world.interactables.includes(C.hit)) ctx.world.interactables.push(C.hit);
+  };
+  function sealRun(id) {
+    const S = seals.get(id); if (!S) return;
+    const max = S.def.max || 1;
+    if (S.press) { ctx.answer(W2.pressed); return; }
+    if (S.n > 0 && (G.fuda <= 0 || S.n >= max)) {
+      const ok = G.canUnpaste ? G.canUnpaste(id) : true; if (ok !== true) { ctx.answer(ok); return; }
+      S.n -= 1; S.burn = 0; showSeal(S); G.addFuda(1); ctx.sound('paper');
+      ext.emit('kushi:unpaste', { id }); ctx.save(); G.sealRefresh(); return;
     }
-    if (G.fuda <= 0) { ctx.answer(ctx.state.tasks.includes('T_CHOBA') ? '貼る札を持っていない。戸の札をはがすと、札が手に入る。' : '柱だ。太くて、黒光りしている。'); return; }
-    G.addFuda(-1); G.setPost(id, true); ctx.sound('stamp');
-    ext.emit('kushi:paste', { id }); ctx.save();
+    if (G.fuda <= 0) { ctx.answer(ctx.state.tasks.includes('T_CHOBA') ? '貼る札を持っていない。戸の札をはがすと、札が手に入る。' : `${S.def.label}だ。`); return; }
+    const ok = G.canPaste(id); if (ok !== true) { ctx.answer(ok); return; }
+    G.addFuda(-1); S.n += 1; if (S.n === 1) S.burn = 0; showSeal(S); ctx.sound('stamp');
+    if (S.door) { const dd = ctx.world.doors.get(S.door); if (dd && dd.isOpen && dd.close) dd.close(); }
+    ext.emit('kushi:paste', { id, n: S.n }); ctx.save(); G.sealRefresh();
   }
-  G.paste = postRun;
+  G.paste = sealRun;
 
+  ext.registerInteract('sealdoor', {
+    // from the side a charm may not be put up (inside 燻しの間), the door is just a door
+    prompt: (o) => (asDoor(o) ? (ctx.world.doors.get(o.id).isOpen ? '[E] 扉を閉める' : '[E] 扉を開ける') : sealPrompt(o.seal)),
+    run: (o) => { if (asDoor(o)) { const d = ctx.world.doors.get(o.id); if (d.isOpen) d.close(); else d.open(); return; } sealRun(o.seal); },
+  });
   ext.registerInteract('fuda', {
-    prompt: (o) => `[E] 札をはがす：${o.label || '札'}`,
+    prompt: (o) => { const C = charms.get(o.id); return C && C.def.wax ? `[E] 蝋を手燭の火であぶる：${o.label || '札'}` : `[E] 札をはがす：${o.label || '札'}`; },
     run: (o) => peel(o.id),
   });
-  ext.registerInteract('post', {
-    prompt: (o) => {
-      const P = posts.get(o.id); if (!P) return '';
-      const name = P.def.label;
-      if (P.on) return P.press ? `${name}（札が焦げている）` : `[E] 札をはがす：${name}`;
-      if (!ctx.state.tasks.includes('T_CHOBA')) return `${name}`;
+  const asDoor = (o) => G.sealN(o.seal) === 0 && G.canPaste(o.seal) !== true && !!ctx.world.doors.get(o.id);
+  function sealPrompt(id) {
+      const S = seals.get(id); if (!S) return '';
+      const name = S.def.label, max = S.def.max || 1;
+      if (S.press) return `${name}（札が焦げている）`;
+      if (S.n > 0 && G.fuda > 0 && S.n < max) return `[E] 札をもう一枚貼る：${name}（${S.n}枚／札 ×${G.fuda}）`;
+      if (S.n > 0) return `[E] 札をはがす：${name}（${S.n}枚）`;
       return G.fuda > 0 ? `[E] 札を貼る：${name}（札 ×${G.fuda}）` : `${name}（貼る札がない）`;
-    },
-    run: (o) => postRun(o.id),
-  });
+  }
+  ext.registerInteract('seal', { prompt: (o) => sealPrompt(o.id), run: (o) => sealRun(o.id) });
 
   // ---------------- every frame: the peel animation, the charring ----------------
+  let puffT = 0;
   function update(dt, active) {
     for (let i = peeling.length - 1; i >= 0; i--) {
       const p = peeling[i]; p.t += dt;
@@ -171,52 +245,61 @@ export function installFuda(ext, G) {
       p.m.rotation.x = -k * 1.4; p.m.position.y -= dt * 0.12 * k;
       if (k >= 1) { p.m.visible = false; peeling.splice(i, 1); }
     }
+    for (let i = falling.length - 1; i >= 0; i--) {
+      const f = falling[i]; f.t += dt; f.m.position.y -= dt * 0.9; f.m.rotation.x += dt * 3;
+      if (f.t > 0.9) { ctx.world.group.remove(f.m); falling.splice(i, 1); }
+    }
+    for (const s of smoke) if (s.t > 0) { s.t -= dt; s.spr.position.y += dt * 0.35; s.spr.scale.setScalar(0.08 + (1.8 - s.t) * 0.22); s.spr.material.opacity = Math.max(0, s.t / 1.8) * 0.9; if (s.t <= 0) s.spr.visible = false; }
     if (!active) return;
-    for (const P of posts.values()) {
-      if (P.fall >= 0) {   // a charred charm drops and is gone
-        P.fall += dt; P.charm.position.y -= dt * 1.6; P.charm.rotation.x += dt * 4;
-        if (P.fall > 0.8) { P.fall = -1; P.charm.visible = false; }
-        continue;
-      }
-      if (!P.on) continue;
-      if (P.press) {
-        const life = P.def.id === 'K_LESSON' ? 8 : ctx.calm ? 18 : 12;
-        P.burn = Math.min(1, P.burn + dt / life);
-        const c = 1 - P.burn * 0.85; P.mat.color.setRGB(c, c * 0.92, c * 0.85);
-        P.mat.emissive.setRGB(0.5 * Math.min(1, P.burn * 1.6) * (0.7 + 0.3 * Math.sin(performance.now() / 70)), 0.12 * P.burn, 0);
-        if (P.burn >= 1) {
-          P.on = false; G.postsOn[P.def.id] = false; P.fall = 0; P.press = false; P.burn = 0;
-          ctx.sound('ashFall');
-          ext.emit('kushi:fall', { id: P.def.id }); ctx.save();
-        }
+    puffT -= dt;
+    const life = ctx.calm ? BURN.calm : BURN.life;
+    for (const S of seals.values()) {
+      if (!S.press || S.n <= 0) continue;
+      S.burn = Math.min(1, S.burn + dt / life);
+      const sl = S.slots[S.n - 1];
+      sl.mat.userData.burn.value = S.burn; sl.mat.userData.glow.value = 0.75 + 0.25 * Math.sin(performance.now() / 90);
+      if (puffT <= 0) puff(sl.mesh.position.clone().add(new THREE.Vector3(0, -0.12 + S.burn * 0.2, 0)));
+      if (S.burn >= 1) {
+        S.n -= 1; S.burn = 0;
+        const m = new THREE.Mesh(geo, fallM); m.position.copy(sl.mesh.position); m.rotation.copy(sl.mesh.rotation); ctx.world.group.add(m);
+        falling.push({ m, t: 0, home: m.position.clone() }); sl.mesh.visible = false; sl.mat.userData.burn.value = 0;
+        ctx.sound('ashFall');
+        ext.emit('kushi:fall', { id: S.def.id, left: S.n }); ctx.save(); G.sealRefresh();
       }
     }
+    if (puffT <= 0) puffT = 0.16;
   }
 
   ext.on('game:ready', (c) => {
     ctx = c;
-    paperM = new THREE.MeshStandardMaterial({ map: charmTexture(), side: THREE.DoubleSide, roughness: 1, emissive: 0x000000 });
+    tex = charmTexture();
     oldM = new THREE.MeshStandardMaterial({ map: charmTexture(true), side: THREE.DoubleSide, roughness: 1 });
-    G.paperM = paperM; G.oldM = oldM; G.charmGeo = geo;
+    fallM = makeMat(); fallM.userData.burn.value = 0.97; fallM.userData.glow.value = 0.4;
+    G.paperM = makeMat(); G.oldM = oldM; G.charmGeo = geo; G.burnMaterial = makeMat;
     const F = ctx.data.fuda;
     for (const d of F.doors) doorCharm(d);
-    for (const w of F.walls) { const c2 = charmAt(w.room, w.x, 1.5, w.z, w.face, paperM, w.id, w.label); charms.set(w.id, { def: w, ...c2, wall: true }); }
-    for (const p of F.posts) buildPost(p);
+    for (const w of F.walls) { const c2 = charmAt(w.room, w.x, w.y ?? 1.5, w.z, w.face, makeMat(), w.id, w.label); charms.set(w.id, { def: w, ...c2, wall: true }); }
+    for (const s of F.seals || []) buildSeal(s);
+    const st = smokeTex();
+    smoke = Array.from({ length: 14 }, () => { const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: st, transparent: true, depthWrite: false, opacity: 0 })); spr.visible = false; ctx.world.group.add(spr); return { spr, t: 0 }; });
+    // the warm-up compiles the charm program once with the burn on (a burning charm never builds a program in play)
+    const warm = new THREE.Mesh(geo, makeMat()); warm.material.userData.burn.value = 0.5;
+    const wg = new THREE.Group(); wg.visible = false; wg.add(warm, new THREE.Sprite(smoke[0].spr.material)); ctx.scene.add(wg); ctx.warmObjects = [...(ctx.warmObjects || []), wg];
     chip = document.createElement('div'); chip.id = 'kc-fuda'; chip.className = 'kc-fuda'; chip.hidden = true;
     (document.getElementById('hud') || document.body).appendChild(chip);
     ctx.registerHudPart && ctx.registerHudPart('kc-fuda', { slot: 'tr', order: 30 });
     ctx.systems.push({ id: 'kushi-fuda', def: { update: (dt, c2, active) => update(dt, active) }, inst: null });
-    G.showFuda();
+    G.showFuda(); G.sealRefresh();
   });
-  ext.on('task:done', () => G.showFuda && G.showFuda());
+  ext.on('task:done', () => { if (G.showFuda) G.showFuda(); if (G.sealRefresh) G.sealRefresh(); });
   ext.registerPersist('fuda', {
-    serialize: () => ({ fuda: G.fuda, peeled: G.peeled, posts: Object.fromEntries([...posts.values()].map((P) => [P.def.id, P.on ? Math.round(P.burn * 100) / 100 + 0.001 : 0])) }),
+    serialize: () => ({ fuda: G.fuda, peeled: G.peeled, seals: Object.fromEntries([...seals.values()].map((S) => [S.def.id, [S.n, Math.round(S.burn * 100) / 100]])) }),
     restore: (s) => {
       if (!s) return;
       G.fuda = s.fuda || 0;
       for (const id of s.peeled || []) G.peelQuiet(id);
       for (const id of s.peeled || []) { const C = charms.get(id); if (C && C.door) { const d = ctx.world.doors.get(C.door); if (d && d.open) d.open(); } }
-      for (const [id, v] of Object.entries(s.posts || {})) G.setPost(id, v > 0, Math.max(0, v - 0.001));
+      for (const [id, v] of Object.entries(s.seals || {})) G.setSeal(id, v[0], v[1]);
       G.showFuda();
     },
   });

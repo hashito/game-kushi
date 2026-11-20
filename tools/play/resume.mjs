@@ -7,7 +7,7 @@ export default async (api) => {
   await G(`(document.getElementById('start-btn').click(), 1)`); await sleep(1800); await H.idle(); await sleep(400);
   await H.walkTo(3.6, 23.4); await H.walkTo(4.9, 23.2); await H.use(5.7, 22.5, 1.0); await H.idle();
   await H.walkTo(4.2, 21.2); await H.use(4.43, 20.08, 1.45, { wait: 1400 }); await H.idle();
-  await H.walkTo(3.8, 21.4); await H.use(2.98, 21.4, 1.35); await H.idle(); await H.use(2.98, 21.4, 1.35, { wait: 1400 }); await H.idle();
+  await H.use(4.43, 20.1, 1.3); await H.idle(); await H.use(4.43, 20.1, 1.3, { wait: 1400 }); await H.idle();
   await H.walkTo(3.6, 22.8); await H.walkTo(1.4, 21.2); await H.use(1.88, 20.08, 1.45, { wait: 1400 }); await H.idle();
   await H.walkTo(1.3, 19.2); await H.walkTo(1.5, 17.7); await H.use(2.25, 17.7, 1.0); await H.idle();
   await sleep(1500); const a = await st(); log('before', JSON.stringify(a)); await shot('before-reload');

@@ -10,6 +10,9 @@ export default async ({ p, G, sleep, log, shot, base }) => {
     await sleep(2500);
     await G(`(document.querySelectorAll('.wm-layer .btn.primary').forEach((b) => b.click()), 1)`);
     await sleep(600);
+    // TOUR_BRIGHT=1: a debug light (no fog, a bright ambient) to look at placement, not at the mood
+    if (process.env.TOUR_BRIGHT) await G(`(g.scene.fog = null, g.scene.traverse((o) => { if (o.isHemisphereLight) o.intensity = 3.5; }), g.renderer.toneMappingExposure = 1.6, 1)`);
+    if (process.env.TOUR_AT) { const [x, z, yaw, pitch] = process.env.TOUR_AT.split(',').map(Number); await G(`(g.camera.position.x = ${x}, g.camera.position.z = ${z}, g.fp.yaw = ${yaw}, g.fp.pitch = ${pitch || 0}, 1)`); await sleep(400); }
     log(sc.id, await G(`({ room: g.state.room, floor: g.floor, tasks: g.state.tasks.length, prompt: document.getElementById('prompt').textContent })`));
     await shot(sc.id);
     if (process.env.TOUR_TURN) { await G(`(g.fp.yaw += Math.PI, 1)`); await sleep(500); await shot(`${sc.id}-back`); }

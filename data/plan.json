@@ -113,94 +113,52 @@
       "wallTex": "stone_wall"
     },
     {
-      "id": "P1",
-      "name": "板の道",
+      "id": "DORO",
+      "name": "土の廊下",
       "x": 1.6,
-      "z": -41,
+      "z": -19,
       "w": 2,
-      "d": 40,
-      "floor": 0,
-      "kind": "corridor",
-      "type": "corridor",
-      "furnish": false,
-      "floorTex": "planks_dark",
-      "wallTex": "stone_wall"
-    },
-    {
-      "id": "P2",
-      "name": "低い道",
-      "x": -18.6,
-      "z": -42.6,
-      "w": 22.2,
-      "d": 1.6,
+      "d": 18,
       "floor": 0,
       "kind": "corridor",
       "type": "corridor",
       "furnish": false,
       "floorTex": "dirt_floor",
-      "wallTex": "rock_granite_mossy"
+      "wallTex": "clay_wall"
     },
     {
-      "id": "P3",
-      "name": "水の道",
-      "x": -18.6,
-      "z": -81,
-      "w": 2,
-      "d": 38.4,
+      "id": "ITA",
+      "name": "板の間",
+      "x": -4.4,
+      "z": -9,
+      "w": 6,
+      "d": 6,
       "floor": 0,
-      "kind": "corridor",
-      "type": "corridor",
-      "furnish": false,
-      "floorTex": "wet_floor",
-      "wallTex": "rock_granite_mossy"
-    },
-    {
-      "id": "P4A",
-      "name": "札の回廊",
-      "x": -18.6,
-      "z": -82.6,
-      "w": 14.6,
-      "d": 1.6,
-      "floor": 0,
-      "kind": "corridor",
-      "type": "corridor",
+      "kind": "room",
+      "type": "storage",
       "furnish": false,
       "floorTex": "planks_dark",
-      "wallTex": "planks_dark"
+      "wallTex": "stone_wall"
     },
     {
-      "id": "P4B",
-      "name": "札の回廊（格子戸の先）",
-      "x": -4,
-      "z": -82.6,
-      "w": 14,
-      "d": 1.6,
+      "id": "IBUSHI",
+      "name": "燻しの間",
+      "x": 3.6,
+      "z": -13,
+      "w": 6,
+      "d": 8,
       "floor": 0,
-      "kind": "corridor",
-      "type": "corridor",
-      "furnish": false,
-      "floorTex": "planks_dark",
-      "wallTex": "planks_dark"
-    },
-    {
-      "id": "P5",
-      "name": "下りの道",
-      "x": 8,
-      "z": -100,
-      "w": 2,
-      "d": 17.4,
-      "floor": 0,
-      "kind": "corridor",
-      "type": "corridor",
+      "kind": "room",
+      "type": "storage",
       "furnish": false,
       "floorTex": "dirt_floor",
-      "wallTex": "stone_wall"
+      "wallTex": "plaster_soot"
     },
     {
       "id": "OKUMURO",
       "name": "奥の室",
-      "x": 5,
-      "z": -108,
+      "x": -1.4,
+      "z": -27,
       "w": 8,
       "d": 8,
       "floor": 0,
@@ -285,79 +243,6 @@
       "hint": "作業場の板戸。札が貼ってある。"
     },
     {
-      "id": "D_P1",
-      "a": "MURO",
-      "b": "P1",
-      "x": 2.6,
-      "z": -1,
-      "width": 1.2,
-      "look": "slide",
-      "closable": true,
-      "unlock": "passage",
-      "hint": "通路への板戸。札が貼ってある。真っ暗で、灯りがないと進めない。"
-    },
-    {
-      "id": "D_P12",
-      "a": "P1",
-      "b": "P2",
-      "x": 2.6,
-      "z": -41,
-      "width": 1.6,
-      "look": "none",
-      "open": true
-    },
-    {
-      "id": "D_P23",
-      "a": "P2",
-      "b": "P3",
-      "x": -17.6,
-      "z": -42.6,
-      "width": 1.6,
-      "look": "none",
-      "open": true
-    },
-    {
-      "id": "D_P34",
-      "a": "P3",
-      "b": "P4A",
-      "x": -17.6,
-      "z": -81,
-      "width": 1.6,
-      "look": "none",
-      "open": true
-    },
-    {
-      "id": "D_GATE",
-      "a": "P4A",
-      "b": "P4B",
-      "x": -4,
-      "z": -81.8,
-      "width": 1.4,
-      "look": "none",
-      "unlock": "passage",
-      "hint": "札だらけの格子戸。格子の真ん中の札が、戸と柱をつないでいる。"
-    },
-    {
-      "id": "D_P45",
-      "a": "P4B",
-      "b": "P5",
-      "x": 9,
-      "z": -82.6,
-      "width": 1.6,
-      "look": "none",
-      "open": true
-    },
-    {
-      "id": "D_END",
-      "a": "P5",
-      "b": "OKUMURO",
-      "x": 9,
-      "z": -100,
-      "width": 1.2,
-      "look": "slide",
-      "closable": true
-    },
-    {
       "id": "ST_HATCH",
       "a": "MURO",
       "b": "SAGYO",
@@ -389,6 +274,54 @@
         }
       },
       "reason": "作業場の床の揚げ戸から、地下の室へ降りるはしご"
+    },
+    {
+      "id": "D_DORO",
+      "a": "MURO",
+      "b": "DORO",
+      "x": 2.6,
+      "z": -1,
+      "width": 1.2,
+      "look": "slide",
+      "closable": true,
+      "unlock": "passage",
+      "hint": "地下の廊下への板戸。札が貼ってある。真っ暗で、灯りがないと進めない。",
+      "reason": "室から奥の部屋へ続く土の廊下"
+    },
+    {
+      "id": "D_ITA",
+      "a": "DORO",
+      "b": "ITA",
+      "x": 1.6,
+      "z": -6,
+      "width": 1.1,
+      "look": "slide",
+      "closable": true,
+      "hint": "板の間の板戸。札が貼ってある。",
+      "reason": "柘植の板を寝かせておく部屋"
+    },
+    {
+      "id": "D_IBU",
+      "a": "DORO",
+      "b": "IBUSHI",
+      "x": 3.6,
+      "z": -9,
+      "width": 1.1,
+      "look": "slide",
+      "closable": true,
+      "hint": "燻しの間の板戸。札が貼ってある。",
+      "reason": "板を燻す部屋（奥の室と煙道でつながる）"
+    },
+    {
+      "id": "D_KOSHI",
+      "a": "DORO",
+      "b": "OKUMURO",
+      "x": 2.6,
+      "z": -19,
+      "width": 1.2,
+      "look": "none",
+      "reason": "廊下の突き当たりの、奥の室の格子戸",
+      "open": true
     }
   ],
   "stations": [
@@ -442,75 +375,28 @@
       "label": "燻し炉の縁"
     },
     {
-      "id": "S_LAMP1",
-      "room": "P1",
-      "x": 1.95,
-      "z": -2.6,
-      "label": "壁の灯明"
-    },
-    {
-      "id": "S_LAMP2",
-      "room": "P3",
-      "x": -18.25,
-      "z": -44.2,
-      "label": "壁の灯明"
-    },
-    {
-      "id": "S_LAMP3",
-      "room": "P4A",
-      "x": -16,
-      "z": -82.25,
-      "label": "壁の灯明"
-    },
-    {
-      "id": "S_LAMP4",
-      "room": "P5",
-      "x": 9.65,
-      "z": -84.8,
-      "label": "壁の灯明"
-    },
-    {
       "id": "S_SHELF",
       "room": "OKUMURO",
-      "x": 9,
-      "z": -107.3,
+      "x": 2.6,
+      "z": -26.3,
       "label": "奥の棚"
+    },
+    {
+      "id": "S_RACK",
+      "room": "IBUSHI",
+      "x": 8.9,
+      "z": -9,
+      "label": "燻しの間の板掛け"
+    },
+    {
+      "id": "S_KOSHI",
+      "room": "DORO",
+      "x": 2.6,
+      "z": -18.6,
+      "label": "格子戸の蝋の札"
     }
   ],
-  "hides": [
-    {
-      "id": "H_MURO",
-      "room": "MURO",
-      "x": 8.5,
-      "z": 3.8,
-      "look": "cabinet",
-      "label": "札を貼った戸棚"
-    },
-    {
-      "id": "H_P1",
-      "room": "P1",
-      "x": 3.25,
-      "z": -21.5,
-      "look": "cabinet",
-      "label": "札を貼った戸棚"
-    },
-    {
-      "id": "H_P3",
-      "room": "P3",
-      "x": -16.95,
-      "z": -66,
-      "look": "cabinet",
-      "label": "札を貼った戸棚"
-    },
-    {
-      "id": "H_P5",
-      "room": "P5",
-      "x": 9.65,
-      "z": -92,
-      "look": "cabinet",
-      "label": "札を貼った戸棚"
-    }
-  ],
+  "hides": [],
   "furniture": [],
   "start": "OMOTE",
   "spawn": {
@@ -534,6 +420,6 @@
       "direct-total",
       "no-corridor"
     ],
-    "why": "出口は表の戸一つ（閉じ込められる話。最後にハルさんが開ける）。町家は奥へ一本につながる作り（表から奥へ、戸を一枚ずつ）。地下の通路も一本道（長い一本道を、札を貼りながら逃げる場面として作った）。"
+    "why": "出口は表の戸一つ（閉じこめられる話。最後にハルさんが開ける）。町家は奥へ一本につながる作り（表から奥へ、戸を一枚ずつ）。地下は室から廊下一本に部屋が並ぶ（戸の札で、千草さんを部屋に閉じこめる謎として作った）。"
   }
 }

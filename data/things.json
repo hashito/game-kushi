@@ -136,8 +136,8 @@
     "id": "NAKA_TANSU",
     "room": "NAKA",
     "position": [
-      6,
-      13.35
+      7.2,
+      13.3
     ],
     "y": 0.7,
     "label": "箪笥",
@@ -246,22 +246,6 @@
     "photo": "assets/photos/th-roka-amado.webp"
   },
   {
-    "id": "SAGYO_COMB",
-    "room": "SAGYO",
-    "position": [
-      0.55,
-      1.2
-    ],
-    "y": 0.95,
-    "label": "作りかけの櫛",
-    "text": [
-      "作業台に、作りかけの櫛が一枚。歯が半分だけ挽いてある。のこぎり、やすり、木賊（とくさ：磨くための草）。"
-    ],
-    "feeling": "五十年以上、誰も触っていない。",
-    "size": 0.7,
-    "photo": "assets/photos/th-sagyo-comb.webp"
-  },
-  {
     "id": "SAGYO_BOARDS",
     "room": "SAGYO",
     "position": [
@@ -342,93 +326,13 @@
     "photo": "assets/photos/th-muro-kiln.webp"
   },
   {
-    "id": "P1_HAIR",
-    "room": "P1",
-    "position": [
-      1.75,
-      -16
-    ],
-    "y": 1.3,
-    "label": "板のすき間",
-    "text": [
-      "積んだ板のすき間に、長い黒髪がはさまっている。何本も。"
-    ],
-    "feeling": "女の人の髪だ。",
-    "size": 0.7,
-    "photo": "assets/photos/th-p1-hair.webp"
-  },
-  {
-    "id": "P2_HANDS",
-    "room": "P2",
-    "position": [
-      -6,
-      -41.8
-    ],
-    "y": 0.1,
-    "label": "濡れた手の跡",
-    "text": [
-      "床に、濡れた手の跡が続いている。這って進んだ跡だ。奥から、こちらへ。"
-    ],
-    "feeling": "",
-    "size": 0.7,
-    "photo": "assets/photos/th-p2-hands.webp"
-  },
-  {
-    "id": "P3_TOOTH",
-    "room": "P3",
-    "position": [
-      -17.2,
-      -58
-    ],
-    "y": 0.1,
-    "label": "水に浮くもの",
-    "text": [
-      "水の上に、長い髪の束が浮いている。……ゆっくり、こちらへ流れてくる。"
-    ],
-    "feeling": "",
-    "size": 0.7,
-    "photo": "assets/photos/th-p3-tooth.webp"
-  },
-  {
-    "id": "P4_FUDA",
-    "room": "P4A",
-    "position": [
-      -12.6,
-      -81.04
-    ],
-    "y": 1.4,
-    "label": "回廊の札",
-    "text": [
-      "壁も天井も、札で埋まっている。何百枚。日付はどれも「昭和四十九年霜月十四日」。……一晩で、これだけ貼ったのか。"
-    ],
-    "feeling": "あの夜、ハルさんは千草さんを閉じこめるために、これだけの札を書いた。",
-    "size": 0.7,
-    "photo": "assets/photos/th-p4-fuda.webp"
-  },
-  {
-    "id": "P5_STEPS",
-    "room": "P5",
-    "position": [
-      8.4,
-      -94
-    ],
-    "y": 0.1,
-    "label": "足跡",
-    "text": [
-      "湿った土に、小さな足跡。素足の女の人の足。奥から来て、奥へ戻っている。"
-    ],
-    "feeling": "",
-    "size": 0.7,
-    "photo": "assets/photos/th-p5-steps.webp"
-  },
-  {
     "id": "OKUMURO_KIMONO",
     "room": "OKUMURO",
     "position": [
-      8.2,
-      -106.6
+      1.9,
+      -25.9
     ],
-    "y": 0.3,
+    "y": 0.2,
     "label": "藍の着物",
     "text": [
       "棚の下に、藍の着物がくずれている。長い黒髪が、床に広がっている。袖から、白い指の骨がのぞいている。",
@@ -442,8 +346,8 @@
     "id": "OKUMURO_CANDLE",
     "room": "OKUMURO",
     "position": [
-      10.6,
-      -107.2
+      4,
+      -26.3
     ],
     "y": 0.3,
     "label": "燃え尽きた手燭",
@@ -453,5 +357,87 @@
     "feeling": "千草さんの灯りは、ここで尽きた。",
     "size": 0.7,
     "photo": "assets/photos/th-okumuro-candle.webp"
+  },
+  {
+    "size": 0.7,
+    "id": "SAGYO_BENCHSAW",
+    "room": "SAGYO",
+    "position": [
+      0.45,
+      2.9
+    ],
+    "y": 0.95,
+    "label": "作業台",
+    "text": [
+      "のこぎり、やすり、木賊（とくさ：磨くための草）。刃に、柘植の粉が固まってついている。"
+    ],
+    "feeling": "五十年以上、誰も触っていない。",
+    "photo": "assets/photos/th-sagyo-comb.webp"
+  },
+  {
+    "size": 0.7,
+    "id": "MURO_BELLPULL",
+    "room": "MURO",
+    "position": [
+      3.6,
+      3.9
+    ],
+    "y": 1.3,
+    "label": "呼び鈴の紐",
+    "text": [
+      "天井の穴から、紐が一本下がっている。握りの木が、すり減って黒い。",
+      "引くと、上のどこかで鈴が鳴る仕掛けだ。……帳場の呼び鈴だろう。"
+    ],
+    "feeling": "控えに「帳場の呼び鈴が、鳴りやんだ」とあった。千草さんは、何日もこれを引いたんだ。",
+    "photo": "assets/photos/th-muro-bellpull.webp"
+  },
+  {
+    "size": 0.7,
+    "id": "DORO_BELLS",
+    "room": "DORO",
+    "position": [
+      3.3,
+      -7.5
+    ],
+    "y": 2.6,
+    "label": "天井の鈴",
+    "text": [
+      "天井に張った紐に、小さな鈴が下がっている。紐は、室の呼び鈴から、地下の部屋という部屋へ張りめぐらせてある。"
+    ],
+    "feeling": "何かが通ると、鈴が鳴る。……鳴った所に、千草さんがいる。",
+    "photo": "assets/photos/th-doro-bells.webp"
+  },
+  {
+    "size": 0.7,
+    "id": "ITA_WRITING",
+    "room": "ITA",
+    "position": [
+      -0.8,
+      -6.3
+    ],
+    "y": 0.8,
+    "label": "台の板の字",
+    "text": [
+      "台の板に、爪でひっかいた字がある。「おかあさん　あけて」。何度も、なぞった跡。"
+    ],
+    "feeling": "千草さんは、まだ生きていたとき、ここで書いたんだ。",
+    "photo": "assets/photos/th-ita-writing.webp"
+  },
+  {
+    "size": 0.7,
+    "id": "IBUSHI_FLUE",
+    "room": "IBUSHI",
+    "position": [
+      7.5,
+      -12.9
+    ],
+    "y": 1,
+    "label": "煙道の口",
+    "text": [
+      "北の壁に、石で囲った黒い口。燻しの煙を逃がす煙道だ。奥の室のほうへ続いている。",
+      "口に、札が一枚貼ってある。"
+    ],
+    "feeling": "人は通れない。……死んだ者なら、這って通れる。",
+    "photo": "assets/photos/th-ibushi-flue.webp"
   }
 ]

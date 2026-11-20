@@ -60,12 +60,12 @@
     {
       "key": "item-matches",
       "size": "768x768",
-      "prompt": "an old small box of kitchen matches, plain paper box with no label, some matches beside it, on a sooty wooden shelf"
+      "prompt": "a small old Japanese safety match box lying open, plain brown paper box with no label, a few wooden matches with red heads spilled beside it, on a sooty wooden shelf, warm light, close up"
     },
     {
       "key": "item-koteko",
       "size": "768x768",
-      "prompt": "a long heavy rusty iron crowbar leaning against an old plaster wall in a dark workshop"
+      "prompt": "a long heavy iron crowbar lying diagonally across old wooden floor boards, clearly seen whole from end to end, rust and a hooked flat end, warm light from one side, plain dark background"
     },
     {
       "key": "item-oldfuda",
@@ -266,6 +266,36 @@
       "key": "th-sagyo-boards",
       "size": "768x768",
       "prompt": "bundles of thin pale yellow boxwood boards standing against the wall of an old craftsman workshop, wood grain, dust, candle light"
+    },
+    {
+      "key": "item-kakekushi",
+      "size": "768x768",
+      "prompt": "an unfinished Japanese boxwood comb, a pale yellow half-moon of wood with only half of its fine teeth cut, the other half still a solid block, lying on a dusty dark wooden workbench beside a small fine saw and wood shavings, candle light"
+    },
+    {
+      "key": "doc-hikae",
+      "size": "1344x768",
+      "prompt": "an old thin Japanese notebook bound with string, open on a dusty wooden shelf in a dark cellar, its pages covered with faint brush strokes that are blurred and unreadable, a small candlestick beside it, candle light, no readable text"
+    },
+    {
+      "key": "th-muro-bellpull",
+      "size": "768x768",
+      "prompt": "a single old straw rope hanging from a small hole in a dark earthen cellar ceiling, ending in a worn black wooden grip, candle light from below, dust in the air"
+    },
+    {
+      "key": "th-doro-bells",
+      "size": "1344x768",
+      "prompt": "a long narrow earthen cellar corridor with wooden frames, a thin straw rope stretched along the ceiling with small brass bells hanging from it every few meters, candle light, deep darkness at the far end"
+    },
+    {
+      "key": "th-ita-writing",
+      "size": "768x768",
+      "prompt": "close up of an old wooden plank surface with many thin desperate scratch marks made by fingernails, rough uneven grooves, dark cellar, candle light, no letters"
+    },
+    {
+      "key": "th-ibushi-flue",
+      "size": "768x768",
+      "prompt": "a low square opening in a sooty earthen wall of a dark cellar, framed by rough stones, pitch black inside, a single blank white paper strip pasted across the stone frame, candle light, soot stains around the opening"
     }
   ],
   "seeds": {

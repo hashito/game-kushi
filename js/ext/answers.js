@@ -26,8 +26,9 @@ export function installAnswers(ext, G) {
       case 'T_RETURN': return done('T_THINK') ? null : W.give_wait;
       case 'T_THINK': return has('COMB') || done('T_SEAL') ? (done('T_SEAL') ? null : W.bench_busy) : W.bench_early;
       case 'T_LIGHT': return null;
-      case 'T_LAMP1': case 'T_LAMP2': case 'T_LAMP3': case 'T_LAMP4': return W.lamp_order;
-      case 'T_BOX': return null;
+      case 'T_LURE': return done('T_KOSHI_SEE') ? null : W.lure_early;
+      case 'T_KOSHI': return done('T_TRAP') ? null : done('T_KOSHI_SEE') ? W.koshi_she : W.koshi_early;
+      case 'T_BOX': return done('T_FLUE2') ? null : W.box_flue;
       case 'T_SQ1': return ctx.levelIndex(task.stage) > ctx.prog.index ? W.butsudan_early : null;
       default: return null;
     }

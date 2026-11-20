@@ -2,7 +2,7 @@
   "id": "kushi",
   "title": "札の家 ― 奥の棚の櫛",
   "subtitle": "お札をはがして、奥の棚の櫛を持って来い",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "noPrewarm": true,
   "standard": "1.16",
   "theme": "dark-industrial candle-room",
@@ -94,7 +94,7 @@
   "voice": true,
   "things": true,
   "controls": {
-    "crouch": true,
+    "crouch": false,
     "flashlight": {
       "color": 16754784,
       "intensity": 16,
@@ -103,9 +103,6 @@
     },
     "fov": 72,
     "far": 55,
-    "gate": {
-      "crouch": "L3"
-    },
     "touch": [
       {
         "k": "KeyE",
@@ -132,7 +129,7 @@
     },
     "chigusa": {
       "text": "髪に、からめとられた。",
-      "sub": "千草さんは、櫛を持った者のところへ来る。後ろに来たら、柱に向いて［E］で札を貼る。札が焦げて落ちるまでに、先へ逃げる。札を貼った戸棚に隠れてもよい。",
+      "sub": "千草さんは、清次さんの櫛のある所へ来る。燻しの間では、煙道から来る前に廊下へ出て、戸に札を貼る。櫛を持ったら、戸の札が焦げて落ちる前に、はしごまで走る。",
       "photo": "assets/photos/mon-close.webp",
       "retry": "やり直す"
     },

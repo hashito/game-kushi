@@ -1,17 +1,25 @@
-// The story of 札の家: what is said when (data/talk.json, js/ext/words.js), the tasks that need code, the scripted moments of the passage
-// (one every few metres on the way in), the gate and the post lesson, the comb and the chase back, the hatch, the questions at the bench,
-// and the three endings. Shares G with fuda.js (the charms), ghost.js (千草さん) and house.js (the things).
+// The story of 札の家: what is said when (data/talk.json, js/ext/words.js), the tasks that need code, the basement (2.0, rebuilt:
+// 「封じの間」), the comb and the run back, the hatch, the questions at the bench, and the three endings. Shares G with fuda.js (the
+// charms and seals), ghost.js (千草さん) and house.js (the things).
+//
+// The basement, in order (one rule: 札は死んだ者を通さない。千草さんは、清次さんの櫛のある所へ来る):
+//   T_LIGHT   the candle at the kiln            T_HIKAE   ハル's ledger of charms (what is charmed, and why)
+//   T_DORO    the corridor door charm           T_KOSHI_SEE  the lattice of 奥の室: she comes to it and the waxed charm holds her
+//   T_LURE    清次's unfinished comb on the drying rack of 燻しの間
+//   T_TRAP    peel the flue charm, get out, seal 燻しの間's door from the corridor: she comes through the flue to the comb and is shut in
+//   T_KOSHI   melt the wax with the candle, peel the lattice charm      T_OKUMURO  her remains
+//   T_FLUE2   a charm on 奥の室's own flue mouth (or she comes straight through it)          T_BOX  the comb (L4)
+//   then she wants her comb: she presses the seals (they char and fall, ~22 s a charm); run the corridor to the ladder (T_ESCAPE).
+// A catch never strands the player: each phase has its own fixed checkpoint and its own reset (resetFlue, resetHunt), also on a resume.
 import * as THREE from 'three';
 import { W } from './words.js';
 
-const ROOM_SURFACE = { P3: 'water', P2: 'dirt', P5: 'dirt', MURO: 'dirt', OKUMURO: 'dirt', OMOTE: 'dirt', HASHIRI: 'dirt' };
-// the scripted moments on the way in: [id, x, z, what]. Each runs once, when you first walk past its point
-const EVENTS = [
-  ['e1', 2.6, -8, 'comb'], ['e2', 2.6, -16.5, 'hair'], ['e3', 2.6, -27, 'flame'], ['e4', 2.6, -36, 'fall'],
-  ['e5', 1.4, -41.8, 'low'], ['e6', -6, -41.8, 'hands'], ['e7', -12.5, -41.8, 'cross'],
-  ['e8', -17.6, -44.6, 'water'], ['e9', -17.6, -55, 'splash'], ['e10', -17.6, -63, 'float'], ['e11', -17.6, -72, 'hum'],
-  ['e12', -14, -81.8, 'whisper'], ['e13', 9, -89, 'steps'], ['e14', 9, -96.5, 'comb2'],
-];
+const ROOM_SURFACE = { MURO: 'dirt', DORO: 'dirt', IBUSHI: 'dirt', OKUMURO: 'dirt', OMOTE: 'dirt', HASHIRI: 'dirt' };
+const CP = {
+  flue: { x: 2.4, z: -7.6, yaw: -Math.PI / 2, floor: 0 },     // the corridor, before 燻しの間's door, facing it
+  hunt: { x: 2.6, z: -24.6, yaw: Math.PI, floor: 0 },         // 奥の室, in front of the shelf, facing the way out
+};
+const CAGE_AT = { room: 'OKUMURO', x: 1.2, z: -25.4 };
 
 export function installStory(ext, G) {
   let ctx = null, RUN0 = 3.8, LIT = 0, nearT = 0, nearK = 1, nearNow = 1;
@@ -26,9 +34,10 @@ export function installStory(ext, G) {
   const task = (id) => ctx.data.tasks.find((t) => t.id === id);
   const tryDone = (id) => { if (!done(id) && ctx.canStart(task(id)) === true) { ctx.completeTask(id); return true; } return false; };
   const later = (f, ms = 400) => setTimeout(f, ms);
-  G.ev = G.ev || []; G.lampsOut = G.lampsOut || [];
   const cam = () => ctx.camera.position;
   const removeItem = (id) => { const i = ctx.state.inv.indexOf(id); if (i >= 0) ctx.state.inv.splice(i, 1); };
+  G.ev = G.ev || [];
+  let flueSnap = null, huntSnap = null;   // what a catch puts back (persisted)
 
   // ---------------- the world agrees with the tasks done (a resumed save, a test scene) ----------------
   function apply() {
@@ -36,11 +45,17 @@ export function installStory(ext, G) {
     if (done('T_USU')) G.moveUsu(true);
     G.hatchCharm.visible = !done('T_HATCH') || (done('T_SEAL') && !done('T_RETURN'));
     G.muroGlow.i = done('T_HATCH') ? 0.7 : 0;
-    for (const id of ['S_LAMP1', 'S_LAMP2', 'S_LAMP3', 'S_LAMP4']) { const on = done(`T_LAMP${id.slice(-1)}`) && !G.lampsOut.includes(id); G.lampEntry[id].i = on ? 3.0 : 0; G.lampFlame[id].visible = on; }
-    G.combBox.visible = !done('T_BOX'); G.boxCord.visible = !done('T_BOX');
+    G.combBox.visible = !done('T_BOX'); G.boxCord.visible = !done('T_BOX'); G.boxCharm.visible = !done('T_BOX');
+    if (G.lure) G.lure.visible = done('T_LURE');
+    if (done('T_TRAP') && !G.peeled.includes('F_FLUE')) G.peelQuiet('F_FLUE');
+    if (done('T_KOSHI')) G.openKoshi(true);
+    G.boxGlow.i = done('T_BOX') && !done('T_ESCAPE') ? 0.9 : 0;
+    // the waxed charm on the lattice is worked from the lattice's own [E] spot (S_KOSHI: the wax needs the flame), not as a plain charm
+    const K = G.charms.get('F_KOSHI'); if (K) { const i = ctx.world.interactables.indexOf(K.hit); if (i >= 0) ctx.world.interactables.splice(i, 1); }
+    if (done('T_KOSHI') && G.koshiHit) { const i = ctx.world.interactables.indexOf(G.koshiHit); if (i >= 0) ctx.world.interactables.splice(i, 1); }
     ctx.world.setLampFloor(ctx.floor, true);
     hatchSpot();
-    if (G.showFuda) G.showFuda();
+    if (G.showFuda) G.showFuda(); if (G.sealRefresh) G.sealRefresh();
   }
   // the hatch's [E] spot is there only while a hatch task waits (otherwise [E] on the hatch is the ladder)
   function hatchSpot() {
@@ -52,9 +67,34 @@ export function installStory(ext, G) {
   }
   G.applyStory = apply;
 
+  // ---------------- 千草さん: where she is for the tasks done ----------------
+  const catchFlue = () => { G.ghostStop(); ctx.checkpoint = { ...CP.flue }; ctx.die('chigusa'); };
+  const catchHunt = () => { G.ghostStop(); ctx.checkpoint = { ...CP.hunt }; ctx.die('chigusa'); };
+  const lureSpot = () => ({ room: 'IBUSHI', x: (G.lureAt || { x: 9.3 }).x - 0.7, z: (G.lureAt || { z: -9 }).z });
+  /** the flue phase did not end (a catch, a reload): the flue charm back on, the door seal off, she back in 奥の室 */
+  function resetFlue() {
+    if (G.peeled.includes('F_FLUE')) G.unpeel('F_FLUE');
+    if (flueSnap) G.fuda = flueSnap.fuda; else G.fuda = Math.max(0, G.fuda - 1 + G.sealN('K_IBU'));
+    G.setSeal('K_IBU', 0); G.showFuda();
+    G.ghostStart('cage', { at: CAGE_AT });
+  }
+  /** the run back did not end: the seals as they were when the comb was taken, she back by the drying rack */
+  function resetHunt() {
+    const s = huntSnap || { fuda: G.fuda, seals: { K_IBU: [Math.max(1, G.sealN('K_IBU')), 0], K_FLUE: [Math.max(1, G.sealN('K_FLUE')), 0] } };
+    G.fuda = s.fuda; for (const [id, v] of Object.entries(s.seals)) G.setSeal(id, v[0], v[1]); G.showFuda();
+    G.ghostStart('hunt', { at: lureSpot(), wait: 3.5, onCatch: catchHunt });
+    G.candleOut = false; if (has('TESHOKU')) G.light0(true);
+  }
+  function placeGhost() {
+    if (!done('T_HATCH') || done('T_ESCAPE')) { G.ghostStop(); return; }
+    if (done('T_BOX')) { ctx.checkpoint = { ...CP.hunt }; resetHunt(); return; }
+    if (done('T_TRAP')) { G.ghostStart('trapped', { at: lureSpot(), onCatch: catchFlue }); return; }
+    if (G.peeled.includes('F_FLUE')) { resetFlue(); return; }
+    G.ghostStart('cage', { at: CAGE_AT });
+  }
+  G.placeGhost = placeGhost;
+
   // ---------------- the light: the candlestick (no light at all before it is lit) ----------------
-  G.lampOn = (id) => { G.lampEntry[id].i = 3.0; G.lampFlame[id].visible = true; const k = G.lampsOut.indexOf(id); if (k >= 0) G.lampsOut.splice(k, 1); ctx.world.setLampFloor(ctx.floor, true); };
-  G.lampOut = (id) => { G.lampEntry[id].i = 0; G.lampFlame[id].visible = false; if (!G.lampsOut.includes(id)) G.lampsOut.push(id); ctx.world.setLampFloor(ctx.floor, true); ctx.sound('creak'); };
   let relighting = false;
 
   // ---------------- the opening ----------------
@@ -62,6 +102,7 @@ export function installStory(ext, G) {
     if (!ctx) return;
     apply();
     if (done('T_LIGHT') && !G.candleOut) G.light0(true);
+    if (!ctx.testScene) placeGhost();
     if (resume || scene || ctx.testScene) return;
     talk('opening', 'はじまり').then(() => { say('start', 6); if (ctx.mapTip) ctx.mapTip(); });
   });
@@ -81,21 +122,35 @@ export function installStory(ext, G) {
       }
       return G.light0(true);
     };
-    // a crouching body passes under the low beams of the passage
-    const s0 = ctx.fp.solid.bind(ctx.fp);
-    ctx.fp.solid = (cl) => (cl.low && ctx.fp.crouching ? false : s0(cl));
     ctx.stepSurfaceOf = (room) => ROOM_SURFACE[room] || null;
     // who may peel what, when (the rule is fuda.js; the order is the story's)
     G.canPeel = (id) => {
       if (id === 'F_NAKA' && !done('T_CHOBA')) return W.peel_haru_first;
       if (['F_HASHIRI', 'F_OKU', 'F_ROKA', 'F_SAGYO'].includes(id) && !done('T_PASTE1')) return done('T_CHOBA') ? W.peel_l1 : W.peel_haru_first;
-      if (id === 'F_P1' && !done('T_LIGHT')) return W.peel_dark;
-      if (id === 'F_GATE' && (!flag('gate_seen') || G.gh.mode === 'gate')) return W.peel_gate;
+      if (id === 'F_DORO' && !done('T_LIGHT')) return W.peel_dark;
+      if (id === 'F_DORO' && !done('T_HIKAE')) return W.peel_hikae;
+      if (id === 'F_FLUE' && !done('T_LURE')) return W.flue_first;
+      if (id === 'F_KOSHI' && !done('T_TRAP')) return W.koshi_she;
       return true;
     };
     G.doorHint = (def) => { const r = G.canPeel(def.id); return r === true ? W.door_charm : r; };
-    G.lampS = {}; for (const [id, e] of Object.entries(G.lampEntry)) G.lampS[id] = G.project(e.x, e.z).s;
-    G.evS = EVENTS.map(([id, x, z, what]) => ({ id, s: G.project(x, z).s, what }));
+    // the seals: where a charm may be put up, and taken down
+    G.sealOpen = (id) => {
+      if (id === 'K_NAKA') return done('T_PEEL1') && !done('T_PASTE1');
+      if (id === 'K_IBU') return G.peeled.includes('F_FLUE') || done('T_TRAP');
+      if (id === 'K_FLUE') return done('T_OKUMURO');
+      return false;
+    };
+    G.canPaste = (id) => {
+      if (id === 'K_IBU' && ctx.state.room === 'IBUSHI') return W.ibu_outside;
+      return true;
+    };
+    G.canUnpaste = (id) => {
+      if (id === 'K_IBU' && done('T_TRAP') && !done('T_ESCAPE')) return W.ibu_keep;
+      if (id === 'K_IBU' && G.gh.mode === 'flue') return W.ibu_keep;
+      if (id === 'K_FLUE' && done('T_FLUE2') && !done('T_ESCAPE')) return W.flue_keep;
+      return true;
+    };
     // the ladder: shut while 千草さん is under the hatch
     const st = G.stairDown && G.stairDown.userData.interact;
     if (st) {
@@ -109,25 +164,29 @@ export function installStory(ext, G) {
     ctx.registerHudPart && ctx.registerHudPart('kc-seal', { slot: 'tc', order: 10 });
   });
 
-  // ---------------- L1: the voice behind the lattice, the first charm, the post ----------------
+  // ---------------- L1: the voice behind the lattice, the first charm, putting it back up ----------------
   ext.registerTask('T_CHOBA', { run: async () => { await talk('choba1', '帳場の格子'); return true; } });
   ext.on('kushi:peel', ({ id }) => {
     if (id === 'F_NAKA') { ctx.completeTask('T_PEEL1'); later(() => talk('peel1_done', '帳場の声')); return; }
-    if (id === 'F_P1') { tryDone('T_P1'); return; }
-    if (id === 'F_GATE') { tryDone('T_GATE'); return; }
+    if (id === 'F_DORO') { tryDone('T_DORO'); return; }
+    if (id === 'F_FLUE') { flueStart(); return; }
     if (/^W_/.test(id)) { const n = ['W_1', 'W_2', 'W_3'].filter((w) => G.peeled.includes(w)).length; if (n === 3) tryDone('T_SQ2'); else say('sq2_count', 3); return; }
     if (!flag('peel_first')) { setFlag('peel_first'); say('peel_first', 5); }
   });
   ext.on('kushi:paste', ({ id }) => {
-    if (id === 'K_DAIKOKU' && done('T_PEEL1') && !done('T_PASTE1') && !flag('daikoku')) { setFlag('daikoku'); later(() => talk('paste1', '帳場の声'), 300); }
+    if (id === 'K_NAKA' && done('T_PEEL1') && !done('T_PASTE1') && !flag('naka_paste')) { setFlag('naka_paste'); later(() => talk('paste1', '帳場の声'), 300); return; }
+    if (id === 'K_FLUE' && done('T_OKUMURO')) { if (tryDone('T_FLUE2')) later(() => talk('flue2_done', '奥の室'), 300); }
   });
   ext.on('kushi:unpaste', ({ id }) => {
-    if (id === 'K_DAIKOKU' && flag('daikoku') && !done('T_PASTE1')) { ctx.completeTask('T_PASTE1'); later(() => talk('paste1_done', '帳場の声')); }
+    if (id === 'K_NAKA' && flag('naka_paste') && !done('T_PASTE1')) { const d = ctx.world.doors.get('D_NAKA'); if (d && d.open) d.open(); ctx.completeTask('T_PASTE1'); later(() => talk('paste1_done', '帳場の声')); }
   });
 
   // ---------------- L2: the house ----------------
   ext.on('item:pickup', () => { if (has('TESHOKU') && has('MATCHES')) tryDone('T_HASHIRI'); });
-  ext.on('doc:read', ({ id }) => { if (id === 'DOC_DIARY') tryDone('T_OKU'); });
+  ext.on('doc:read', ({ id }) => {
+    if (id === 'DOC_DIARY') tryDone('T_OKU');
+    if (id === 'DOC_HIKAE' && tryDone('T_HIKAE')) later(() => talk('hikae', '札の控え'), 300);
+  });
   let ringT = -1;
   ext.registerTask('T_PHONE', { run: async () => {
     ringT = -1; ctx.sound('pickupPhone');
@@ -137,61 +196,68 @@ export function installStory(ext, G) {
     return true;
   } });
   ext.registerTask('T_USU', { canStart: () => (has('KOTEKO') ? true : W.usu_need), onDone: () => { G.moveUsu(); ctx.sound('noise', 'thud'); later(() => say('usu_done', 5), 1300); hatchSpot(); } });
-  ext.registerTask('T_HATCH', { run: async () => { ctx.sound('paper'); G.hatchCharm.visible = false; return true; }, onDone: () => { G.muroGlow.i = 0.7; ctx.world.setLampFloor(ctx.floor, true); hatchSpot(); later(() => talk('hatch_done', '揚げ戸の札')); } });
+  ext.registerTask('T_HATCH', { run: async () => { ctx.sound('paper'); G.hatchCharm.visible = false; return true; }, onDone: () => { G.muroGlow.i = 0.7; ctx.world.setLampFloor(ctx.floor, true); hatchSpot(); G.ghostStart('cage', { at: CAGE_AT }); later(() => talk('hatch_done', '揚げ戸の札')); } });
 
-  // ---------------- L3: the cellar and the passage ----------------
+  // ---------------- L3: the 室, the corridor, the lattice, the flue ----------------
   ext.registerTask('T_LIGHT', { canStart: () => (has('TESHOKU') && has('MATCHES') ? true : W.light_need), onDone: () => { G.light0(true); ctx.sound('lighter'); later(() => talk('light_done', '室')); } });
-  for (const n of [1, 2, 3, 4]) ext.registerTask(`T_LAMP${n}`, {
-    canStart: () => (ctx.lightOn ? true : W.lamp_need),
-    run: async () => { ctx.sound('lighter'); G.lampOn(`S_LAMP${n}`); return true; },
-    onDone: () => say('lamp_done', 3),
+  ext.registerTask('T_LURE', {
+    // the conditions of the moment are checked in run (a canStart that says no would hide the task's steps from the guide)
+    run: async () => { if (!has('KAKE_KUSHI')) { ans('lure_need'); return false; } removeItem('KAKE_KUSHI'); if (G.lure) G.lure.visible = true; ctx.sound('paper'); return true; },
+    onDone: () => { flueSnap = { fuda: G.fuda }; later(() => talk('lure_done', '燻しの間')); },
+  });
+  function flueStart() {
+    flueSnap = { fuda: G.fuda - 1 };
+    G.ghostStart('flue', { onCatch: catchFlue });
+    ctx.checkpoint = { ...CP.flue };
+    ctx.sound('stinger'); ctx.fx && ctx.fx.spook && ctx.fx.spook(0.6);
+    later(() => say('flue_go', 6), 600);
+  }
+  function trapDone() {
+    G.ghostStart('trapped', { at: { room: 'IBUSHI', x: G.gh.x, z: G.gh.z }, onCatch: catchFlue });
+    ctx.completeTask('T_TRAP');
+    later(() => talk('trap', '燻しの間'), 1200);
+  }
+  ext.registerTask('T_KOSHI', {
+    run: async (c, t) => { if (!ctx.lightOn) { ans('koshi_fire'); return false; } ctx.sound('lighter'); return ctx.runMinigame(t); },
+    onDone: () => { G.peel('F_KOSHI', { force: true }); G.openKoshi(); apply(); ctx.sound('creak'); later(() => talk('koshi_open', '格子戸'), 1500); },
   });
   ext.registerTask('T_BOX', { onDone: () => rise() });
 
-  // the gate: the first sight of her (she is thrown back by the charm on the gate)
-  function gateScene() {
-    setFlag('gate_seen');
-    G.ghostStart('gate', G.gateS - 7, { speed: 1.3, onStop: () => {
-      ctx.sound('stinger'); ctx.fx && ctx.fx.spook && ctx.fx.spook(0.9);
-      const C = G.charms.get('F_GATE'); if (C) { C.mesh.material = C.mesh.material.clone(); C.mesh.material.emissive.setRGB(0.7, 0.2, 0.05); later(() => C.mesh.material.emissive.setRGB(0, 0, 0), 1500); }
-      later(async () => { await talk('gate', '格子戸'); G.ghostFade(); }, 1100);
-    } });
-  }
-  // the post lesson: she comes from the far end; a charm on the post stops her (she never kills here)
-  let lessonBack = 0;
-  function lessonStart(again) {
-    G.ghostStart('lesson', G.project(9, -81.8).s, { speed: 1.4, onCatch: () => { G.ghostFade(); G.gh.onCatch = null; } });
-    say(again ? 'lesson_again' : 'lesson_start', 5); ctx.sound('stinger');
-  }
-  ext.on('kushi:ghost-press', ({ id }) => { if (id === 'K_LESSON' && !flag('post_ok')) { setFlag('post_ok'); talk('post_ok', '結界の柱'); } });
-  ext.on('kushi:fall', ({ id }) => { if (id === 'K_LESSON' && G.gh.mode === 'lesson') { G.ghostStop(); ctx.completeTask('T_POST'); later(() => talk('post_done', '結界の柱'), 600); } });
-  ext.on('kushi:ghost-gone', ({ mode }) => {
-    if (mode === 'lesson' && !done('T_POST')) later(() => { if (!done('T_POST') && ctx.state.room === 'P4B') lessonStart(true); }, 1500);
-  });
-  ext.on('kushi:ghost-lost', () => say('hide_lost', 4));
-
-  // ---------------- L4: the comb, the chase, the hatch ----------------
-  let snap = null;
-  const takeSnap = G.takeSnap = () => { snap = { fuda: G.fuda, posts: Object.fromEntries([...G.posts.values()].map((P) => [P.def.id, P.on ? P.burn : -1])) }; };
-  function chaseFrom(s, rise) { G.ghostStart('chase', s, { rise, onCatch: () => { G.ghostStop(); ctx.die('chigusa'); } }); }
+  // ---------------- L4: the comb, the run back, the hatch ----------------
   async function rise() {
-    G.combBox.visible = false; G.boxCord.visible = false;
+    G.combBox.visible = false; G.boxCord.visible = false; G.boxCharm.visible = false;
+    huntSnap = { fuda: G.fuda, seals: { K_IBU: [G.sealN('K_IBU'), 0], K_FLUE: [G.sealN('K_FLUE'), 0] } };
+    ctx.checkpoint = { ...CP.hunt };
     await talk('rise', '奥の棚');
     ctx.setLight(false); G.candleOut = true; ctx.sound('stinger'); ctx.fx && ctx.fx.spook && ctx.fx.spook(1);
     G.boxGlow.i = 0.9; ctx.world.setLampFloor(0, true);
-    takeSnap(); chaseFrom(0, 2.6);
-    say('chase_go', 6); later(() => say('chase_dark', 5), 6500);
+    G.ghostStart('hunt', { at: lureSpot(), wait: 1.0, onCatch: catchHunt });
+    say('hunt_go', 6); later(() => { if (G.candleOut) say('ev_dark', 5); }, 6500);
+    ctx.save();
   }
   ext.on('player:respawn', () => {
-    if (done('T_BOX') && !done('T_ESCAPE') && snap) {
-      G.fuda = snap.fuda; for (const [id, v] of Object.entries(snap.posts)) G.setPost(id, v >= 0, Math.max(0, v)); G.showFuda();
-      const ps = G.project(cam().x, cam().z).s;
-      chaseFrom(flag('cp_mid') ? Math.max(0, ps - 16) : 0, 4.0);   // back at the shelf she rises again behind you (4 s to get going)
-      G.candleOut = !ctx.lightOn;
-    }
+    if (!ctx) return;
+    if (done('T_BOX') && !done('T_ESCAPE')) { resetHunt(); later(() => say('hunt_reset', 6), 300); }
+    else if (G.peeled.includes('F_FLUE') && !done('T_TRAP')) { resetFlue(); later(() => say('flue_reset', 6), 300); }
+    else if (done('T_TRAP') && !done('T_BOX')) G.ghostStart('trapped', { at: lureSpot(), onCatch: catchFlue });
     if (G.seal) G.seal.t = 0;
-    if (G.gh.mode === 'lesson') G.ghostStop();
   });
+  ext.on('kushi:ghost-press', ({ id, mode }) => {
+    // the first sight: she comes to the lattice and the waxed charm throws her back
+    if (id === 'F_KOSHI' && mode === 'cage' && !done('T_KOSHI_SEE')) koshiScene();
+    if (mode === 'hunt' && id === 'K_FLUE' && ctx.state.room === 'OKUMURO' && !flag('press_flue')) { setFlag('press_flue'); say('ev_flue_bell', 4); }
+  });
+  let koshiBusy = false;
+  async function koshiScene() {
+    if (koshiBusy) return; koshiBusy = true;
+    ctx.sound('stinger'); ctx.fx && ctx.fx.spook && ctx.fx.spook(0.9);
+    const C = G.charms.get('F_KOSHI'); if (C) { const u = C.mesh.material.userData; u.burn.value = 0.12; u.glow.value = 1; later(() => { u.glow.value = 0.2; }, 1400); }
+    await new Promise((r) => later(r, 900));
+    await talk('koshi', '格子戸');
+    ctx.completeTask('T_KOSHI_SEE');
+    koshiBusy = false;
+  }
+  ext.on('kushi:fall', ({ left }) => { if (left === 0 && G.gh.mode === 'hunt') ctx.sound('stinger'); });
   let sealEl = null;
   ext.registerTask('T_SEAL', { run: async () => { G.seal = null; sealEl.hidden = true; ctx.sound('stamp'); G.hatchCharm.visible = true; removeItem('OLD_FUDA'); return true; }, onDone: () => { hatchSpot(); later(() => talk('seal_done', '揚げ戸')); } });
 
@@ -248,50 +314,44 @@ export function installStory(ext, G) {
     if (!ctx) return;
     if (to === 'SAGYO') { if (tryDone('T_SAGYO')) { ringT = 2.5; } if (done('T_BOX') && !done('T_ESCAPE')) { ctx.completeTask('T_ESCAPE'); G.ghostStop(); startSeal(); } }
     if (to === 'MURO' && !flag('muro_in')) { setFlag('muro_in'); later(() => talk('muro_in', '室'), 500); }
+    if (to === 'ITA' && !G.ev.includes('ita')) { G.ev.push('ita'); flick = 1.2; voice('whisper1'); later(() => say('ev_ita', 4), 900); }
     if (to === 'OKUMURO' && tryDone('T_OKUMURO')) later(() => talk('okumuro', '奥の室'), 300);
   });
   ext.on('task:done', ({ id }) => { if (id === 'T_SAGYO') ringT = 2.5; if (id === 'T_CHOBA' && !(ctx && ctx.testScene)) later(() => say('chip_first', 5), 800); });
-  ext.on('thing:look', ({ id }) => { if (id === 'OMOTE_DOOR' && done('T_PHONE')) ctx.answer('戸は、死んだハルさんが押さえている。……櫛を持って来るまで、開かない。'); });
+  ext.on('thing:look', ({ id }) => {
+    if (id === 'OMOTE_DOOR' && done('T_PHONE')) ctx.answer('戸は、死んだハルさんが押さえている。……櫛を持って来るまで、開かない。');
+  });
 
   function startSeal() {
-    takeSnap();
     G.seal = { t: 0, max: ctx.calm ? 20 : 10, knock: 0, talked: false };
     hatchSpot();
     talk('top', '揚げ戸').then(() => { if (G.seal) { G.seal.talked = true; say('seal_go', 5); } });
   }
 
   // ---------------- every frame ----------------
-  let hintT = 0, flick = 0, black = 0, peek = 0;
+  let flick = 0;
   function update(dt, active) {
     if (!active || !ctx) return;
     const c = cam(), room = ctx.state.room;
-    // the phone rings until it is answered
-    if (ringT >= 0 && !done('T_PHONE')) { ringT -= dt; if (ringT < 0) { ctx.audio && ctx.audio.ring && ctx.audio.ring({ x: 3.0, y: 4.3, z: 13.3 }); if (!flag('ring_said')) { setFlag('ring_said'); say('phone_ring', 5); } ringT = 3.4; } }
-    // underground: no running before the comb (a small flame, wet stone); the water slows the legs
+    // the phone rings until it is answered: the bell of a black phone, from the phone (2.0, #5)
+    if (ringT >= 0 && !done('T_PHONE')) { ringT -= dt; if (ringT < 0) { if (G.phoneRing) G.phoneRing(); if (!flag('ring_said')) { setFlag('ring_said'); say('phone_ring', 5); } ringT = 3.0; } }
+    // underground: no running before the comb (a small flame, a dirt floor)
     ctx.fp.o.run = ctx.floor === 0 && !done('T_BOX') ? ctx.fp.o.speed : RUN0;
-    ctx.fp.slow = room === 'P3' ? 0.6 : 1;
-    if (room === 'P2' && !ctx.fp.crouching) { hintT -= dt; if (hintT <= 0) { say('crouch_hint', 3); hintT = 8; } } else hintT = Math.min(hintT, 1);
-    // the candle: a flicker, a blackout
+    // the candle: a flicker; a wall right in front of the flame does not burn white (the light eases down, sampled 8 times a second)
     if (ctx.flashlight && ctx.lightOn && LIT) {
-      // a wall right in front of the flame does not burn white: the light eases down when something is close (sampled 8 times a second)
       nearT -= dt; if (nearT <= 0) { nearT = 0.125; ray.setFromCamera(CENTER, ctx.camera); ray.far = 2.6; const h = ray.intersectObject(ctx.world.group, true).find((x) => x.object.visible && !x.object.isSprite && !(x.object.material && (x.object.material.visible === false || x.object.material.opacity < 0.2))); nearK = h ? 0.3 + 0.7 * Math.max(0, Math.min(1, (h.distance - 0.3) / 2.3)) : 1; }
       nearNow += (nearK - nearNow) * Math.min(1, dt * 6);
       const L = LIT * nearNow;
-      if (black > 0) { black -= dt; ctx.flashlight.intensity = black > 0 ? 0.05 : L; }
-      else if (flick > 0) { flick -= dt; ctx.flashlight.intensity = flick > 0 ? L * (0.25 + Math.random() * 0.4) : L; }
+      if (flick > 0) { flick -= dt; ctx.flashlight.intensity = flick > 0 ? L * (0.25 + Math.random() * 0.4) : L; }
       else ctx.flashlight.intensity = L;
     }
-    if (peek > 0) { peek -= dt; if (peek <= 0 && G.gh.mode === 'peek') G.ghostStop(); }
     if (ctx.floor === 0) {
-      const me = G.project(c.x, c.z);
-      // the way in: a moment every few metres
-      if (done('T_P1') && !done('T_BOX') && me.d < 3) for (const e of G.evS) if (!G.ev.includes(e.id) && me.s < e.s) { G.ev.push(e.id); moment(e.what); break; }
-      // the gate, the lesson
-      if (room === 'P4A' && done('T_LAMP3') && !flag('gate_seen') && c.x > -10.5 && G.gh.mode === 'off') gateScene();
-      if (room === 'P4B' && done('T_GATE') && !done('T_POST') && G.gh.mode === 'off' && c.x > -2.6) lessonStart(false);
-      if (G.gh.mode === 'lesson' && c.x > 2.65) { lessonBack -= dt; if (lessonBack <= 0) { say('lesson_back', 4); lessonBack = 6; } }
-      // a checkpoint at the mouth of the low passage on the way back
-      if (G.gh.mode === 'chase' && room === 'P2' && c.x > -16.6 && !flag('cp_mid')) { setFlag('cp_mid'); ctx.checkpoint = { x: -16.2, z: -41.8, yaw: -Math.PI / 2, floor: 0 }; takeSnap(); }
+      // the corridor: a bell far ahead, then the sound of combing from behind the lattice
+      if (room === 'DORO' && c.z < -3 && !G.ev.includes('bell')) { G.ev.push('bell'); const b = G.bells && G.bells.find((x) => x.z < -16); if (b) { b.swing = 1; G.bellAt({ x: b.x, y: b.y, z: b.z }, 0.06); } later(() => say('ev_bell', 6), 900); }
+      if (room === 'DORO' && c.z < -11 && !G.ev.includes('comb') && !done('T_KOSHI_SEE')) { G.ev.push('comb'); noise('rustle', { x: 2.6, y: 1, z: -24 }, 6); say('ev_comb', 5); }
+      // she is shut in 燻しの間: the door sealed from the corridor and she out of the flue by the comb
+      if (G.gh.mode === 'flue' && G.sealN('K_IBU') > 0 && G.gh.room === 'IBUSHI' && !G.gh.hidden && room !== 'IBUSHI' && !done('T_TRAP')) trapDone();
+      if (G.gh.mode === 'flue' && G.gh.hidden && !G.ev.includes('flue_bell')) { G.ev.push('flue_bell'); say('ev_flue_bell', 4); }
     }
     // the hatch pushed up from below
     if (G.seal && G.seal.talked) {
@@ -304,30 +364,10 @@ export function installStory(ext, G) {
     } else if (sealEl && !sealEl.hidden) sealEl.hidden = true;
   }
   const noise = (name, pos, n) => ctx.audio && ctx.audio.noise && ctx.audio.noise(name, { pos, n });
-  function moment(what) {
-    const c = cam();
-    const ahead = (d) => { const p = G.routeAt(G.project(c.x, c.z).s - d); return { x: p.x, y: 1.2, z: p.z }; };
-    switch (what) {
-      case 'comb': noise('rustle', ahead(14), 6); say('ev_comb', 5); break;
-      case 'hair': say('ev_hair', 4); break;
-      case 'flame': flick = 1.2; voice('whisper1'); say('ev_flame', 4); break;
-      case 'fall': noise('thud', { x: c.x, y: 1, z: c.z + 6 }, 3); ctx.body && ctx.body.play && ctx.body.play('stagger'); say('ev_fall', 4); break;
-      case 'low': say('ev_low', 5); break;
-      case 'hands': say('ev_hands', 5); break;
-      case 'cross': G.ghostStart('peek', G.project(-17.6, -47).s); peek = 0.7; ctx.sound('creak'); later(() => say('ev_cross', 4), 700); break;
-      case 'water': noise('splash', { x: c.x, y: 0.2, z: c.z }, 2); say('ev_water', 5); break;
-      case 'splash': noise('splash', { x: c.x, y: 0.2, z: c.z + 5 }, 3); say('ev_splash', 4); break;
-      case 'float': say('ev_float', 5); break;
-      case 'hum': black = 1.6; ctx.audio && ctx.audio.tone && ctx.audio.tone({ dur: 2.4, freq: 220, type: 'sine', gain: 0.035, vibrato: 4, wet: 0.6 }); say('ev_hum', 5); break;
-      case 'whisper': voice('whisper2'); noise('rustle', { x: c.x, y: 2, z: c.z }, 8); say('ev_whisper', 5); break;
-      case 'steps': say('ev_steps', 4); break;
-      case 'comb2': noise('rustle', { x: 9, y: 1, z: -104 }, 8); say('ev_comb2', 4); break;
-    }
-  }
   function voice(key) { const L = (ctx.data.talk[key] || [])[0]; if (!L) return; if (L.voice && ctx.voiceLine) ctx.voiceLine(L.voice); ctx.ui.say(`<span class="who">女の声</span>${L.text}`, 3); }
 
   ext.registerPersist('story', {
-    serialize: () => ({ ev: G.ev, lampsOut: G.lampsOut, candleOut: !!G.candleOut }),
-    restore: (s) => { if (!s) return; G.ev = s.ev || []; G.lampsOut = s.lampsOut || []; G.candleOut = !!s.candleOut; apply(); },
+    serialize: () => ({ ev: G.ev, candleOut: !!G.candleOut, flueSnap, huntSnap }),
+    restore: (s) => { if (!s) return; G.ev = s.ev || []; G.candleOut = !!s.candleOut; flueSnap = s.flueSnap || null; huntSnap = s.huntSnap || null; apply(); },
   });
 }
