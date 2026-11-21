@@ -746,5 +746,28 @@
       "id": "flue2_done-1",
       "voice": "assets/voice/flue2_done-1.mp3"
     }
+  ],
+  "think_urge": [
+    {
+      "who": "千草",
+      "where": "すぐそばで",
+      "text": "……くし……どこ……。",
+      "id": "think_urge-1",
+      "voice": "assets/voice/think_urge-1.mp3"
+    },
+    {
+      "who": "千草",
+      "where": "耳のうしろで",
+      "text": "……はやく……かえして……。",
+      "id": "think_urge-2",
+      "voice": "assets/voice/think_urge-2.mp3"
+    },
+    {
+      "who": "千草",
+      "where": "作業台の下で",
+      "text": "……まだ……？",
+      "id": "think_urge-3",
+      "voice": "assets/voice/think_urge-3.mp3"
+    }
   ]
 }

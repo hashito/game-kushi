@@ -280,7 +280,7 @@ export function installHouse(ext, G) {
     const flueMouth = (room, x, z, facing) => {
       const s = facing === 'n' ? -1 : 1;
       box(room, x, z + s * 0.12, 0.9, 0.12, 0.08, M.stone, 0.72, false); for (const d of [-1, 1]) box(room, x + d * 0.4, z + s * 0.12, 0.12, 0.72, 0.08, M.stone, 0, false);
-      const v = plane(room, x, z + s * 0.081, 0.68, 0.7, M.void, 0.36, facing === 'n' ? Math.PI : 0); v.name = 'kc-flue-dark';
+      const v = plane(room, x, z + s * 0.0855, 0.68, 0.7, M.void, 0.36, facing === 'n' ? Math.PI : 0); v.name = 'kc-flue-dark';   // 2.1.0: 5.5 mm off the wall (at 1 mm the two flickered: P21), still behind the flue charm (1 cm)
     };
     flueMouth('IBUSHI', 7.5, -13, 's'); flueMouth('OKUMURO', 5.5, -19, 'n');
 

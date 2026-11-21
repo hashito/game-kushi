@@ -267,7 +267,12 @@ export function installStory(ext, G) {
     await ctx.talk([{ who: '私', text: Q.intro }], { title: '作業台' });
     for (const [i, q] of Q.questions.entries()) {
       for (;;) {
-        const v = await ctx.choose({ who: '私', title: `考える（${i + 1} / ${Q.questions.length}）`, text: q.q, options: q.options.map((o) => ({ id: o.id, label: o.label })) });
+        // 2.1.0 (水無瀬病院 2nd play test #14 #15, rolled out here): the question is written on an old page of Haru's 帳面, a bar runs down while
+        // you think, and 千草 whispers for the comb under the work table. Running out never picks: she asks again, the candle gutters, the bar refills.
+        const urge = ctx.data.talk.think_urge || [];
+        const v = await ctx.choose({ who: '私', title: `考える（${i + 1} / ${Q.questions.length}）`, text: q.q, look: 'form', form: { org: '札の家　帳場の控え', title: '五 十 二 年 前', no: `問 ${i + 1} / ${Q.questions.length}`, stamp: '済', paper: 'ledger' },
+          timer: { seconds: 28, urge: urge.slice(0, 2).map((L, k) => ({ ...L, at: k ? 0.3 : 0.65 })), out: urge[2], onOut: () => { flick = 1.0; ctx.sound('stinger'); ctx.fx && ctx.fx.spook && ctx.fx.spook(0.4); } },
+          options: q.options.map((o) => ({ id: o.id, label: o.label })) });
         if (!v) return false;
         const o = q.options.find((x) => x.id === v);
         if (o.ok) { await ctx.talk([{ who: '私', text: o.why }], { title: '作業台' }); break; }
