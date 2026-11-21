@@ -10,12 +10,13 @@
 // Everything (frames, stacks, photos, the pixel font) is loaded and every mesh compiled before the start button opens (pixel games load first).
 import * as THREE from 'three';
 import { placeProps } from './props.js';
-import { loadFrameSet, createFigure, buildStackGeometry, loadPixels, stripVolume } from '../kit/sprite-stack-mesh.js';
+import { loadFrameSet, createFigure, buildStackGeometry, loadPixels, stripVolume, stackThumb } from '../kit/sprite-stack-mesh.js';
 import { locomotion, turnToward } from '../kit/sprite-stack-anim.js';
 import { installPhotoHooks, preparePhotos, setPhotoPalette } from './photos.js';
 import { installTopdown } from './topdown.js';
 import { installGuide } from './guide.js';
 import { palette, dotifyScene, gradePixels } from '../kit/dot-world.js';
+import { setItemThumbs } from '/js/kit/inventory-ui.js';
 
 const LAYER = new URL('../../', import.meta.url).href;   // /dot/
 const at = (p) => new URL(p, LAYER).href;
@@ -63,6 +64,9 @@ export default async function dotLayer(ext, { manifest, data }) {
   for (const set of [worker, haru, chigusa, haruFar, chigusaFar]) if (set) gradePixels(set.px.data, PAL0);
   const stackPx = Object.fromEntries(await Promise.all(Object.keys(stackIndex).map(async (k) => { const px = await loadPixels(at(`assets/stacks/${k}.png`)); gradePixels(px.data, PAL0); return [k, px]; })));
   D.timings.load = Math.round(performance.now() - t0);
+  // the menu's items have no photos: each shows a small dot picture of its own stack (kit 1.22.0, 「絵のない詳細は…ドットの絵」), never an
+  // empty box or two letters of its name
+  { const thumbs = {}; setItemThumbs((id) => { const k = ITEM_STACK[id], s = k && stackIndex[k]; if (!s || !stackPx[k]) return null; return thumbs[k] || (thumbs[k] = stackThumb(stripVolume(stackPx[k], s.w, s.d, s.n, 0), { px: 96 })); }); }
   const mat = new THREE.MeshLambertMaterial({ vertexColors: true });
   mat.name = 'dot-stack';
   D.material = mat;
@@ -265,8 +269,8 @@ export default async function dotLayer(ext, { manifest, data }) {
     const wk = createFigure(THREE, worker, { height: 1.7, material: figMat(0.42, 'dot-worker') });
     if (mode === 'top') addOutline(wk, outlineMat(0xe6c890, 0.02, 'dot-outline-worker'));
     wk.root.visible = false;
-    scene.add(wk.root);
-    warm.push(wk.warm);
+    if (mode === 'top') scene.add(wk.root);   // first person never draws the worker (its light set animates off the scene)
+    if (mode === 'top') warm.push(wk.warm);
     for (const w of warm) w.visible = false;
     ctx.warmObjects = [...(ctx.warmObjects || []), ...warm];
     figures = D.figures = { worker: wk, haru: haruFig, chigusa: chiFig };
