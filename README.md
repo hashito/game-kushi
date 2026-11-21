@@ -37,8 +37,19 @@ paths, `<base href="/">`); only `dot/` is theirs:
   `js/sprite-stack-mesh.js`, `js/sprite-stack-anim.js`, docs/sprite-motions.md; copies in `dot/js/kit/`), the items and the main
   furniture as library stacks fitted into the space of the original parts (colliders unchanged); `photos.js` redraws the root's
   photos as pixel art at boot; `topdown.js` the camera from above, the cut-away house, screen-relative moves and auto-aim [E].
+- The people read from above: light clothes, a little light of their own (their colour as emission) and, from above, an outline
+  (the worker warm, ハル dim, 千草 cold and pale).
+- Floors and walls: `dot/assets/textures/` - the house's texture ids drawn from the kit's building parts (tatami, boards, earth,
+  plaster, stone; `python tools/dot/surfaces.py --kit <game-kit clone>`), `recipes.textures` points there; other ids stay the root's.
+- Mood props: `dot/js/dot/props.js` - two or three atmosphere parts per room (kit 1.20.1 K1 / K5), one standout, colliders on the
+  bigger ones, never just inside a south wall (hidden from above); lamps glow (their emissive voxels drawn unlit).
+- All dot (2.2, kit 1.21.0 `js/dot-world.js`, copy in `dot/js/kit/`): one palette (`wa`) for the world, the people, the photos and
+  the UI; `dotifyScene` redraws every visible material as a dot tile (plaster, earth, tatami, boards, ceiling boards ...) or a
+  palette-quantized picture, again every 2 s for things added later. Check: `tools/dot/dotscene-steps.mjs` (P33).
+- The people at the fine size (res 2, 1.25 cm a voxel; `figures.json` `"res": 2`), the coarse sets in `dot/assets/figures/far/`
+  for the LOD past 6 m (first person: the worker is coarse, never seen). The look: `dot/game.patch.json` `"dotPost": "soft"`.
 - Frames: `tools/dot/figures.json` -> game-kit `tools/sprite-stacks/motion_frames.py --spec ... --out dot/assets/figures`;
-  props: `python tools/dot/stacks.py --kit <game-kit clone>`; share pictures: `tools/dot/og-steps.mjs` + `og-compose.mjs`.
+  stacks and props: `python tools/dot/stacks.py --kit <game-kit clone>`; share pictures: `tools/dot/og-steps.mjs` + `og-compose.mjs`.
 - Play checks: `node tools/probe.mjs --public --path dot/ --query qa=1\&dotscript=1 --steps tools/play/full.mjs` (`dotscript`: the
   scripts steer by yaw as in first person), `--path dot-fps/ --query qa=1` for the first-person one.
 
