@@ -11,7 +11,7 @@ export default async (api) => {
   if (top) {
     await H.walkTo(3.6, 23.4); await H.walkTo(4.6, 22.9); await H.face(7.15, 21.2, 0.6);
   } else {
-    await H.walkTo(3.6, 23.4); await H.walkTo(4.2, 21.6); await H.face(4.43, 20.08, 1.35);
+    await H.walkTo(3.6, 23.4); await H.walkTo(4.6, 22.9); await H.face(7.15, 21.2, 0.75);
   }
   await sleep(1200);
   // the picture only: every overlay of the page hidden, the canvas kept
