@@ -1,11 +1,14 @@
+import { palette, gradePixels } from '../kit/dot-world.js';
 // The root's photos, drawn as pixel art at boot (no second copy on the server): each picture of /assets/photos/ is read once, shrunk
 // to about 120 px on its short side with an ordered dither to a small palette, and kept as a blob URL. Every way the kit and the game
 // show a photo (img.src, setAttribute, <img> in innerHTML, style.backgroundImage) is mapped to the pixel picture, and the dot CSS
 // enlarges every picture with hard edges (image-rendering: pixelated). Text is never inside these photos (documents are HTML text).
 const RE = /(?:^|[^\w-])assets\/photos\/([\w.-]+\.(?:webp|png|jpe?g))/;   // after a /, a quote, url( or the start
 const map = new Map();   // file name -> blob URL
-const SHORT = 120, LEVELS = 7;
-const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((v) => (v + 0.5) / 16 - 0.5);
+const SHORT = 120;
+let PAL = palette('wa');
+/** the palette the photos are drawn in (dot/js/dot/index.js sets the game's before the photos are prepared) */
+export const setPhotoPalette = (p) => { PAL = p; };
 
 export const pixelUrl = (v) => {
   if (typeof v !== 'string' || !map.size) return v;
@@ -25,11 +28,9 @@ async function pixelate(url) {
   const g = c.getContext('2d', { willReadFrequently: true });
   g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
   g.drawImage(img, 0, 0, w, h);
-  const id = g.getImageData(0, 0, w, h), d = id.data, step = 255 / (LEVELS - 1);
-  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-    const i = (y * w + x) * 4, b = BAYER[(y & 3) * 4 + (x & 3)] * step;
-    for (let ch = 0; ch < 3; ch++) d[i + ch] = Math.max(0, Math.min(255, Math.round((d[i + ch] + b) / step) * step));
-  }
+  // the game's one palette (「全体の色合いを合わせる」): the photos in the same colours as the world, the people and the windows
+  const id = g.getImageData(0, 0, w, h);
+  gradePixels(id.data, PAL, { w, dither: 0.9 });
   g.putImageData(id, 0, 0);
   const blob = await new Promise((r) => c.toBlob(r, 'image/png'));
   return URL.createObjectURL(blob);

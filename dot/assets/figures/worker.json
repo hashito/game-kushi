@@ -1,13 +1,14 @@
 {
  "id": "worker",
- "w": 35,
- "d": 52,
- "n": 84,
+ "w": 70,
+ "d": 104,
+ "n": 168,
  "pivot": [
-  17,
-  26
+  34,
+  52
  ],
- "mpp": 0.025,
+ "mpp": 0.0125,
+ "res": 2,
  "frames": [
   "idle.1",
   "idle.2",
@@ -191,10 +192,10 @@
   "family": "character",
   "variant": "casual",
   "params": {
-   "top": "#4a6a8a",
-   "bottom": "#2e3038",
-   "shoes": "#d8d6cc",
-   "hair": "#2c2627",
+   "top": "#9ec0dc",
+   "bottom": "#5c6070",
+   "shoes": "#ecebe2",
+   "hair": "#5a4130",
    "hairstyle": "short"
   }
  }

@@ -53,10 +53,10 @@
   "family": "character",
   "variant": "elderly-woman",
   "params": {
-   "top": "#2a211b",
-   "bottom": "#1d1713",
-   "shoes": "#1a1512",
-   "hair": "#cfcbc0",
+   "top": "#54463a",
+   "bottom": "#3c3129",
+   "shoes": "#2a231e",
+   "hair": "#e4e0d4",
    "hairstyle": "long",
    "cane": false
   }

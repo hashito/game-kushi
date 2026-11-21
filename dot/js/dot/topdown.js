@@ -11,7 +11,7 @@ import { pickInteractable } from '/js/kit/world-from-plan.js';
 
 const Q = new URLSearchParams(location.search);
 const camQ = (Q.get('dotcam') || '').split(',').map(Number);
-export const VIEW = { up: camQ[0] || 6.4, back: camQ[1] || 4.0, fov: camQ[2] || 46, cut: 1.85, pitch: -0.32, amb: camQ[3] || 2.2, glow: camQ[4] || 3, mist: 0.35, danger: 0.75 };
+export const VIEW = { up: camQ[0] || 6.4, back: camQ[1] || 4.0, fov: camQ[2] || 46, cut: 1.85, pitch: -0.32, amb: camQ[3] || 2.2, glow: camQ[4] || 3, mist: 0.35, danger: 0.75, under: 1.7, underGlow: [4.2, 9.5] };   // under: the basement seen from above is lit more (the room's shape, not only the candle's circle)
 
 export function installTopdown(ext, { D, mat, locomotion, turnToward }) {
   let ctx = null, fp = null, wk = null, sil = null, glow = null;
@@ -135,6 +135,7 @@ export function installTopdown(ext, { D, mat, locomotion, turnToward }) {
     ctx.renderer.domElement.addEventListener('click', (e) => { if (!script() && ctx.state.started && !ctx.blocked()) ctx.tapSelect(e.clientX, e.clientY); });
     focus.set(ctx.camera.position.x, 0, ctx.camera.position.z);
     D.topCam = topCam;
+    D.topCam = topCam;   // the camera the picture was drawn with (the checks project points with it)
     return { clipped, view: VIEW };
   }
 
@@ -148,7 +149,7 @@ export function installTopdown(ext, { D, mat, locomotion, turnToward }) {
     const step = moved > 1 ? 0 : moved;   // a teleport is not a step
     fig.root.visible = !!(c.state && c.state.started && !c.state.ended);
     fig.root.position.set(p.x, fy, p.z);
-    if (glow) glow.position.set(p.x, fy + 3.2, p.z + 0.6);
+    if (glow) { glow.position.set(p.x, fy + 3.2, p.z + 0.6); const u = c.floor === 0; glow.intensity = u ? VIEW.underGlow[0] : VIEW.glow; glow.distance = u ? VIEW.underGlow[1] : 7; }
     fig.root.rotation.y = turnToward(fig.root.rotation.y, fp.yaw + Math.PI, dt, 12);
     if (!busy) {
       const G = window.__kc || {}, H = G.gh;
@@ -204,7 +205,7 @@ export function installTopdown(ext, { D, mat, locomotion, turnToward }) {
       fl.updateMatrixWorld(); fl.target.updateMatrixWorld();
     }
     const amb = ambients.map((l) => l.intensity);
-    for (const l of ambients) l.intensity *= VIEW.amb;
+    for (const l of ambients) l.intensity *= VIEW.amb * (c.floor === 0 ? VIEW.under : 1);
     // the red mist of danger fills the whole screen in first person; from above it would hide the very corridor the player must run
     // down. Here it is kept lighter (the danger tint, the heartbeat and her bells stay as they are)
     const st0 = c.fxState;

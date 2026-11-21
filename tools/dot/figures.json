@@ -1,11 +1,5 @@
 [
- {"id": "worker", "family": "character", "variant": "casual",
-  "params": {"top": "#4a6a8a", "bottom": "#2e3038", "shoes": "#d8d6cc", "hair": "#2c2627", "hairstyle": "short"},
-  "motions": ["idle", "walk", "run", "crouch", "crouch-walk", "stand-up", "reach", "paste", "caught", "turn", "fear"]},
- {"id": "haru", "family": "character", "variant": "elderly-woman",
-  "params": {"top": "#2a211b", "bottom": "#1d1713", "shoes": "#1a1512", "hair": "#cfcbc0", "hairstyle": "long", "cane": false},
-  "motions": ["kneel", "idle", "fear"]},
- {"id": "chigusa", "family": "monster-yurei", "variant": "white",
-  "params": {"robe": "#232c48", "skin": "#c4c2bc", "hair": "#08080b"},
-  "motions": ["idle", "walk", "attack", "reach", "paste", "fear"]}
+ {"id": "worker", "family": "character", "variant": "casual", "params": {"top": "#9ec0dc", "bottom": "#5c6070", "shoes": "#ecebe2", "hair": "#5a4130", "hairstyle": "short"}, "motions": ["idle", "walk", "run", "crouch", "crouch-walk", "stand-up", "reach", "paste", "caught", "turn", "fear"], "res": 2},
+ {"id": "haru", "family": "character", "variant": "elderly-woman", "params": {"top": "#54463a", "bottom": "#3c3129", "shoes": "#2a231e", "hair": "#e4e0d4", "hairstyle": "long", "cane": false}, "motions": ["kneel", "idle", "fear"], "res": 2},
+ {"id": "chigusa", "family": "monster-yurei", "variant": "white", "params": {"robe": "#34426a", "skin": "#d2d0ca", "hair": "#08080b"}, "motions": ["idle", "walk", "attack", "reach", "paste", "fear"], "res": 2}
 ]

@@ -1,0 +1,65 @@
+{
+ "id": "haru",
+ "w": 62,
+ "d": 66,
+ "n": 168,
+ "pivot": [
+  30,
+  14
+ ],
+ "mpp": 0.0125,
+ "res": 2,
+ "frames": [
+  "kneel.1",
+  "kneel.2",
+  "idle.1",
+  "idle.2",
+  "idle.3",
+  "idle.4",
+  "fear.1",
+  "fear.2"
+ ],
+ "motions": {
+  "kneel": {
+   "frames": [
+    "kneel.1",
+    "kneel.2"
+   ],
+   "fps": 1,
+   "loop": true,
+   "fallback": "sit"
+  },
+  "idle": {
+   "frames": [
+    "idle.1",
+    "idle.2",
+    "idle.3",
+    "idle.4"
+   ],
+   "fps": 2,
+   "loop": true,
+   "fallback": null
+  },
+  "fear": {
+   "frames": [
+    "fear.1",
+    "fear.2"
+   ],
+   "fps": 2,
+   "loop": true,
+   "fallback": "crouch"
+  }
+ },
+ "src": {
+  "family": "character",
+  "variant": "elderly-woman",
+  "params": {
+   "top": "#54463a",
+   "bottom": "#3c3129",
+   "shoes": "#2a231e",
+   "hair": "#e4e0d4",
+   "hairstyle": "long",
+   "cane": false
+  }
+ }
+}

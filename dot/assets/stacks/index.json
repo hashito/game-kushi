@@ -21,16 +21,16 @@
   "mpp": 0.007
  },
  "letter": {
-  "w": 21,
+  "w": 22,
   "d": 27,
-  "n": 4,
+  "n": 5,
   "src": "game-kushi-letter-1",
   "mpp": 0.007
  },
  "old-fuda": {
   "w": 11,
   "d": 26,
-  "n": 3,
+  "n": 4,
   "src": "game-kushi-old-fuda",
   "mpp": 0.007
  },
@@ -168,5 +168,313 @@
   "src": "game-kushi-crowbar",
   "mpp": 0.007,
   "designed": "f"
+ },
+ "koshi-choba-s": {
+  "w": 88,
+  "d": 6,
+  "n": 88,
+  "src": "designed",
+  "mpp": 0.025,
+  "designed": "koshi_choba_s",
+  "prop": true
+ },
+ "koshi-choba-w": {
+  "w": 96,
+  "d": 6,
+  "n": 88,
+  "src": "designed",
+  "mpp": 0.025,
+  "designed": "koshi_choba_w",
+  "prop": true
+ },
+ "koshi-door": {
+  "w": 50,
+  "d": 6,
+  "n": 87,
+  "src": "designed",
+  "mpp": 0.025,
+  "designed": "koshi_door",
+  "prop": true
+ },
+ "bangasa": {
+  "w": 43,
+  "d": 37,
+  "n": 27,
+  "src": "atmos-k1-bangasa",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "morishio": {
+  "w": 45,
+  "d": 24,
+  "n": 16,
+  "src": "atmos-k1-morishio-crumbled",
+  "mpp": 0.007,
+  "prop": true
+ },
+ "hibachi": {
+  "w": 31,
+  "d": 31,
+  "n": 38,
+  "src": "atmos-k1-hibachi",
+  "mpp": 0.012,
+  "prop": true
+ },
+ "ichimatsu": {
+  "w": 27,
+  "d": 27,
+  "n": 51,
+  "src": "atmos-k1-ichimatsu",
+  "mpp": 0.007,
+  "prop": true
+ },
+ "andon": {
+  "w": 15,
+  "d": 15,
+  "n": 33,
+  "src": "atmos-k5-andon",
+  "mpp": 0.025,
+  "prop": true,
+  "glow": "andon-glow",
+  "glowColor": "#f7e7c3"
+ },
+ "andon-glow": {
+  "w": 15,
+  "d": 15,
+  "n": 33,
+  "src": "atmos-k5-andon",
+  "mpp": 0.025,
+  "prop": true,
+  "glowOf": "andon"
+ },
+ "kouro": {
+  "w": 33,
+  "d": 23,
+  "n": 43,
+  "src": "atmos-k1-kouro-ash",
+  "mpp": 0.007,
+  "prop": true
+ },
+ "mizugame": {
+  "w": 27,
+  "d": 27,
+  "n": 35,
+  "src": "atmos-k1-mizugame",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "tsukemono": {
+  "w": 25,
+  "d": 25,
+  "n": 25,
+  "src": "atmos-k1-tsukemono",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "andon-torn": {
+  "w": 19,
+  "d": 22,
+  "n": 35,
+  "src": "atmos-k1-andon-torn",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "futon-rolled": {
+  "w": 47,
+  "d": 21,
+  "n": 18,
+  "src": "atmos-k1-futon-rolled",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "seoikago": {
+  "w": 25,
+  "d": 24,
+  "n": 43,
+  "src": "atmos-k1-seoikago",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "nata-stump": {
+  "w": 46,
+  "d": 30,
+  "n": 32,
+  "src": "atmos-k1-nata-stump",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "tawara": {
+  "w": 35,
+  "d": 25,
+  "n": 30,
+  "src": "atmos-k1-tawara",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "box-sealed": {
+  "w": 27,
+  "d": 21,
+  "n": 20,
+  "src": "atmos-k5-box-sealed",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "ofuda-wall": {
+  "w": 45,
+  "d": 6,
+  "n": 61,
+  "src": "atmos-k5-ofuda-wall",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "box-chained": {
+  "w": 25,
+  "d": 22,
+  "n": 18,
+  "src": "atmos-k5-box-chained",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "mirror-cloth": {
+  "w": 23,
+  "d": 11,
+  "n": 62,
+  "src": "atmos-k5-mirror-cloth",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "candle-fallen": {
+  "w": 39,
+  "d": 16,
+  "n": 10,
+  "src": "atmos-k5-candle-fallen",
+  "mpp": 0.007,
+  "prop": true
+ },
+ "byobu-sakasa": {
+  "w": 55,
+  "d": 9,
+  "n": 57,
+  "src": "atmos-k1-byobu-sakasa",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "kiku-oke": {
+  "w": 28,
+  "d": 21,
+  "n": 45,
+  "src": "atmos-k1-kiku-oke",
+  "mpp": 0.007,
+  "prop": true
+ },
+ "q-geta": {
+  "w": 24,
+  "d": 24,
+  "n": 8,
+  "src": "kushi-q5-child-geta",
+  "mpp": 0.007,
+  "prop": true
+ },
+ "q-photo-down": {
+  "w": 35,
+  "d": 36,
+  "n": 5,
+  "src": "kushi-q5-photo-facedown",
+  "mpp": 0.007,
+  "prop": true
+ },
+ "q-salt-jar": {
+  "w": 31,
+  "d": 28,
+  "n": 31,
+  "src": "kushi-q5-salt-jar",
+  "mpp": 0.007,
+  "prop": true
+ },
+ "q-ohajiki": {
+  "w": 32,
+  "d": 32,
+  "n": 10,
+  "src": "kushi-q5-ohajiki",
+  "mpp": 0.007,
+  "prop": true
+ },
+ "q-nail-box": {
+  "w": 41,
+  "d": 31,
+  "n": 14,
+  "src": "kushi-q5-nail-box",
+  "mpp": 0.007,
+  "prop": true
+ },
+ "q-charcoal": {
+  "w": 31,
+  "d": 19,
+  "n": 37,
+  "src": "kushi-q4-charcoal-sack",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "q-wet-feet": {
+  "w": 25,
+  "d": 67,
+  "n": 1,
+  "src": "kushi-q5-foot-wet-line",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "q-mushiro": {
+  "w": 45,
+  "d": 62,
+  "n": 2,
+  "src": "kushi-q4-mushiro",
+  "mpp": 0.025,
+  "prop": true
+ },
+ "q-ash-pile": {
+  "w": 55,
+  "d": 42,
+  "n": 16,
+  "src": "kushi-q4-ash-pile",
+  "mpp": 0.025,
+  "prop": true,
+  "glow": "q-ash-pile-glow",
+  "glowColor": "#fe7d4b"
+ },
+ "q-ash-pile-glow": {
+  "w": 55,
+  "d": 42,
+  "n": 16,
+  "src": "kushi-q4-ash-pile",
+  "mpp": 0.025,
+  "prop": true,
+  "glowOf": "q-ash-pile"
+ },
+ "q-sake": {
+  "w": 29,
+  "d": 12,
+  "n": 32,
+  "src": "kushi-q4-offering-sake",
+  "mpp": 0.007,
+  "prop": true
+ },
+ "q-fuda-ash": {
+  "w": 34,
+  "d": 29,
+  "n": 4,
+  "src": "kushi-q5-fuda-ash",
+  "mpp": 0.007,
+  "prop": true,
+  "glow": "q-fuda-ash-glow",
+  "glowColor": "#fe7d4b"
+ },
+ "q-fuda-ash-glow": {
+  "w": 34,
+  "d": 29,
+  "n": 4,
+  "src": "kushi-q5-fuda-ash",
+  "mpp": 0.007,
+  "prop": true,
+  "glowOf": "q-fuda-ash"
  }
 }

@@ -25,9 +25,14 @@
 :root[data-dot] .tl-lookcard, :root[data-dot] .gf-title-box, :root[data-dot] #objective, :root[data-dot] .kc-fuda, :root[data-dot] .kc-seal,
 :root[data-dot] .mg-card, :root[data-dot] .chip {
   border: 2px solid var(--dot-line) !important;
-  box-shadow: 0 0 0 2px #000, 4px 4px 0 2px rgba(0, 0, 0, 0.55) !important;
-  outline: 2px solid var(--dot-dim); outline-offset: -6px;
+  /* the inner line is an inset shadow of the box itself, not an outline: iPhone Safari drew the outline (offset -6 px) up-left of the
+     border and only as tall as part of the window, across the text (水無瀬病院 ドット版, landscape with the address bar, 2026-11-21) */
+  box-shadow: 0 0 0 2px #000, 4px 4px 0 2px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(0, 0, 0, 0.35), inset 0 0 0 3px var(--dot-dim) !important;
+  outline: none !important;
 }
+/* a window never grows past its frame: the body scrolls inside it; pictures keep their shape */
+:root[data-dot] .wm-win { overflow: hidden; }
+:root[data-dot] #gf-reader img, :root[data-dot] .tl-lookcard img, :root[data-dot] .kcard img, :root[data-dot] .wm-body img { object-fit: contain; }
 :root[data-dot] .wm-head, :root[data-dot] .win-head { border-bottom: 2px dashed var(--dot-dim); }
 :root[data-dot] .wm-title, :root[data-dot] .win-title, :root[data-dot] .gf-talk-who { letter-spacing: 0.1em; }
 :root[data-dot] .gf-talk-who::before { content: '\25B6\FE0E'; display: inline-block; margin-right: 0.35em; color: var(--dot-line); font-size: 0.8em; }
@@ -70,3 +75,30 @@
 :root[data-dot="top"] #crosshair { display: none !important; }
 :root[data-dot="top"] canvas { cursor: default; }
 :root[data-dot="top"] .kit-look-prompt, :root[data-dot="top"] .kit-look-note { display: none !important; }
+
+/* the inner margin (playtest 2026-11-21: 「UIの説明文などの枠からのマージンがほとんどないです」). The frames draw a second line 6 px inside the
+   border, which sat on the kit's own 7-12 px: the text nearly touched it. Every framed box keeps at least 14 px between that line and
+   its text, on a phone too (checked by tools/dot/frames-steps.mjs with game-kit tools/frame-padding.mjs, kit check P23) */
+:root[data-dot] { --gf-win-pad: 22px; }
+
+:root[data-dot] .wm-body:not(.wm-flush) { padding: 22px !important; }
+:root[data-dot] .wm-head { padding-left: 20px !important; padding-right: 14px !important; }
+:root[data-dot] .sg-card { padding: 14px 18px !important; }
+:root[data-dot] .sg-card.sg-lv-off { padding: 10px 16px !important; }
+:root[data-dot] .pg-hud { padding: 12px 16px !important; }
+:root[data-dot] .pg-big, :root[data-dot] .pg-cur { padding: 16px 20px !important; }
+:root[data-dot] .tl-item { padding: 16px 20px !important; }
+:root[data-dot] .iv-feel { padding: 12px 16px !important; }
+:root[data-dot] #say { padding: 14px 22px !important; }
+:root[data-dot] #prompt:not(:empty) { padding: 8px 16px !important; }
+:root[data-dot] .gf-title-box { padding: 24px 26px 18px !important; }
+:root[data-dot] .gf-mo-card-in, :root[data-dot] .kcard, :root[data-dot] .gf-talk { padding: 20px 24px !important; }
+:root[data-dot] .btn, :root[data-dot] .gf-sb-btn, :root[data-dot] .wm-btn { padding-left: max(16px, 1em) !important; padding-right: max(16px, 1em) !important; }
+:root[data-dot] #t-right button, :root[data-dot] .t-btn { padding-left: 10px !important; padding-right: 10px !important; }
+:root[data-dot] .tm-tabs { padding-left: 18px !important; padding-right: 18px !important; }
+:root[data-dot] .wm-body.wm-flush { padding-left: 8px !important; padding-right: 8px !important; }
+
+/* short landscape phones (844x340 with the address bar): the small badges and the reader's voice box keep 14 px inside their frames */
+:root[data-dot] body.gf-phone #kc-fuda, :root[data-dot] body.gf-phone .kc-fuda { padding: 14px 16px !important; }
+:root[data-dot] body.gf-phone #prompt:not(:empty) { padding: 14px 18px !important; }
+:root[data-dot] #gf-reader aside.iv-voice { padding-top: 14px !important; padding-bottom: 14px !important; }

@@ -64,6 +64,8 @@ for (const t of targets) {
   const og = path.join(DOT, `og-${t.mode}.png`);
   if (fs.existsSync(og)) fs.copyFileSync(og, path.join(OUT, 'og-image.png'));
   else console.warn(`build-dot: WARNING dot/og-${t.mode}.png is missing: ${t.path} shares have no picture`);
+  // 3b. the web app manifest (kit 1.21.0 phone play: a home-screen start is fullscreen and landscape - iOS has no page fullscreen)
+  fs.writeFileSync(path.join(OUT, 'manifest.webmanifest'), JSON.stringify({ name: t.name, short_name: '札の家 ' + (t.mode === 'fps' ? '一人称' : '見下ろし'), start_url: `/${t.path}`, scope: `/${t.path}`, display: 'fullscreen', orientation: t.mode === 'fps' ? 'landscape' : 'any', background_color: '#000000', theme_color: '#000000', icons: [{ src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml' }, { src: `/${t.path}/og-image.png`, sizes: '1200x630', type: 'image/png' }] }, null, 2) + '\n');
   // 4. the page
   const url = `${origin}/${t.path}`;   // firebase.json trailingSlash false: /dot/ redirects to /dot
   urls.push(url);
@@ -81,6 +83,12 @@ for (const t of targets) {
     `<meta name="description" content="${esc(t.description)}">`,
     `<link rel="canonical" href="${url}">`,
     `<meta name="theme-color" content="#000000">`,
+    `<link rel="manifest" href="/${t.path}/manifest.webmanifest">`,
+    `<meta name="apple-mobile-web-app-capable" content="yes">`,
+    `<meta name="mobile-web-app-capable" content="yes">`,
+    `<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">`,
+    `<meta name="apple-mobile-web-app-title" content="${esc(t.name)}">`,
+    `<link rel="apple-touch-icon" href="/${t.path}/og-image.png">`,
     `<meta property="og:type" content="website">`,
     `<meta property="og:site_name" content="${esc(site.name)}">`,
     `<meta property="og:title" content="${esc(title)}">`,

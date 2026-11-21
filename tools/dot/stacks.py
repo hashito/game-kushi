@@ -35,11 +35,62 @@ PLAIN = {
 }
 
 
+# the mood props (kit 1.20.1 atmosphere parts, K1 和 and K5 lights / rituals), placed by dot/js/dot/props.js. A part with emissive
+# voxels (catalog "emissive": its glowing colours) is split in two: <id> (the body) and <id>-glow (only the glowing voxels, drawn
+# unlit), both cut from the same box so they stay in register
+PROPS = {
+    'bangasa': 'atmos-k1-bangasa', 'morishio': 'atmos-k1-morishio-crumbled', 'hibachi': 'atmos-k1-hibachi',
+    'ichimatsu': 'atmos-k1-ichimatsu', 'andon': 'atmos-k5-andon', 'kouro': 'atmos-k1-kouro-ash', 'mizugame': 'atmos-k1-mizugame',
+    'tsukemono': 'atmos-k1-tsukemono', 'andon-torn': 'atmos-k1-andon-torn', 'futon-rolled': 'atmos-k1-futon-rolled',
+    'seoikago': 'atmos-k1-seoikago', 'nata-stump': 'atmos-k1-nata-stump', 'tawara': 'atmos-k1-tawara',
+    'box-sealed': 'atmos-k5-box-sealed', 'ofuda-wall': 'atmos-k5-ofuda-wall', 'box-chained': 'atmos-k5-box-chained',
+    'mirror-cloth': 'atmos-k5-mirror-cloth', 'candle-fallen': 'atmos-k5-candle-fallen', 'byobu-sakasa': 'atmos-k1-byobu-sakasa',
+    'kiku-oke': 'atmos-k1-kiku-oke',
+}
+# 2.2: the 札の家 parts (kit 1.20.2 Q1-Q5, ids kushi-q*), placed room by room by dot/js/dot/props-rooms.js; read from --qkit (kit main)
+QPROPS = {
+    'q-geta': 'kushi-q5-child-geta', 'q-photo-down': 'kushi-q5-photo-facedown', 'q-salt-jar': 'kushi-q5-salt-jar',
+    'q-ohajiki': 'kushi-q5-ohajiki', 'q-nail-box': 'kushi-q5-nail-box', 'q-charcoal': 'kushi-q4-charcoal-sack',
+    'q-wet-feet': 'kushi-q5-foot-wet-line', 'q-mushiro': 'kushi-q4-mushiro', 'q-ash-pile': 'kushi-q4-ash-pile',
+    'q-sake': 'kushi-q4-offering-sake', 'q-fuda-ash': 'kushi-q5-fuda-ash',
+}
+
+
+def hexrgb(h):
+    h = h.lstrip('#')
+    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+
+def save_glow(vol, e, out_id, meta, index):
+    """body and glow of one part, cut from the same box"""
+    solid = vol[..., 3] > 0
+    xs, ys, zs = np.where(solid)
+    vol = vol[xs.min():xs.max() + 1, ys.min():ys.max() + 1, :zs.max() + 1]
+    em = np.zeros(vol.shape[:3], bool)
+    for c in e.get('emissive') or []:
+        r, g, b = hexrgb(c)
+        em |= (vol[..., 3] > 0) & (vol[..., 0] == r) & (vol[..., 1] == g) & (vol[..., 2] == b)
+    w, d, n = vol.shape[:3]
+    parts = [(out_id, np.where(em[..., None], 0, vol))]
+    if em.any():
+        parts.append((f'{out_id}-glow', np.where(em[..., None], vol, 0)))
+    for k, v in parts:
+        strip = v.transpose(1, 2, 0, 3).reshape(d, n * w, 4)
+        Image.fromarray(strip.astype(np.uint8), 'RGBA').save(os.path.join(OUT, f'{k}.png'), optimize=True)
+        index[k] = {'w': int(w), 'd': int(d), 'n': int(n), **meta, **({'glowOf': out_id} if k != out_id else {})}
+    if em.any():
+        index[out_id]['glow'] = f'{out_id}-glow'
+        index[out_id]['glowColor'] = (e.get('glow') or {}).get('color')
+    return int(em.sum())
+
+
 def load(kit, lib_id):
-    cat = load.cat if hasattr(load, 'cat') else None
-    if cat is None:
+    cats = load.cats if hasattr(load, 'cats') else {}
+    load.cats = cats
+    cat = cats.get(kit)
+    if cat is None:   # one catalog per kit checkout (--kit and --qkit)
         with open(os.path.join(kit, 'assets', 'sprite-stacks', 'catalog.json'), encoding='utf-8') as f:
-            cat = load.cat = {a['id']: a for a in json.load(f)['assets']}
+            cat = cats[kit] = {a['id']: a for a in json.load(f)['assets']}
     e = cat[lib_id]
     w, d = e['sliceSize']
     n = e['sliceCount']
@@ -239,9 +290,68 @@ def sheet(index, path):
     out.resize((out.width * k, out.height * k), Image.NEAREST).save(path)
 
 
+
+# ---- the lattices (2026-11-21 play: 「鉄の格子？が分かりづらかった」): designed panels, not the photo house's thin dark sticks.
+# Pale aged hinoki bars, thick and evenly spaced, each with a lit face and a darker side; a dark walnut frame (posts, top rail,
+# sill, two cross rails) so the outline reads; wood grain flecks so it is plainly wood, not iron. 1 voxel = 2.5 cm.
+LATTICE_MPP = 0.025
+
+
+def lattice_panel(width_m, height_m, seed, bar=(206, 168, 116), frame=(70, 44, 28), pitch=10, barw=3, door=False):
+    rnd = random.Random(seed)
+    W, H = int(round(width_m / LATTICE_MPP)), int(round(height_m / LATTICE_MPP))
+    D = 6
+    v = np.zeros((W, D, H, 4), np.uint8)
+
+    def put(x0, x1, y0, y1, z0, z1, c, grain=10):
+        for x in range(max(0, x0), min(W, x1)):
+            for z in range(max(0, z0), min(H, z1)):
+                g = rnd.randint(-grain, grain)
+                for y in range(max(0, y0), min(D, y1)):
+                    k = 1.0
+                    if y == y1 - 1: k = 1.12          # the front face: lit
+                    elif y == y0: k = 0.82            # the back face
+                    if x == x0 or x == x1 - 1: k *= 0.86   # the sides of a bar: darker, so each bar stands apart
+                    col = [min(255, max(0, int(c[i] * k) + g)) for i in range(3)]
+                    v[x, y, z] = (*col, 255)
+
+    post = 5 if not door else 4
+    # bars between the posts, evenly spaced
+    x = post + (pitch - barw) // 2 + 2
+    while x + barw <= W - post - 1:
+        put(x, x + barw, 1, 5, 2, H - 4, bar, 9)
+        x += pitch
+    # cross rails (dark), the frame on top of them
+    for zz in (H // 3, (2 * H) // 3):
+        put(post, W - post, 0, 6, zz, zz + 3, frame, 6)
+    put(0, post, 0, 6, 0, H, frame, 6); put(W - post, W, 0, 6, 0, H, frame, 6)     # posts
+    put(0, W, 0, 6, H - 5, H, frame, 6)                                             # top rail
+    put(0, W, 0, 6, 0, 3, (54, 36, 24), 5)                                          # sill
+    # brass cap on each post top: a small bright point that marks the corners from above
+    for xx in (0, W - post):
+        put(xx + 1, xx + post - 1, 1, 5, H - 1, H, (196, 150, 70), 4)
+    return v
+
+
+def koshi_choba_s(seed):
+    return lattice_panel(2.2, 2.2, seed)
+
+
+def koshi_choba_w(seed):
+    return lattice_panel(2.4, 2.2, seed + 1)
+
+
+def koshi_door(seed):
+    # 奥の室's 格子戸: the same wood, a little darker with age and soot, a closer pitch; it slides
+    return lattice_panel(1.24, 2.18, seed + 2, bar=(176, 132, 86), frame=(60, 38, 24), pitch=8, barw=3, door=True)
+
+
+LATTICES = [('koshi-choba-s', koshi_choba_s, 11), ('koshi-choba-w', koshi_choba_w, 12), ('koshi-door', koshi_door, 13)]
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--kit', required=True, help='a checkout of game-kit with the sprite-stack library (branch sprite-stacks)')
+    ap.add_argument('--qkit', help='a checkout of game-kit main with the 札の家 Q parts (default: --kit)')
     ap.add_argument('--sheet', help='write a review sheet of every stack (front, side, back, from above)')
     a = ap.parse_args()
     os.makedirs(OUT, exist_ok=True)
@@ -252,6 +362,14 @@ def main():
     for out_id, lib, fn, seed in DESIGNED:
         vol, e = load(a.kit, lib)
         save(fn(vol, seed), out_id, {'src': lib, 'mpp': e.get('metersPerPixel'), 'designed': fn.__name__}, index)
+    for out_id, fn, seed in LATTICES:
+        save(fn(seed), out_id, {'src': 'designed', 'mpp': LATTICE_MPP, 'designed': fn.__name__, 'prop': True}, index)
+    for out_id, lib in PROPS.items():
+        vol, e = load(a.kit, lib)
+        save_glow(vol, e, out_id, {'src': lib, 'mpp': e.get('metersPerPixel'), 'prop': True}, index)
+    for out_id, lib in QPROPS.items():
+        vol, e = load(a.qkit or a.kit, lib)
+        save_glow(vol, e, out_id, {'src': lib, 'mpp': e.get('metersPerPixel'), 'prop': True}, index)
     with open(os.path.join(OUT, 'index.json'), 'w', encoding='utf-8', newline='\n') as f:
         json.dump(index, f, ensure_ascii=False, indent=1)
         f.write('\n')

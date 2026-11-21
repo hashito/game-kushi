@@ -9,10 +9,13 @@
 //   - top: the house seen from above with the player figure (topdown.js)
 // Everything (frames, stacks, photos, the pixel font) is loaded and every mesh compiled before the start button opens (pixel games load first).
 import * as THREE from 'three';
+import { placeProps } from './props.js';
 import { loadFrameSet, createFigure, buildStackGeometry, loadPixels, stripVolume } from '../kit/sprite-stack-mesh.js';
 import { locomotion, turnToward } from '../kit/sprite-stack-anim.js';
-import { installPhotoHooks, preparePhotos } from './photos.js';
+import { installPhotoHooks, preparePhotos, setPhotoPalette } from './photos.js';
 import { installTopdown } from './topdown.js';
+import { installGuide } from './guide.js';
+import { palette, dotifyScene, gradePixels } from '../kit/dot-world.js';
 
 const LAYER = new URL('../../', import.meta.url).href;   // /dot/
 const at = (p) => new URL(p, LAYER).href;
@@ -42,18 +45,54 @@ export default async function dotLayer(ext, { manifest, data }) {
   const D = window.__dot = { mode, timings: {}, fixtures: [], items: [] };
   // load first: the frame sets, the stacks and the list of photos (all small)
   const t0 = performance.now();
-  const [worker, haru, chigusa, stackIndex, photoList] = await Promise.all([
-    loadFrameSet(THREE, at('assets/figures/worker.json')),
+  // the people at the fine resolution (kit 1.21.0, res 2: 1.25 cm a voxel; 「人や敵…近くで見るとドットが目立つので解像度を上げて」), and the
+  // same people at the normal resolution for far away in first person (LOD: assets/figures/far/)
+  const fpsLod = mode === 'fps';
+  const [worker, haru, chigusa, stackIndex, photoList, haruFar, chigusaFar] = await Promise.all([
+    loadFrameSet(THREE, at(fpsLod ? 'assets/figures/far/worker.json' : 'assets/figures/worker.json')),   // first person never shows the worker: the light set
     loadFrameSet(THREE, at('assets/figures/haru.json')),
     loadFrameSet(THREE, at('assets/figures/chigusa.json')),
     fetch(at('assets/stacks/index.json')).then((r) => r.json()),
     fetch(at('photos.json')).then((r) => r.json()).catch(() => []),
+    fpsLod ? loadFrameSet(THREE, at('assets/figures/far/haru.json')) : null,
+    fpsLod ? loadFrameSet(THREE, at('assets/figures/far/chigusa.json')) : null,
   ]);
-  const stackPx = Object.fromEntries(await Promise.all(Object.keys(stackIndex).map(async (k) => [k, await loadPixels(at(`assets/stacks/${k}.png`))])));
+  // one palette for everything (kit js/dot-world.js): the people and the parts are graded before their meshes are made, so a face of one
+  // colour merges into one rectangle (fewer vertices) and nothing has to be recoloured later
+  const PAL0 = palette((manifest.dot && manifest.dot.palette) || 'wa');
+  for (const set of [worker, haru, chigusa, haruFar, chigusaFar]) if (set) gradePixels(set.px.data, PAL0);
+  const stackPx = Object.fromEntries(await Promise.all(Object.keys(stackIndex).map(async (k) => { const px = await loadPixels(at(`assets/stacks/${k}.png`)); gradePixels(px.data, PAL0); return [k, px]; })));
   D.timings.load = Math.round(performance.now() - t0);
   const mat = new THREE.MeshLambertMaterial({ vertexColors: true });
   mat.name = 'dot-stack';
   D.material = mat;
+  // the people: the same colours per vertex, plus a little light of their own (a share of their own colour as emission), so a
+  // figure reads as a person in a dark room and not as a dark lump; the house lights still shape it
+  const figMat = (self, name) => {
+    const m = new THREE.MeshLambertMaterial({ vertexColors: true });
+    m.name = name;
+    m.onBeforeCompile = (sh) => { sh.fragmentShader = sh.fragmentShader.replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>\n totalEmissiveRadiance += diffuseColor.rgb * ${self.toFixed(3)};`); };
+    m.customProgramCacheKey = () => `dot-fig-${self}`;
+    return m;
+  };
+  // an outline: the figure's own faces turned inside out and pushed out along their normals, in one flat colour (from above a
+  // person must stand out of the floor: a thin edge, like the line round a sprite)
+  const outlineMat = (color, w, name) => {
+    const m = new THREE.MeshBasicMaterial({ color, side: THREE.BackSide });
+    m.name = name;
+    m.onBeforeCompile = (sh) => { sh.vertexShader = sh.vertexShader.replace('#include <begin_vertex>', `vec3 transformed = position + normal * ${w.toFixed(4)};`); };
+    m.customProgramCacheKey = () => `dot-outline-${w}`;
+    return m;
+  };
+  const addOutline = (fig, m) => {
+    const o = new THREE.Mesh(fig.mesh.geometry, m); o.name = 'dot-outline'; o.frustumCulled = false;
+    fig.root.add(o);
+    fig.warm.add(new THREE.Mesh(fig.mesh.geometry, m));
+    const up = fig.update;
+    fig.update = (dt, u) => { const r = up(dt, u); o.geometry = fig.mesh.geometry; return r; };
+    fig.outline = o;
+    return o;
+  };
   const geoCache = new Map();
   const stackGeo = (k) => {
     if (!geoCache.has(k)) { const s = stackIndex[k]; geoCache.set(k, buildStackGeometry(THREE, stripVolume(stackPx[k], s.w, s.d, s.n, 0), { mpp: s.mpp })); }
@@ -64,6 +103,7 @@ export default async function dotLayer(ext, { manifest, data }) {
   ext.registerBoot('dot-pictures', async (ctx, report) => {
     const t = performance.now();
     if (mode === 'top') D.clippedAtBoot = topApi.clipScene();   // the whole house is built now: the cut goes into every program the next step compiles
+    setPhotoPalette(palette((manifest.dot && manifest.dot.palette) || 'wa'));
     D.photos = await preparePhotos(photoList, (k) => report(k * 0.8, `ドット絵を準備中… ${Math.round(k * 100)}%`));
     try {
       const text = [...new Set(JSON.stringify([data, manifest]).replace(/\\u[0-9a-f]{4}|\\n/g, ''))].join('');
@@ -142,6 +182,46 @@ export default async function dotLayer(ext, { manifest, data }) {
         D.fixtures.push({ id: f.id, hidden: hide.length, box: [u.min.x, u.min.y, u.min.z, u.max.x, u.max.y, u.max.z].map((v) => +v.toFixed(2)) });
       }
     }
+    // ---- the mood props (designed parts of the kit's atmosphere library; dot/js/dot/props.js) ----
+    if (house) {
+      const glowMat = new THREE.MeshBasicMaterial({ vertexColors: true }); glowMat.name = 'dot-glow-voxels';   // a lamp's paper / flame: lit by itself
+      D.props = placeProps(THREE, ctx, { stackGeo, stackIndex, mat, glowMat, parent: house });
+    }
+    // ---- the lattices (play 2026-11-21 「鉄の格子？が分かりづらかった」): the photo house's thin dark sticks give way to designed wooden
+    // panels (tools/dot/stacks.py lattice_panel: pale hinoki bars, a dark frame), and the charms on them are larger and lit enough to read as paper
+    if (house) {
+      const centred = new Map();
+      const cgeo = (k) => { if (!centred.has(k)) { const g = stackGeo(k).clone(); g.computeBoundingBox(); const b = g.boundingBox, c = b.getCenter(new THREE.Vector3()); g.translate(-c.x, -b.min.y, -c.z); g.computeBoundingBox(); centred.set(k, g); } return centred.get(k); };
+      const panel = (k, parent, x, y, z, ry) => { const m = new THREE.Mesh(cgeo(k), mat); m.name = `dot-lattice:${k}`; m.castShadow = true; m.receiveShadow = true; m.rotation.y = ry; m.position.set(x, y, z); parent.add(m); return m; };
+      D.lattices = [];
+      const lat = house.getObjectByName('kc-lattice');
+      if (lat && stackIndex['koshi-choba-s']) {
+        lat.visible = false;
+        const y0 = W.yOf('MISE');
+        D.lattices.push(panel('koshi-choba-s', house, 6.9, y0, 22.445, 0).name, panel('koshi-choba-w', house, 5.755, y0, 21.2, -Math.PI / 2).name);
+      }
+      if (G.koshi && stackIndex['koshi-door']) {
+        for (const ch of G.koshi.children) if (ch.isMesh) ch.visible = false;
+        D.lattices.push(panel('koshi-door', G.koshi, 0, 0, -0.045, 0).name);
+      }
+      if (G.chobaCharms) {
+        const inst = G.chobaCharms, M4 = new THREE.Matrix4(), S = new THREE.Matrix4().makeScale(1.35, 1.35, 1.35);
+        for (let i = 0; i < inst.count; i++) { inst.getMatrixAt(i, M4); inst.setMatrixAt(i, M4.multiply(S)); }
+        inst.instanceMatrix.needsUpdate = true;
+        inst.material = new THREE.MeshLambertMaterial({ map: (G.paperM && G.paperM.map) || null, color: 0xf2e8cc, emissive: 0x8a7c5c, side: THREE.DoubleSide });
+        inst.material.name = 'dot-choba-charms';
+      }
+    }
+    // ---- papers on walls (2026-11-21 「張り紙よりも大きな枠が見えて、ちらついている」): a sheet a few mm off the plaster is drawn pulled toward the
+    // camera in depth (polygonOffset), so at the low resolution of the picture it never fights the wall behind it (tools/dot/wallpaper-steps.mjs)
+    {
+      const flat = new Set();
+      W.group.traverse((o) => { if (o.isMesh && /^fuda:/.test(o.name)) flat.add(o); });
+      for (const o of W.interactables) { const ia = o.userData.interact; if (ia && ia.kind === 'doc' && o.userData.pasted) (o.userData.model || o).traverse((m) => { if (m.isMesh) flat.add(m); }); }
+      if (G.chobaCharms) flat.add(G.chobaCharms);
+      for (const m of flat) for (const mt of [].concat(m.material)) if (mt && !mt.polygonOffset) { mt.polygonOffset = true; mt.polygonOffsetFactor = -2; mt.polygonOffsetUnits = -4; mt.needsUpdate = true; }
+      D.wallPapers = flat.size;
+    }
     // ---- items lying in the world ----
     for (const o of W.interactables) {
       const ia = o.userData.interact, k = ia && ia.kind === 'item' && ITEM_STACK[ia.id];
@@ -163,7 +243,8 @@ export default async function dotLayer(ext, { manifest, data }) {
     // ハル behind the lattice: kneeling
     let haruFig = null;
     if (G.haru && G.haru.root) {
-      haruFig = createFigure(THREE, haru, { height: 1.5, material: mat, state: 'kneel' });
+      haruFig = createFigure(THREE, haru, { height: 1.5, material: figMat(0.3, 'dot-haru'), state: 'kneel', ...(haruFar ? { lod: { set: haruFar, far: 6, camera: ctx.camera } } : {}) });
+      if (mode === 'top') addOutline(haruFig, outlineMat(0x8a7a62, 0.016, 'dot-outline-haru'));
       const keep = new Set(); haruFig.root.traverse((x) => keep.add(x));
       hideOwn(G.haru.root, keep);
       G.haru.root.add(haruFig.root);
@@ -172,14 +253,17 @@ export default async function dotLayer(ext, { manifest, data }) {
     // 千草: her frames follow the ghost (js/ext/ghost.js moves fig.root, turns it, fades it)
     let chiFig = null;
     if (G.chigusa && G.chigusa.root) {
-      chiFig = createFigure(THREE, chigusa, { height: 1.62, material: mat });
+      chiFig = createFigure(THREE, chigusa, { height: 1.62, material: figMat(mode === 'top' ? 0.3 : 0.12, 'dot-chigusa'), ...(chigusaFar ? { lod: { set: chigusaFar, far: 6, camera: ctx.camera } } : {}) });
+      // from above her outline is cold and pale: she is seen the moment she comes into the room (in first person she stays in the dark)
+      if (mode === 'top') addOutline(chiFig, outlineMat(0x9fb4d0, 0.02, 'dot-outline-chigusa'));
       const keep = new Set(); chiFig.root.traverse((x) => keep.add(x));
       hideOwn(G.chigusa.root, keep);
       G.chigusa.root.add(chiFig.root);
       warm.push(chiFig.warm);
     }
     // the worker (seen only from above)
-    const wk = createFigure(THREE, worker, { height: 1.7, material: mat });
+    const wk = createFigure(THREE, worker, { height: 1.7, material: figMat(0.42, 'dot-worker') });
+    if (mode === 'top') addOutline(wk, outlineMat(0xe6c890, 0.02, 'dot-outline-worker'));
     wk.root.visible = false;
     scene.add(wk.root);
     warm.push(wk.warm);
@@ -189,6 +273,16 @@ export default async function dotLayer(ext, { manifest, data }) {
     // every texture with hard edges (the stacks have none: colour per vertex)
     if (ctx.pixelStyle) ctx.pixelStyle.sweep();
     D.timings.dress = Math.round(performance.now() - t);
+    installGuide(THREE, ctx, { D, mode });   // the basement: a floor of light and the next goal's glow (before the cut and the boot compile)
+    // ---- one palette, every surface dot (2026-11-21 「壁もドット絵でないです。全てドットで再構築してください」「全体の色合いを合わせる」):
+    // the walls, floors, ceilings, doors, lamps, glow planes and the old item models are redrawn as dot tiles / quantized pictures in the
+    // game's palette (game-kit js/dot-world.js); the sprite stacks and the people are graded to the same palette. Things added later (a
+    // charm put back, a texture that loads late) are caught by the same pass every two seconds (it only touches what is not dot yet).
+    const PAL = D.palette = palette((manifest.dot && manifest.dot.palette) || 'wa');
+    const dotify = () => { const s = dotifyScene(THREE, scene, { pal: PAL }); for (const w of warm) dotifyScene(THREE, w, { pal: PAL }); return s; };
+    D.dotify = dotify();
+    D.dotifyLog = [];   // passes over 16 ms (a check reads it: tools/dot/perf-steps.mjs)
+    setInterval(() => { const t0 = performance.now(); const s = dotify(); const ms = performance.now() - t0; if (ms > 16 && D.dotifyLog.length < 40) D.dotifyLog.push({ ms: Math.round(ms), room: ctx.state && ctx.state.room, s }); }, 2000);
     if (mode === 'top') D.top = topApi.ready(ctx, wk);
   });
 
