@@ -16,5 +16,6 @@ export default async (api) => {
   await full(api);
   const P = await G('window.__perf');
   const inPlay = P.newPrograms.filter((x) => x.started);
+  log('DOTIFY', JSON.stringify(await G('(window.__dot && window.__dot.dotifyLog) || null')));
   log('PERF', JSON.stringify({ programsAtTitle: P.p0, newProgramsInPlay: inPlay.length, firstNew: inPlay.slice(0, 8), frames: P.frames, worstMs: P.worst, longFrames: P.long.length, longest: P.long.sort((a, b) => b.ms - a.ms).slice(0, 8) }));
 };

@@ -109,7 +109,12 @@ export default async (api) => {
   await runTo(2.6, -21.0); await runTo(2.6, -10.0); await shot('run-ibu'); await runTo(2.6, -1.6); await runTo(2.6, -0.1); await runTo(6.6, 0.9);
   await use(6.6, -0.5, 1.2, 'ladder up'); await sleep(1500);
   log('dead?', await G('({ room: g.state.room, deaths: g.state.deaths })'));
-  await H.idle(); await must('T_ESCAPE'); await shot('seal-bar');
+  // 2.2: the thing follows up the ladder - run through the house to 店の間 (the 帳場 threshold), then back to the hatch to seal it
+  await shot('chase-up'); await H.route([[5.3, 4.0], [5.3, 5.75], [5.3, 7.4], [5.3, 12.0], [5.3, 14.0], [3.9, 19.0], [3.9, 21.0], [4.6, 22.6]], { run: true });
+  for (let i = 0; i < 30 && !(await G('g.state.tasks.includes("T_ESCAPE")')); i++) await sleep(300);
+  await shot('safe'); log('dead?', await G('({ room: g.state.room, deaths: g.state.deaths })'));
+  await H.idle(); await must('T_ESCAPE'); await H.idle();
+  await H.route([[3.9, 21.0], [3.9, 19.0], [5.3, 14.0], [5.3, 12.0], [5.3, 7.4], [5.3, 5.75], [5.3, 4.0], [6.6, 1.0]]); await shot('seal-bar');
   await use(6.6, -0.5, 0.1, 'T_SEAL'); await H.idle(); await must('T_SEAL');
   await st('L4 done'); if (UPTO === 'L4') return;
   // ---- L5 ----

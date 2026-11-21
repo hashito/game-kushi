@@ -37,6 +37,14 @@ export default async (api) => {
   while (Date.now() - t0 < 70000) { const s = await G('({ deaths: g.state.deaths || 0, card: !!document.querySelector(".gf-mo-card, .gf-dead") })'); if (s.deaths || s.card) { log('  caught', JSON.stringify(s)); break; } await sleep(1000); }
   await sleep(1500); await shot('caught');
   await H.idle(6000); log('  after caught', JSON.stringify(await H.pos()), await G('({ comb: g.state.inv.includes("COMB"), fuda: kc.fuda, ibu: kc.sealN("K_IBU"), flue: kc.sealN("K_FLUE"), mode: kc.gh.mode })')); await shot('after-caught');
+  // 6b. 2.2 the run upstairs: try to go back down the ladder (locked, with a reason), then stand still and be caught (death, retry at the
+  // top of the ladder with the thing rising again)
+  await scene('escape-doro'); await G('(g.setLight(true), 1)'); await H.route([[2.6, -9.0], [2.6, -0.6], [6.6, 0.9]], { run: true });
+  await H.use(6.6, -0.5, 1.2, { noIdle: true }); await sleep(2500); log('  upstairs', JSON.stringify(await H.pos()), await G('({ chase2: g.state.flags.includes("chase2"), floor: g.floor, mode: kc.gh.mode })'));
+  await H.walkTo(6.6, 0.4); await tryE(6.6, -0.5, 1.2, 'ladder-down-in-chase');
+  { const t1 = Date.now(); while (Date.now() - t1 < 40000 && !(await G('!!document.querySelector(".gf-mo-card, .gf-dead")'))) await sleep(800); }
+  await sleep(1500); await shot('caught-upstairs');
+  await H.idle(6000); log('  after caught upstairs', JSON.stringify(await H.pos()), await G('({ deaths: g.state.deaths, floor: g.floor, mode: kc.gh.mode, escape: g.state.tasks.includes("T_ESCAPE") })')); await shot('after-caught-upstairs');
   // 7. the bench before the hatch is sealed / the return before the thinking
   await scene('bench'); await H.walkTo(6.6, 1.0); await tryE(6.6, -0.5, 0.1, 'return-before-think');
 };

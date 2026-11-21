@@ -41,7 +41,15 @@ export default async (api) => {
     await G('(g.setLight(true), 1)'); await sleep(1600);
     const ok = await H.route([[2.6, -20.5], [2.6, -9.0], [2.6, -0.6], [6.6, 0.9]], { run: true });
     await shot('at-ladder'); await H.use(6.6, -0.5, 1.2, { noIdle: true }); await sleep(2500);
-    for (let i = 0; i < 20 && !(await G('g.state.tasks.includes("T_ESCAPE")')); i++) await sleep(300);
+    // 2.2: caught upstairs = death and a retry from the top of the ladder; stand still once to be caught, then run to 店の間
+    for (let i = 0; i < 40 && (await G('!g.state.flags.includes("chase2")')); i++) await sleep(300);
+    let cardUp = false; for (let i = 0; i < 100 && !(cardUp = await G('!!document.querySelector(".gf-mo-card")')); i++) await sleep(300);
+    log('caught upstairs', cardUp, await G('(document.querySelector(".gf-mo-card") || {}).textContent'), await G('g.checkpoint && g.checkpoint.floor')); await shot('caught-up');
+    for (let i = 0; i < 8 && (await G('g.blocked()')); i++) { await H.closeWindows(); await sleep(600); }
+    if (!cardUp) res = 'not caught upstairs';
+    log('after retry', await S()); await shot('retry-up');
+    await H.route([[5.3, 4.0], [5.3, 5.75], [5.3, 7.4], [5.3, 12.0], [5.3, 14.0], [3.9, 19.0], [3.9, 21.0], [4.6, 22.6]], { run: true });
+    for (let i = 0; i < 40 && !(await G('g.state.tasks.includes("T_ESCAPE")')); i++) await sleep(300);
     const s = await S(); log('escape', ok, s); if (!(await G('g.state.tasks.includes("T_ESCAPE")'))) res = 'could not escape after catches';
   }
   log('RESULT', res);

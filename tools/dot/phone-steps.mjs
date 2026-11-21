@@ -5,6 +5,9 @@ import { helpers } from '../play/lib.mjs';
 export default async (api) => {
   const { G, sleep, log, shot } = api, H = helpers(api);
   await shot('title');
+  // kit 1.21.0: portrait shows the 横向き notice first; this run plays on in portrait (「このまま遊ぶ」)
+  await shot('rotate-notice'); log('rotate notice', await G(`getComputedStyle(document.getElementById('gf-rotate') || document.body).display !== 'none'`));
+  await G(`((document.querySelector('#gf-rotate .gf-rot-ok') || { click() {} }).click(), 1)`);
   await G(`(document.getElementById('start-btn').click(), 1)`);
   await sleep(1500); await shot('opening');
   await H.idle(); await sleep(400); await shot('start');
