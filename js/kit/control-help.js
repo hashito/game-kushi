@@ -1,4 +1,4 @@
-/* game-kit 1d506003: js/control-help.js — edit in game-kit and run tools/kit-sync.js */
+/* game-kit 7dca29ac (branch main): js/control-help.js — edit in game-kit and run tools/kit-sync.js */
 // Controls help (standard 1.17.0, from 水無瀬病院 #16 / #17 / #22: 「操作方法をメニューで表示して」「C またはボタンでしゃがむなどを教えて」
 // 「走れるようになったりライトを直したりの操作が分かりづらい」). Two parts, installed by game-core for every 3D game:
 //   - 操作方法 in the pause menu: every control of this game (game.json "controls"), keyboard / touch / pad as the player is using now;
@@ -63,7 +63,7 @@ export function installControlHelp(ctx) {
   } });
   let card = null, cur = null;
   const seen = new Set(), queue = [];
-  const close = () => { if (card) card.remove(); card = null; document.querySelectorAll('.gf-ch-lit').forEach((b) => b.classList.remove('gf-ch-lit')); cur = null; if (queue.length) setTimeout(() => { if (!card && queue.length) { const [k, o] = queue.shift(); show(k, o); } }, 350); };
+  const close = () => { if (card) card.remove(); card = null; document.querySelectorAll('.gf-ch-lit').forEach((b) => { b.classList.remove('gf-ch-lit'); delete b.dataset.gfHint; }); cur = null; if (queue.length) setTimeout(() => { if (!card && queue.length) { const [k, o] = queue.shift(); show(k, o); } }, 350); };
   const show = (k, o) => {
     injectCss(); cur = k;
     const row = CONTROL_ROWS.find((r) => r[0] === k);
@@ -78,7 +78,9 @@ export function installControlHelp(ctx) {
     if (lane && ctx.registerHudPart) { lane.appendChild(card); try { ctx.registerHudPart('gf-ch', { slot: 'tc', order: 5, el: card }); } catch { /* an older HUD */ } }
     else document.body.appendChild(card);
     more();
-    for (const b of document.querySelectorAll('#t-buttons [data-k]')) if ((KEYS[k] || [o.code]).includes(b.dataset.k)) b.classList.add('gf-ch-lit');
+    // 1.21.0 (phones: 「通知が多すぎます」): the lit button carries a short badge (data-gf-hint); a phone shows only that badge, not the card
+    let lit = 0; for (const b of document.querySelectorAll('#t-buttons [data-k]')) if ((KEYS[k] || [o.code]).includes(b.dataset.k)) { b.classList.add('gf-ch-lit'); b.dataset.gfHint = o.badge || (o.why === 'できるようになった。' ? 'NEW' : (o.text || (row ? row[1] : k)).slice(0, 8)); lit++; }
+    card.classList.toggle('gf-ch-badged', lit > 0);
   };
   const more = () => { const el = card && card.querySelector('.gf-ch-more'); if (!el) return; el.hidden = !queue.length; el.textContent = queue.length ? `このあと、もう ${queue.length} つ` : ''; };
   ctx.controlHint = (k, o = {}) => {

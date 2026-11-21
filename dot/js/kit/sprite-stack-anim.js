@@ -1,4 +1,4 @@
-/* game-kit 032e2f5 (branch sprite-motions): js/sprite-stack-anim.js — edit in game-kit */
+/* game-kit 1bf4712 (branch sprite-motions, on main 1.20.1): js/sprite-stack-anim.js — edit in game-kit */
 // The generic motion player of sprite-stack characters (docs/sprite-motions.md). No three.js, no DOM: it only decides
 // which frame of a frame set shows now. The same player drives every character and monster, in 3D (sprite-stack-mesh.js)
 // or 2D (sprite-stack-library.js draw by frame id).
