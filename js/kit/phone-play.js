@@ -1,4 +1,4 @@
-/* game-kit 7dca29ac (branch main): js/phone-play.js — edit in game-kit and run tools/kit-sync.js */
+/* game-kit 3d827491: js/phone-play.js — edit in game-kit and run tools/kit-sync.js */
 // Phone play (standard 1.21.0, 札の家 ドット版 一人称, the user's phone play 2026-11-21:
 // 「携帯で行う場合は横でのプレイを推奨にしたほうが良い」「メッセージや通知で領域を使いすぎているのでタスクなどは携帯の場合は常時表示をやめたほうが良い」
 // 「可能なら携帯の場合に全画面表示できると良い」).
@@ -28,6 +28,7 @@ body.gf-phone .tl-lane>.tl-item~.tl-item{display:none}
 body.gf-phone.gf-playing.gf-portrait .tl-lane{margin-top:calc(env(safe-area-inset-top,0px) + 56px)}   /* below the 目的 chip */
 body.gf-phone.gf-landscape #say{max-width:var(--gf-say-w,60vw)!important;font-size:14px;line-height:1.55}
 body.gf-phone.gf-landscape #t-buttons{display:flex!important;flex-direction:column-reverse;align-items:flex-end;gap:8px}   /* landscape: the action buttons stand in a column at the right edge, the bottom middle stays free */
+body.gf-phone.gf-landscape #t-buttons{flex-wrap:wrap-reverse;align-content:flex-start;max-height:calc(100vh - 150px);max-height:calc(100dvh - 150px)}   /* 1.21.1: a low screen (667x375, 844x340 with the address bar) wraps the column into a second one to its left instead of running up under the menu button (P31: #t-right over #t-menu) */
 body.gf-phone.gf-landscape #touch{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
 body.gf-phone.gf-landscape .gf-reader{padding:max(8px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
 /* 1.21.0 one message at a time (水無瀬病院 ドット版 一人称, iPhone landscape: 「通知が多すぎます」 - the 目的 chip, a control-hint card, the tap

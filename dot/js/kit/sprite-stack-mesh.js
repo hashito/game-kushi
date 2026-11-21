@@ -1,4 +1,4 @@
-/* game-kit 7dca29ac (branch main): js/sprite-stack-mesh.js — edit in game-kit and run tools/kit-sync.js */
+/* game-kit fb482e73 (branch main): js/sprite-stack-mesh.js — edit in game-kit and run tools/kit-sync.js */
 // Sprite stacks as three.js meshes (docs/sprite-motions.md): the horizontal slices are read as a voxel volume and turned
 // into one mesh per frame (faces only where a voxel meets air, coplanar faces of one colour merged into rectangles, colour
 // per vertex). The model reads the same from every angle, also at eye level where stacked slice planes would vanish.
@@ -161,7 +161,7 @@ export function createFigure(THREE, set, o = {}) {
   const root = new THREE.Group(); root.name = `figure:${m.id}`;
   root.userData.res = m.res || (m.mpp && m.mpp < 0.02 ? 2 : 1);
   const mesh = new THREE.Mesh(geos.get(frames[0]), mat); mesh.castShadow = true; root.add(mesh);
-  const anim = new MotionPlayer({ ...m, frames }, { state: o.state || 'idle', fallback: o.fallback });
+  const anim = new MotionPlayer({ ...m, frames }, { state: o.state || 'idle', fallback: o.fallback, name: o.name || set.id, holdOk: o.holdOk });
   // every frame once, for the warm-up (geometry uploads before play)
   const warm = new THREE.Group(); warm.name = `warm:${m.id}`;
   for (const g of geos.values()) warm.add(new THREE.Mesh(g, mat));
@@ -185,4 +185,27 @@ export function createFigure(THREE, set, o = {}) {
     dispose() { for (const g of geos.values()) g.dispose(); if (far) for (const g of far.values()) g.dispose(); },
   };
   return fig;
+}
+
+/** 1.22.0: a small dot picture of a stack for menus that have no photo (「絵のない詳細は空の箱や代わりの文字ではなく、ドットの絵」):
+ *  the volume drawn as an oblique sprite stack (each slice half a pixel back per row of depth, back to front, bottom to top; the top of a
+ *  column a step lighter), scaled up by a whole number with no smoothing. vol: stripVolume(...) or any { w, d, n, at(x, y, z), rgb(i) }.
+ *  Returns a data URL (PNG). o.px = the longest side wanted (default 96). */
+export function stackThumb(vol, o = {}) {
+  if (typeof document === 'undefined') return null;
+  const W = vol.w, H = Math.ceil(vol.n + vol.d * 0.5) + 1;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d'); const img = g.createImageData(W, H), D = img.data;
+  for (let z = 0; z < vol.n; z++) for (let y = 0; y < vol.d; y++) for (let x = 0; x < vol.w; x++) {
+    const i = vol.at(x, y, z); if (i < 0) continue;
+    const top = z + 1 >= vol.n || vol.at(x, y, z + 1) < 0;
+    const px = x, py = Math.round((vol.n - 1 - z) + y * 0.5); if (py < 0 || py >= H) continue;
+    const [r, gg, b] = vol.rgb(i), k = top ? 1.12 : 0.92, j = (py * W + px) * 4;
+    D[j] = Math.min(255, r * k); D[j + 1] = Math.min(255, gg * k); D[j + 2] = Math.min(255, b * k); D[j + 3] = 255;
+  }
+  g.putImageData(img, 0, 0);
+  const s = Math.max(1, Math.floor((o.px || 96) / Math.max(W, H)));
+  const out = document.createElement('canvas'); out.width = W * s; out.height = H * s;
+  const og = out.getContext('2d'); og.imageSmoothingEnabled = false; og.drawImage(c, 0, 0, W * s, H * s);
+  return out.toDataURL('image/png');
 }

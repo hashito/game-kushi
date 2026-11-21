@@ -1,4 +1,4 @@
-/* game-kit 0641622: js/mg-sound.js — edit in game-kit and run tools/kit-sync.js */
+/* game-kit fb482e73: js/mg-sound.js — edit in game-kit and run tools/kit-sync.js */
 // The default sounds of the library mini games (standard 1.10.18): every js/mg-<type>.js calls hooks.sound(name, ctx, v); a game that gives
 // no sound hook of its own gets these, made on the spot with WebAudio (ctx.audio = js/audio.js: tone / noiseBurst; no sound files).
 //   mgSound(type, name, audio, v)  plays one cue ('bell' v = which bell, 'turn' / 'hum' / 'step' v = 0..1); unknown names are silent
@@ -76,6 +76,19 @@ const BY_TYPE = {
   'lock-pick': { drop: (a) => { N(a, { dur: 0.03, freq: 2400, q: 3, gain: 0.12, wet: 0.05 }); N(a, { at: 0.04, dur: 0.03, freq: 2000, q: 3, gain: 0.08, wet: 0.05 }); } },
   'balance-scale': { put: (a) => { tick(a, 2800, 0.12); T(a, { dur: 0.4, freq: 1568, type: 'sine', gain: 0.02, wet: 0.3 }); } },
   'kana-word': { tile: (a) => tick(a, 1200, 0.12) },
+  // standard 1.24.0
+  'darkroom-develop': {
+    slosh: (a) => N(a, { dur: 0.35, freq: 600, q: 0.7, gain: 0.07, type: 'lowpass', wet: 0.3, sweep: 0.8 }),
+    pull: (a) => { N(a, { dur: 0.3, freq: 1200, q: 0.6, gain: 0.06, wet: 0.3, sweep: 0.5 }); for (let k = 0; k < 3; k++) T(a, { at: 0.25 + k * 0.18, dur: 0.06, freq: 1400 + k * 180, type: 'sine', gain: 0.03, slide: 0.7, wet: 0.5 }); },
+    tick: (a) => tick(a, 3000, 0.04),
+  },
+  'switchboard': { ring: (a) => { for (let k = 0; k < 6; k++) T(a, { at: k * 0.05, dur: 0.045, freq: 1250, type: 'square', gain: 0.012, wet: 0.2 }); } },
+  'steam-letter': { peel: (a) => N(a, { dur: 0.12, freq: 3800, q: 0.9, gain: 0.04, type: 'highpass', wet: 0.05 }) },
+  'safe-listen': {
+    tick: (a) => tick(a, 3600, 0.025),
+    click: (a, v = 1) => { N(a, { dur: 0.02, freq: 1600, q: 6, gain: 0.08 * v, wet: 0.05 }); thud(a, 420, 0.1 * v); },
+    set: (a) => { thud(a, 260, 0.3); tick(a, 900, 0.12); },
+  },
 };
 
 /** play one cue of a library mini game (silent without audio or for a name no table has) */
@@ -87,7 +100,7 @@ export function mgSound(type, name, audio, v) {
 }
 
 /** the minimum gap between two plays of one cue (ms): drags and per-frame cues stay a sound, not a buzz */
-const GAP = { hum: 300, draw: 70, turn: 45, tick: 45, tilt: 45, zoom: 60, ring: 60, move: 50, lift: 50 };
+const GAP = { slosh: 220, peel: 110, hum: 300, draw: 70, turn: 45, tick: 45, tilt: 45, zoom: 60, ring: 60, move: 50, lift: 50 };
 
 /** the default hooks.sound of a library mini game */
 export function mgSoundHook(type, now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now())) {

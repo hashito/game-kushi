@@ -1,4 +1,4 @@
-/* game-kit 7dca29ac (branch main): js/control-help.js — edit in game-kit and run tools/kit-sync.js */
+/* game-kit 3d827491: js/control-help.js — edit in game-kit and run tools/kit-sync.js */
 // Controls help (standard 1.17.0, from 水無瀬病院 #16 / #17 / #22: 「操作方法をメニューで表示して」「C またはボタンでしゃがむなどを教えて」
 // 「走れるようになったりライトを直したりの操作が分かりづらい」). Two parts, installed by game-core for every 3D game:
 //   - 操作方法 in the pause menu: every control of this game (game.json "controls"), keyboard / touch / pad as the player is using now;
@@ -35,6 +35,7 @@ const CSS = `
 .gf-ch[data-hud-slot]{position:relative;left:auto;top:auto;transform:none;width:100%;max-width:100%;box-sizing:border-box;pointer-events:auto;animation:gf-ch-in2 .35s ease-out}
 @keyframes gf-ch-in2{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 .gf-ch .gf-ch-more{display:block;margin-top:2px;color:#9fb0aa;font-size:13px}
+.gf-ch.gf-ch--short{gap:10px;padding:6px 8px 6px 12px;font-size:15px;line-height:1.4}.gf-ch.gf-ch--short .gf-ch-t b{font-size:15px;font-weight:600}.gf-ch.gf-ch--short .gf-ch-t span,.gf-ch.gf-ch--short .gf-ch-more{display:none}.gf-ch.gf-ch--short button{min-height:40px;padding:0 10px}
 html[data-gf-calm="1"] .gf-ch{animation:none}
 #t-buttons button.gf-ch-lit{outline:3px solid #f0d36a;outline-offset:2px;animation:gf-ch-pulse 1.1s ease-in-out infinite}
 @keyframes gf-ch-pulse{50%{outline-color:rgba(240,211,106,.25)}}
@@ -71,7 +72,10 @@ export function installControlHelp(ctx) {
     card = document.createElement('div'); card.className = 'gf-ch'; card.id = 'gf-ch'; card.setAttribute('role', 'status');
     card.innerHTML = `<kbd>${esc(m === 'touch' ? (o.touch || '') || '' : key)}</kbd><div class="gf-ch-t"><b></b><span></span><small class="gf-ch-more" hidden></small></div><button type="button" aria-label="閉じる">閉じる</button>`;
     const kb = card.querySelector('kbd'); if (m === 'touch' && !o.touch) kb.remove();
-    card.querySelector('b').textContent = `${o.why ? `${o.why} ` : ''}${o.text || (row ? row[1] : k)}${m === 'touch' ? `：${o.touch || key}` : ''}`;
+    // 1.21.1 (「通知が多すぎます」): on a phone the hint card, when it shows, is one short line (what and which button) and the button itself flashes (gf-ch-lit)
+    const short = m === 'touch' && typeof matchMedia !== 'undefined' && matchMedia('(max-height: 520px), (max-width: 520px)').matches;
+    if (short) card.classList.add('gf-ch--short');
+    card.querySelector('b').textContent = short ? `${o.text || (row ? row[1] : k)}：${o.touch || key}` : `${o.why ? `${o.why} ` : ''}${o.text || (row ? row[1] : k)}${m === 'touch' ? `：${o.touch || key}` : ''}`;
     card.querySelector('span').textContent = o.sub || (k === 'crouch' ? (m === 'touch' ? 'もう一度押すと立つ。' : 'もう一度 C で立つ。') : k === 'run' ? 'しゃがんでいると走れない。' : '');
     card.querySelector('button').onclick = () => close();
     const lane = document.getElementById('hs-tc');
