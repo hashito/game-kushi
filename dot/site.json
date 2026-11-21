@@ -1,0 +1,26 @@
+{
+  "targets": [
+    {
+      "path": "dot",
+      "mode": "top",
+      "id": "kushi-dot",
+      "name": "札の家 ― 奥の棚の櫛（ドット版）",
+      "nameEn": "Fuda no Ie: The Comb on the Back Shelf (Dot Edition)",
+      "titleSuffix": "町家を見下ろして歩く、ドット絵の3D和風ホラー",
+      "description": "『札の家 ― 奥の棚の櫛』を、見下ろしのドット絵3Dで作り直した版。訪問介護のヘルパー宮下航を上から見て動かし、戸のお札をはがして古い櫛屋の奥へ進む。物語・声・写真は元の版と同じ。PC・スマホ対応、無料。",
+      "ogImageAlt": "札の家（ドット版）　見下ろした町家の中、手燭を持ったヘルパーと、格子の向こうに座るハル",
+      "subtitle": "見下ろし ドット版"
+    },
+    {
+      "path": "dot-fps",
+      "mode": "fps",
+      "id": "kushi-dot-fps",
+      "name": "札の家 ― 奥の棚の櫛（ドット版・一人称）",
+      "nameEn": "Fuda no Ie: The Comb on the Back Shelf (Dot Edition, First Person)",
+      "titleSuffix": "ドット絵の一人称3D和風ホラー",
+      "description": "『札の家 ― 奥の棚の櫛』を、一人称のドット絵3Dで作り直した版。粗い画素の暗い町家で、戸のお札をはがして奥の棚の櫛を取りに行く。物語・声・写真は元の版と同じ。PC・スマホ対応、無料。",
+      "ogImageAlt": "札の家（ドット版・一人称）　ドット絵の暗い町家の格子戸に、白いお札が貼られている",
+      "subtitle": "一人称 ドット版"
+    }
+  ]
+}

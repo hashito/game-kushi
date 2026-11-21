@@ -1,0 +1,17 @@
+{
+  "style": "pixel",
+  "pixel": {
+    "world": "lowres",
+    "short": 200
+  },
+  "fx": {
+    "noise": 0,
+    "saturation": 0.3
+  },
+  "preset": {
+    "post": {
+      "grain": 0,
+      "vignette": 0.5
+    }
+  }
+}

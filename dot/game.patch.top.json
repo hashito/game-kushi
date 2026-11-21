@@ -1,0 +1,13 @@
+{
+  "pixel": { "world": "lowres", "short": 240 },
+  "preset": { "fog": { "type": "exp2", "color": 657414, "density": 0.03 } },
+  "controls": {
+    "crouch": true,
+    "lookInput": false,
+    "touch": [
+      { "k": "KeyE", "label": "操作", "cls": "big" },
+      { "k": "KeyF", "label": "手燭" },
+      { "k": "KeyC", "label": "しゃがむ" }
+    ]
+  }
+}

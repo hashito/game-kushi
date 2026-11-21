@@ -26,6 +26,22 @@ the door and puts the charm in your hand; pasting it on a post in the passage st
 - Reviews: `docs/brief.md` (plan), `docs/spec-review.md` (cold reader, director critique, checks), `docs/kit-feedback.md`.
 - The kit smoke test cannot play this game (tasks without a station, a floor-1 start); see `docs/kit-feedback.md`.
 
+## ドット版 (`/dot` 見下ろし, `/dot-fps` 一人称)
+
+The same game drawn in dots, two more pages of the same site (`npm run build` = `tools/build-site.js` + `tools/build-dot.mjs`; one
+`firebase deploy` serves `/`, `/dot`, `/dot-fps`). They share the root's `js/ext`, `data`, voices, photos and textures (absolute
+paths, `<base href="/">`); only `dot/` is theirs:
+- `dot/site.json` (the targets: path, mode, id = save slot, SEO texts), `dot/game.patch*.json` (style pixel lowres, no grain;
+  top: crouch on, no mouse look), `dot/index.html` (the page), `dot/css/dot.css` (pixel UI: DotGothic16, square frames).
+- `dot/js/dot/index.js`: the people as sprite-stack motion frames of the kit's shared rig (game-kit branch `sprite-motions`:
+  `js/sprite-stack-mesh.js`, `js/sprite-stack-anim.js`, docs/sprite-motions.md; copies in `dot/js/kit/`), the items and the main
+  furniture as library stacks fitted into the space of the original parts (colliders unchanged); `photos.js` redraws the root's
+  photos as pixel art at boot; `topdown.js` the camera from above, the cut-away house, screen-relative moves and auto-aim [E].
+- Frames: `tools/dot/figures.json` -> game-kit `tools/sprite-stacks/motion_frames.py --spec ... --out dot/assets/figures`;
+  props: `python tools/dot/stacks.py --kit <game-kit clone>`; share pictures: `tools/dot/og-steps.mjs` + `og-compose.mjs`.
+- Play checks: `node tools/probe.mjs --public --path dot/ --query qa=1\&dotscript=1 --steps tools/play/full.mjs` (`dotscript`: the
+  scripts steer by yaw as in first person), `--path dot-fps/ --query qa=1` for the first-person one.
+
 <!-- scene-links:start -->
 ## テスト用の場面リンク
 

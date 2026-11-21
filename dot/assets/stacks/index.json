@@ -1,0 +1,172 @@
+{
+ "comb": {
+  "w": 21,
+  "d": 12,
+  "n": 3,
+  "src": "game-kushi-comb",
+  "mpp": 0.007
+ },
+ "teshoku": {
+  "w": 9,
+  "d": 9,
+  "n": 16,
+  "src": "game-kushi-teshoku",
+  "mpp": 0.007
+ },
+ "matches": {
+  "w": 15,
+  "d": 9,
+  "n": 5,
+  "src": "game-kushi-matches",
+  "mpp": 0.007
+ },
+ "letter": {
+  "w": 21,
+  "d": 27,
+  "n": 4,
+  "src": "game-kushi-letter-1",
+  "mpp": 0.007
+ },
+ "old-fuda": {
+  "w": 11,
+  "d": 26,
+  "n": 3,
+  "src": "game-kushi-old-fuda",
+  "mpp": 0.007
+ },
+ "phone": {
+  "w": 13,
+  "d": 24,
+  "n": 7,
+  "src": "game-kushi-phone",
+  "mpp": 0.007
+ },
+ "sheet": {
+  "w": 21,
+  "d": 27,
+  "n": 4,
+  "src": "game-kushi-visit-sheet",
+  "mpp": 0.007
+ },
+ "kamado": {
+  "w": 49,
+  "d": 25,
+  "n": 61,
+  "src": "game-kushi-HASHIRI_KAMADO",
+  "mpp": 0.025
+ },
+ "case": {
+  "w": 39,
+  "d": 23,
+  "n": 41,
+  "src": "game-kushi-MISE_CASE",
+  "mpp": 0.025
+ },
+ "tea": {
+  "w": 27,
+  "d": 19,
+  "n": 7,
+  "src": "game-kushi-MISE_TEA",
+  "mpp": 0.007
+ },
+ "ihai": {
+  "w": 43,
+  "d": 27,
+  "n": 38,
+  "src": "game-kushi-NAKA_IHAI",
+  "mpp": 0.05
+ },
+ "kurodenwa": {
+  "w": 25,
+  "d": 17,
+  "n": 13,
+  "src": "game-kushi-NAKA_PHONE",
+  "mpp": 0.012
+ },
+ "tansu": {
+  "w": 39,
+  "d": 22,
+  "n": 41,
+  "src": "game-kushi-NAKA_TANSU",
+  "mpp": 0.025
+ },
+ "shoes": {
+  "w": 17,
+  "d": 16,
+  "n": 8,
+  "src": "game-kushi-OMOTE_SHOES",
+  "mpp": 0.007
+ },
+ "kyodai": {
+  "w": 27,
+  "d": 16,
+  "n": 47,
+  "src": "kushi-kyodai",
+  "mpp": 0.025
+ },
+ "tansu-kimono": {
+  "w": 41,
+  "d": 21,
+  "n": 37,
+  "src": "kushi-tansu-kimono",
+  "mpp": 0.025
+ },
+ "kiln": {
+  "w": 29,
+  "d": 27,
+  "n": 21,
+  "src": "kushi-smoke-kiln",
+  "mpp": 0.025
+ },
+ "tsuge-boards": {
+  "w": 25,
+  "d": 9,
+  "n": 35,
+  "src": "kushi-tsuge-boards",
+  "mpp": 0.025
+ },
+ "boards-hair": {
+  "w": 61,
+  "d": 25,
+  "n": 30,
+  "src": "kushi-boards-hair",
+  "mpp": 0.025
+ },
+ "kimono-remains": {
+  "w": 60,
+  "d": 58,
+  "n": 10,
+  "src": "kushi-indigo-kimono-remains",
+  "mpp": 0.012
+ },
+ "burnt-teshoku": {
+  "w": 21,
+  "d": 15,
+  "n": 8,
+  "src": "kushi-burnt-teshoku",
+  "mpp": 0.012
+ },
+ "wedding-photo": {
+  "w": 25,
+  "d": 5,
+  "n": 36,
+  "src": "kushi-wedding-photo",
+  "mpp": 0.012
+ },
+ "kake-kushi": {
+  "w": 21,
+  "d": 12,
+  "n": 3,
+  "src": "game-kushi-comb",
+  "mpp": 0.007,
+  "designed": "f"
+ },
+ "koteko": {
+  "w": 33,
+  "d": 10,
+  "n": 2,
+  "src": "game-kushi-crowbar",
+  "mpp": 0.007,
+  "designed": "f"
+ }
+}

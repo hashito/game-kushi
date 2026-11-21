@@ -1,0 +1,72 @@
+/* 札の家 ドット版: the pixel skin over the kit's shell (the same windows, HUD, title and cards; only their look changes).
+   The pixel font DotGothic16 (Google Fonts, loaded with every glyph of the game behind the title), square corners, two-pixel frames with
+   stepped corners, hard-edged pictures. Sizes stay those of the kit (A12: readable on a phone) - a pixel font is never made smaller. */
+:root[data-dot] {
+  --gf-font: 'DotGothic16', 'Hiragino Sans', 'Yu Gothic', 'Noto Sans JP', sans-serif;
+  --gf-radius: 0px; --gf-radius-lg: 0px; --gf-radius-sm: 0px;
+  --dot-ink: #f1e6cc;
+  --dot-line: #c9862f;
+  --dot-dim: #7a5a2a;
+  --dot-bg: #120d09;
+  --dot-step: polygon(0 4px, 4px 4px, 4px 0, calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px));
+  --gf-shadow: none;
+  --hk-serif: var(--gf-font);   /* the ending's serif lines: the pixel font too */
+}
+:root[data-dot] body { font-family: var(--gf-font); letter-spacing: 0.04em; -webkit-font-smoothing: none; font-smooth: never; }
+/* every picture with hard edges (the photos are drawn small as pixel art; see js/dot/photos.js) */
+:root[data-dot] img, :root[data-dot] canvas, :root[data-dot] .gf-ending-photo, :root[data-dot] .gf-mo-scene-photo, :root[data-dot] [style*="url("] { image-rendering: pixelated; }
+:root[data-dot] *, :root[data-dot] *::before, :root[data-dot] *::after { border-radius: 0 !important; }
+:root[data-dot] .gf-scanlines { opacity: 0.35; }
+/* the film grain overlay is fine noise at screen resolution: it fights the pixels (the dots are the texture here) */
+:root[data-dot] .kit-csspost > div[style*="kitGrain"] { display: none !important; }
+
+/* the frames: windows, cards, talk, the HUD boxes */
+:root[data-dot] .win, :root[data-dot] .wm-win, :root[data-dot] .gf-talk, :root[data-dot] .kcard, :root[data-dot] .gf-mo-card-in,
+:root[data-dot] .tl-lookcard, :root[data-dot] .gf-title-box, :root[data-dot] #objective, :root[data-dot] .kc-fuda, :root[data-dot] .kc-seal,
+:root[data-dot] .mg-card, :root[data-dot] .chip {
+  border: 2px solid var(--dot-line) !important;
+  box-shadow: 0 0 0 2px #000, 4px 4px 0 2px rgba(0, 0, 0, 0.55) !important;
+  outline: 2px solid var(--dot-dim); outline-offset: -6px;
+}
+:root[data-dot] .wm-head, :root[data-dot] .win-head { border-bottom: 2px dashed var(--dot-dim); }
+:root[data-dot] .wm-title, :root[data-dot] .win-title, :root[data-dot] .gf-talk-who { letter-spacing: 0.1em; }
+:root[data-dot] .gf-talk-who::before { content: '\25B6\FE0E'; display: inline-block; margin-right: 0.35em; color: var(--dot-line); font-size: 0.8em; }
+
+/* the buttons: a raised block that sinks when pressed */
+:root[data-dot] .btn, :root[data-dot] button.btn, :root[data-dot] .gf-sb-btn, :root[data-dot] .wm-btn {
+  border: 2px solid var(--dot-line) !important;
+  box-shadow: inset -2px -2px 0 rgba(0, 0, 0, 0.45), inset 2px 2px 0 rgba(255, 255, 255, 0.12), 0 0 0 2px #000 !important;
+  clip-path: var(--dot-step);
+  transition: none !important;
+}
+:root[data-dot] .btn:active, :root[data-dot] .gf-sb-btn:active { transform: translate(2px, 2px); box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.45), 0 0 0 2px #000 !important; }
+:root[data-dot] .btn.primary { background: var(--dot-line) !important; color: #1a1206 !important; }
+:root[data-dot] .btn.primary::before { content: '\25B6\FE0E'; margin-right: 0.4em; font-size: 0.75em; vertical-align: 0.1em; }
+:root[data-dot] .btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* a pixel font reads worse than a smooth one at the same size: no label under 12 px */
+:root[data-dot] .sg-step { font-size: max(12px, 1em) !important; }
+
+/* the title */
+:root[data-dot] #title .gf-title-box { background: rgba(10, 7, 5, 0.86) !important; }
+:root[data-dot] #title h1, :root[data-dot] #title .gf-title { text-shadow: 2px 2px 0 #000, -2px 0 0 #3a0c08, 0 2px 0 #000; letter-spacing: 0.08em; }
+:root[data-dot] #title .gf-title-box::after {
+  content: attr(data-dot-label); display: block; margin-top: 6px; font-size: 15px; color: var(--dot-line); letter-spacing: 0.3em;
+}
+
+/* the HUD: the prompt and the thought band in boxes */
+:root[data-dot] #prompt:not(:empty) { background: rgba(10, 7, 5, 0.82); border: 2px solid var(--dot-line); box-shadow: 0 0 0 2px #000; padding: 4px 10px; }
+:root[data-dot] #objective { background: rgba(10, 7, 5, 0.8) !important; }
+:root[data-dot] .kc-bootbar, :root[data-dot] .gf-boot-bar { height: 8px !important; border: 2px solid var(--dot-line); background: #000 !important; box-shadow: 0 0 0 2px #000; }
+:root[data-dot] .kc-bootbar i { background: repeating-linear-gradient(90deg, var(--dot-line) 0 6px, transparent 6px 8px) !important; }
+:root[data-dot] .gf-boot-bar::after { background: repeating-linear-gradient(90deg, var(--dot-line) 0 6px, transparent 6px 8px); }
+
+/* the death card and the ending */
+:root[data-dot] .gf-mo-card-in { background: rgba(14, 4, 3, 0.92) !important; }
+:root[data-dot] .gf-ending-title { text-shadow: 3px 3px 0 #000; letter-spacing: 0.12em; }
+:root[data-dot] .gf-ending-photo { filter: contrast(1.05); }
+
+/* top-down: no crosshair (the nearest thing in front is used), the view does not need the mouse */
+:root[data-dot="top"] #crosshair { display: none !important; }
+:root[data-dot="top"] canvas { cursor: default; }
+:root[data-dot="top"] .kit-look-prompt, :root[data-dot="top"] .kit-look-note { display: none !important; }
