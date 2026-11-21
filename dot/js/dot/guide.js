@@ -7,7 +7,7 @@
 //  - D.guide reports where it is for the checks (tools/dot/basement-steps.mjs)
 export function installGuide(THREE, ctx, { D, mode }) {
   const UNDER = 0;   // the basement floor
-  const MIN = mode === 'top' ? 0.5 : 0.75;   // first person: the hemisphere's colour is very dark (2a2420), so its floor is higher   // the sky light under the house never below this (top: before its own x2.2 for the view)
+  const MIN = mode === 'top' ? 0.56 : 0.85;   // 2.2: a step up for the dot tiles (the palette darkened the floors)   // first person: the hemisphere's colour is very dark (2a2420), so its floor is higher   // the sky light under the house never below this (top: before its own x2.2 for the view)
   const hemis = []; ctx.scene.traverse((o) => { if (o.isHemisphereLight || o.isAmbientLight) hemis.push({ l: o, base: null, set: null }); });
 
   // a soft round glow (a canvas gradient) and a ring on the floor
@@ -76,6 +76,8 @@ export function installGuide(THREE, ctx, { D, mode }) {
   const iconM = new THREE.SpriteMaterial({ map: itex, transparent: true, depthWrite: false, depthTest: false, fog: false }); iconM.name = 'dot-mark-icon';
   const softM = new THREE.SpriteMaterial({ map: tex, color: 0xffe2a8, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }); softM.name = 'dot-mark-glow';
   const mringM = new THREE.MeshBasicMaterial({ color: 0xffcc70, transparent: true, opacity: 0.5, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false }); mringM.name = 'dot-mark-ring';
+  // the guide's glows are light, not surfaces: the dot pass (dotifyScene) leaves them as they are (quantized, a soft glow went dark: 2.2 basement check)
+  for (const m of [glowM, ringM, iconM, softM, mringM]) { m.userData.dot = 'light'; if (m.map) m.map.userData.dot = 'light'; }
   const mringG = new THREE.RingGeometry(0.3, 0.36, 32);
   const marks = new Map();
   const markAll = () => {
