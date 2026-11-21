@@ -13,7 +13,7 @@ import { buildHaru } from './people.js';
 
 // where each station's invisible [E] box goes (height above the floor; x / z moves; scale of the box)
 const HIT = {
-  S_CHOBA: { y: 1.0, dx: 0.35, dz: -0.2 }, S_PHONE: { y: 0.7, s: [0.6, 0.6, 0.6] }, S_BUTSUDAN: { y: 0.9 }, S_BENCH: { y: 0.9 },
+  S_CHOBA: { y: 1.0, dx: 0.35, dz: -0.2, s: [2.0, 1.4, 1.4] } /* 2.2: ハル is easy to speak to (「話しかけづらい」): a wide box along the lattice, talk reach in plan.json */, S_PHONE: { y: 0.7, s: [0.6, 0.6, 0.6] }, S_BUTSUDAN: { y: 0.9 }, S_BENCH: { y: 0.9 },
   S_LIGHT: { y: 0.35, s: [1.0, 0.5, 1.0] }, S_SHELF: { y: 1.0 }, S_RACK: { y: 1.0, s: [0.5, 1.2, 1.2] }, S_KOSHI: { y: 1.2, s: [1.0, 1.6, 0.3] },
 };
 
@@ -126,12 +126,13 @@ export function installHouse(ext, G) {
       const H = buildHaru(); H.root.position.set(7.15, y0, 21.2); H.root.rotation.y = Math.PI * 0.85; grp.add(H.root); G.haru = H;
       for (const dx of [-0.08, 0.1]) item('yunomi', 'MISE', 5.6 + dx, 22.85, 0, 0, 1.0);
     }
-    // 2.0: cushions in front of the cases, a wall clock on the north wall (flush), its hands at a quarter to six
+    // 2.0: cushions in front of the cases, a wall clock on the north wall (flush), its hands at a quarter to six. 2.2: it hung at x 5.1, where
+    // the 中の間 fusuma slides open (「スライドする戸のところに壁掛け時計があるので良くない」); now on the solid wall above ハル's desk in the 帳場
     zabuton('MISE', 4.3, 24.3); zabuton('MISE', 5.4, 24.3, 0.1);
-    { const y = 1.75, z = 20.08 + 0.06; box('MISE', 5.1, z, 0.34, 0.62, 0.12, M.wood, y - 0.31, false);
-      const face = cyl('MISE', 5.1, z + 0.065, 0.12, 0.12, 0.01, M.white, y + 0.03); face.rotation.x = Math.PI / 2; face.position.y = fy('MISE') + y + 0.08;
-      box('MISE', 5.1, z + 0.075, 0.008, 0.09, 0.004, M.black, y + 0.08, false); box('MISE', 5.08, z + 0.078, 0.06, 0.006, 0.004, M.black, y + 0.08, false);
-      box('MISE', 5.1, z + 0.065, 0.02, 0.22, 0.01, M.gold, y - 0.28, false); }
+    { const y = 1.75, z = 20.08 + 0.06, CX = 7.3; box('MISE', CX, z, 0.34, 0.62, 0.12, M.wood, y - 0.31, false);
+      const face = cyl('MISE', CX, z + 0.065, 0.12, 0.12, 0.01, M.white, y + 0.03); face.rotation.x = Math.PI / 2; face.position.y = fy('MISE') + y + 0.08;
+      box('MISE', CX, z + 0.075, 0.008, 0.09, 0.004, M.black, y + 0.08, false); box('MISE', CX - 0.02, z + 0.078, 0.06, 0.006, 0.004, M.black, y + 0.08, false);
+      box('MISE', CX, z + 0.065, 0.02, 0.22, 0.01, M.gold, y - 0.28, false); }
     // ---------------- 中の間: the butsudan, the wedding photo, the black phone, the chest of drawers, a low table ----------------
     { const x = 7.62, z = 16.5;
       box('NAKA', x, z, 0.58, 0.8, 1.1, M.lacquer); box('NAKA', x + 0.24, z, 0.06, 0.95, 1.1, M.lacquer, 0.8);

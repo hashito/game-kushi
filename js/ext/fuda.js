@@ -94,7 +94,7 @@ export function installFuda(ext, G) {
   const makeMat = () => burnMaterial(tex);
   function charmAt(room, x, y, z, face, mat, id, label) {
     const fy = floorOf(room);
-    const m = new THREE.Mesh(geo, mat); m.position.set(x, fy + y + 0.15, z); m.rotation.y = YAW[face]; m.name = `fuda:${id}`;
+    const m = new THREE.Mesh(geo, mat); m.position.set(x, fy + y + 0.15, z); m.rotation.y = YAW[face]; m.name = `fuda:${id}`; m.userData.doorItem = true;   /* a seal is meant to sit on its door (kit tools/wall-door.mjs leaves it alone) */
     ctx.world.group.add(m);
     const hit = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.7, 0.16), hidden);
     hit.position.set(x, fy + y, z); hit.rotation.y = YAW[face]; hit.name = `fudahit:${id}`; hit.userData.interact = { kind: 'fuda', id, label };

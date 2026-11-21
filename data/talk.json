@@ -364,7 +364,7 @@
     },
     {
       "who": "私",
-      "text": "手燭の火が、吹き消された。廊下の向こうで、戸の札が焦げる匂い。……走れ。札が落ちる前に、はしごまで。",
+      "text": "手燭の火が、吹き消された。廊下の向こうで、戸の札が焦げる匂い。……走れ。つかまったら終わりだ。はしごを上がって、帳場のハルさんの札の輪の内まで。",
       "id": "rise-3",
       "voice": "assets/voice/rise-3.mp3"
     }
@@ -380,7 +380,7 @@
   "seal_done": [
     {
       "who": "私",
-      "text": "古い札を、揚げ戸の上から貼った。叩く音が、止んだ。",
+      "text": "古い札を、揚げ戸の上から貼った。下の気配が、静かになった。",
       "id": "seal_done-1",
       "voice": "assets/voice/seal_done-1.mp3"
     },
@@ -737,6 +737,12 @@
       "text": "札がはがれた。格子戸が、きしみながら横へすべった。……奥の室だ。",
       "id": "koshi_open-1",
       "voice": "assets/voice/koshi_open-1.mp3"
+    },
+    {
+      "who": "私",
+      "text": "千草さんが燻しの間で櫛を抱いているうちに、奥の棚の櫛を取る。それを帳場へ持って行けば、ハルさんは表の戸を開けると言った。",
+      "id": "koshi_open-2",
+      "voice": "assets/voice/koshi_open-2.mp3"
     }
   ],
   "flue2_done": [
@@ -768,6 +774,40 @@
       "text": "……まだ……？",
       "id": "think_urge-3",
       "voice": "assets/voice/think_urge-3.mp3"
+    }
+  ],
+  "safe": [
+    {
+      "who": "私",
+      "text": "店の間に駆けこんだ。……後ろの足音が、中の間の敷居で止まった。",
+      "id": "safe-1",
+      "voice": "assets/voice/safe-1.mp3"
+    },
+    {
+      "who": "ハル",
+      "text": "ここまでは来られん。帳場のまわりは、わしが五十二年貼った札の輪の内じゃ。",
+      "id": "safe-2",
+      "voice": "assets/voice/safe-2.mp3"
+    },
+    {
+      "who": "私",
+      "text": "千草さんの気配が、遠ざかっていく。揚げ戸の下へ、戻っていったんだ。",
+      "id": "safe-3",
+      "voice": "assets/voice/safe-3.mp3"
+    },
+    {
+      "who": "ハル",
+      "text": "揚げ戸が開いたままじゃ。古い札で、上から閉めておいで。また上がって来んうちに。",
+      "id": "safe-4",
+      "voice": "assets/voice/safe-4.mp3"
+    }
+  ],
+  "chase_haru": [
+    {
+      "who": "ハル",
+      "text": "こっちじゃ！　店の間の、わしの札の内へ入れ！",
+      "id": "chase_haru-1",
+      "voice": "assets/voice/chase_haru-1.mp3"
     }
   ]
 }

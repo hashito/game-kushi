@@ -62,6 +62,7 @@
   },
   {
     "id": "T_HASHIRI",
+    "needItems": ["TESHOKU", "MATCHES"],
     "stage": "L2",
     "room": "HASHIRI",
     "title": "走り庭（台所）で、手燭とマッチを持つ",
@@ -154,6 +155,7 @@
   },
   {
     "id": "T_USU",
+    "needItems": ["KOTEKO"],
     "stage": "L2",
     "room": "SAGYO",
     "station": "S_USU",
@@ -308,6 +310,7 @@
   },
   {
     "id": "T_LURE",
+    "needItems": ["KAKE_KUSHI"],
     "stage": "L3",
     "room": "IBUSHI",
     "station": "S_RACK",
@@ -484,13 +487,14 @@
   {
     "id": "T_ESCAPE",
     "stage": "L4",
-    "room": "SAGYO",
+    "room": "MISE",
+    "station": "S_CHOBA",
     "needs": [
       "T_BOX"
     ],
-    "title": "櫛を持って、揚げ戸のはしごまで走る",
-    "meaning": "千草さんが、燻しの間の戸の札を押している。**札が焦げて落ちる前に**、廊下を抜けて作業場へ上がる。",
-    "hint": "格子戸を出て、土の廊下を南へ。室のはしごで作業場へ。走れる（Shift）。",
+    "title": "櫛を持って、帳場のハルさんの札の輪まで逃げる",
+    "meaning": "櫛を取った私を、千草さんが追ってくる。**つかまったら終わり**。帳場のまわりはハルさんが五十二年貼った**札の輪**で、千草さんは入れない。はしごを上がり、家を抜けて、帳場の前まで逃げきる。",
+    "hint": "格子戸を出て、土の廊下を南へ。室のはしごで作業場へ。上では走れる（Shift）。渡り廊下、奥の間、中の間を抜けて店の間の帳場へ。",
     "steps": [
       {
         "text": "土の廊下を南へ走る",
@@ -500,8 +504,16 @@
       },
       {
         "text": "室のはしごで、作業場へ上がる",
+        "body": "千草さんも、はしごを上がってくる。",
         "done": "room",
         "room": "SAGYO"
+      },
+      {
+        "text": "家を抜けて、店の間の帳場の前まで走る",
+        "body": "渡り廊下・奥の間・中の間・店の間。帳場の札の輪の内なら、千草さんは入れない。",
+        "done": "room",
+        "room": "MISE",
+        "emphasis": "station:S_CHOBA"
       }
     ]
   },
@@ -514,16 +526,16 @@
       "T_ESCAPE"
     ],
     "title": "揚げ戸に、古い札を貼る",
-    "meaning": "揚げ戸を閉めただけでは、千草さんが下から押し開ける。札を貼れば、上がって来られない。",
-    "hint": "はしごを上がった足もとの揚げ戸。",
+    "meaning": "千草さんは揚げ戸の下へ戻った。でも揚げ戸は開いたまま。**札を上から貼れば**、もう上がって来られない。",
+    "hint": "作業場の、はしごの揚げ戸。店の間から渡り廊下を通って戻る。",
     "steps": [
       {
-        "text": "揚げ戸を見る",
+        "text": "作業場の揚げ戸の前へ戻る",
         "done": "look",
         "emphasis": "station:S_HATCH"
       },
       {
-        "text": "[E] ですぐに札を貼る",
+        "text": "[E] で古い札を上から貼る",
         "done": "task"
       }
     ]
@@ -601,6 +613,7 @@
   },
   {
     "id": "T_SQ1",
+    "needItems": ["LETTER1", "LETTER2", "LETTER3"],
     "stage": "L2",
     "room": "NAKA",
     "station": "S_BUTSUDAN",

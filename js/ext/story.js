@@ -18,6 +18,7 @@ const ROOM_SURFACE = { MURO: 'dirt', DORO: 'dirt', IBUSHI: 'dirt', OKUMURO: 'dir
 const CP = {
   flue: { x: 2.4, z: -7.6, yaw: -Math.PI / 2, floor: 0 },     // the corridor, before 燻しの間's door, facing it
   hunt: { x: 2.6, z: -24.6, yaw: Math.PI, floor: 0 },         // 奥の室, in front of the shelf, facing the way out
+  chase2: { x: 5.6, z: 1.2, yaw: Math.PI, floor: 1 },         // 2.2: 作業場, at the top of the ladder, facing the door to the 渡り廊下 (the run upstairs starts here)
 };
 const CAGE_AT = { room: 'OKUMURO', x: 1.2, z: -25.4 };
 
@@ -70,6 +71,26 @@ export function installStory(ext, G) {
   // ---------------- 千草さん: where she is for the tasks done ----------------
   const catchFlue = () => { G.ghostStop(); ctx.checkpoint = { ...CP.flue }; ctx.die('chigusa'); };
   const catchHunt = () => { G.ghostStop(); ctx.checkpoint = { ...CP.hunt }; ctx.die('chigusa'); };
+  const catchChase = () => { G.ghostStop(); ctx.checkpoint = { ...CP.chase2 }; ctx.die('chase'); };
+  // 2.2 (「最後に敵が追ってくるところは襲われたら終わりにして婆さんの部屋の手前まで逃げるようにしたほうが良い」): up the ladder she comes too,
+  // and follows the way you ran through the house (ghost.js 'follow'); a catch is the end (the death card, again from the top of the ladder).
+  // Inside 店の間 ハル's ring of charms holds her: the safe beat, then the hatch to seal (no more timer under the lid).
+  const haruCall = () => (ctx.data.talk && ctx.data.talk.chase_haru && ctx.data.talk.chase_haru[0].text) || 'こっちじゃ！';   // data/talk.json chase_haru (voiced as ハル)
+  function chase2(again) {
+    setFlag('chase2'); ctx.checkpoint = { ...CP.chase2 };
+    G.trail = [{ x: 6.6, z: -0.5 }];
+    G.ghostStart('follow', { at: { room: 'SAGYO', x: 6.6, z: -0.5 }, floor: 1, rise: again ? 3.0 : 2.4, onCatch: catchChase });
+    ctx.sound('stinger'); ctx.fx && ctx.fx.spook && ctx.fx.spook(0.7);
+    later(() => say(again ? 'chase_reset' : 'chase_up', 5), 300);
+    later(() => { if (G.gh.mode === 'follow') { ctx.voiceLine && ctx.voiceLine('assets/voice/chase_haru-1.mp3', null, { prio: 'story' }); ctx.ui.say(`<span class="who">ハル</span>${haruCall()}`, 5); } }, 4200);
+  }
+  async function safeBeat() {
+    ctx.completeTask('T_ESCAPE'); G.ghostFade(); ctx.checkpoint = null; hatchSpot();   // the hatch's seal spot back over the ladder (T_SEAL waits)
+    { const sl = ctx.ui.sayLine; if (sl) { sl.q.length = 0; if (sl.cur) { sl.cur.readyAt = sl.cur.hideAt = 0; sl.arm(); } } }   // the run's 「止まるな」 lines go: she stopped at the ring
+    ctx.sound('noise', 'thud');
+    later(() => talk('safe', '帳場の格子'), 900);
+    ctx.save();
+  }
   const lureSpot = () => ({ room: 'IBUSHI', x: (G.lureAt || { x: 9.3 }).x - 0.7, z: (G.lureAt || { z: -9 }).z });
   /** the flue phase did not end (a catch, a reload): the flue charm back on, the door seal off, she back in 奥の室 */
   function resetFlue() {
@@ -87,6 +108,7 @@ export function installStory(ext, G) {
   }
   function placeGhost() {
     if (!done('T_HATCH') || done('T_ESCAPE')) { G.ghostStop(); return; }
+    if (done('T_BOX') && flag('chase2')) { chase2(true); return; }
     if (done('T_BOX')) { ctx.checkpoint = { ...CP.hunt }; resetHunt(); return; }
     if (done('T_TRAP')) { G.ghostStart('trapped', { at: lureSpot(), onCatch: catchFlue }); return; }
     if (G.peeled.includes('F_FLUE')) { resetFlue(); return; }
@@ -154,8 +176,8 @@ export function installStory(ext, G) {
     // the ladder: shut while 千草さん is under the hatch
     const st = G.stairDown && G.stairDown.userData.interact;
     if (st) {
-      const L0 = st.locked; st.locked = () => L0() || (done('T_ESCAPE') && !done('T_RETURN'));
-      const h0 = st.hint; Object.defineProperty(st, 'hint', { configurable: true, get: () => (done('T_ESCAPE') && !done('T_RETURN') ? (done('T_SEAL') ? W.seal_shut : W.stair_shut) : h0) });
+      const L0 = st.locked; st.locked = () => L0() || (done('T_ESCAPE') && !done('T_RETURN')) || (flag('chase2') && !done('T_ESCAPE'));
+      const h0 = st.hint; Object.defineProperty(st, 'hint', { configurable: true, get: () => (flag('chase2') && !done('T_ESCAPE') ? W.chase_stair : done('T_ESCAPE') && !done('T_RETURN') ? (done('T_SEAL') ? W.seal_shut : W.stair_shut) : h0) });
     }
     ctx.systems.push({ id: 'kc-story', def: { update: (dt, c2, active) => update(dt, active) }, inst: null });
     // the seal bar (the hatch pushed up from below)
@@ -168,7 +190,7 @@ export function installStory(ext, G) {
   ext.registerTask('T_CHOBA', { run: async () => { await talk('choba1', '帳場の格子'); return true; } });
   ext.on('kushi:peel', ({ id }) => {
     if (id === 'F_NAKA') { ctx.completeTask('T_PEEL1'); later(() => talk('peel1_done', '帳場の声')); return; }
-    if (id === 'F_DORO') { tryDone('T_DORO'); return; }
+    if (id === 'F_DORO') { if (tryDone('T_DORO')) later(() => say('doro_done', 6), 900); return; }
     if (id === 'F_FLUE') { flueStart(); return; }
     if (/^W_/.test(id)) { const n = ['W_1', 'W_2', 'W_3'].filter((w) => G.peeled.includes(w)).length; if (n === 3) tryDone('T_SQ2'); else say('sq2_count', 3); return; }
     if (!flag('peel_first')) { setFlag('peel_first'); say('peel_first', 5); }
@@ -237,7 +259,8 @@ export function installStory(ext, G) {
   }
   ext.on('player:respawn', () => {
     if (!ctx) return;
-    if (done('T_BOX') && !done('T_ESCAPE')) { resetHunt(); later(() => say('hunt_reset', 6), 300); }
+    if (done('T_BOX') && !done('T_ESCAPE') && flag('chase2')) { chase2(true); }
+    else if (done('T_BOX') && !done('T_ESCAPE')) { resetHunt(); later(() => say('hunt_reset', 6), 300); }
     else if (G.peeled.includes('F_FLUE') && !done('T_TRAP')) { resetFlue(); later(() => say('flue_reset', 6), 300); }
     else if (done('T_TRAP') && !done('T_BOX')) G.ghostStart('trapped', { at: lureSpot(), onCatch: catchFlue });
     if (G.seal) G.seal.t = 0;
@@ -317,7 +340,8 @@ export function installStory(ext, G) {
   // ---------------- rooms ----------------
   ext.on('player:room', ({ to }) => {
     if (!ctx) return;
-    if (to === 'SAGYO') { if (tryDone('T_SAGYO')) { ringT = 2.5; } if (done('T_BOX') && !done('T_ESCAPE')) { ctx.completeTask('T_ESCAPE'); G.ghostStop(); startSeal(); } }
+    if (to === 'SAGYO') { if (tryDone('T_SAGYO')) { ringT = 2.5; } if (done('T_BOX') && !done('T_ESCAPE') && !flag('chase2')) { G.ghostStop(); chase2(false); } }
+    if (to === 'MISE' && flag('chase2') && done('T_BOX') && !done('T_ESCAPE') && G.gh.mode === 'follow') safeBeat();
     if (to === 'MURO' && !flag('muro_in')) { setFlag('muro_in'); later(() => talk('muro_in', '室'), 500); }
     if (to === 'ITA' && !G.ev.includes('ita')) { G.ev.push('ita'); flick = 1.2; voice('whisper1'); later(() => say('ev_ita', 4), 900); }
     if (to === 'OKUMURO' && tryDone('T_OKUMURO')) later(() => talk('okumuro', '奥の室'), 300);
@@ -327,11 +351,7 @@ export function installStory(ext, G) {
     if (id === 'OMOTE_DOOR' && done('T_PHONE')) ctx.answer('戸は、死んだハルさんが押さえている。……櫛を持って来るまで、開かない。');
   });
 
-  function startSeal() {
-    G.seal = { t: 0, max: ctx.calm ? 20 : 10, knock: 0, talked: false };
-    hatchSpot();
-    talk('top', '揚げ戸').then(() => { if (G.seal) { G.seal.talked = true; say('seal_go', 5); } });
-  }
+  // (2.2: the lid pushed up from below with a timer is gone: the run ends at ハル's ring, the hatch is sealed after it at the player's pace)
 
   // ---------------- every frame ----------------
   let flick = 0;
@@ -350,6 +370,7 @@ export function installStory(ext, G) {
       if (flick > 0) { flick -= dt; ctx.flashlight.intensity = flick > 0 ? L * (0.25 + Math.random() * 0.4) : L; }
       else ctx.flashlight.intensity = L;
     }
+    if (G.gh.mode === 'follow' && ctx.floor === 1) { const T0 = G.trail || (G.trail = []), l = T0[T0.length - 1]; if (!l || Math.hypot(c.x - l.x, c.z - l.z) > 0.35) T0.push({ x: c.x, z: c.z }); }   // the way you ran: she follows it
     if (ctx.floor === 0) {
       // the corridor: a bell far ahead, then the sound of combing from behind the lattice
       if (room === 'DORO' && c.z < -3 && !G.ev.includes('bell')) { G.ev.push('bell'); const b = G.bells && G.bells.find((x) => x.z < -16); if (b) { b.swing = 1; G.bellAt({ x: b.x, y: b.y, z: b.z }, 0.06); } later(() => say('ev_bell', 6), 900); }

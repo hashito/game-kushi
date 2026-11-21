@@ -5,11 +5,13 @@
 //   flue     - a comb was put out in 燻しの間 and the flue charm is off: she crawls through the flue to it (unseen; the bells tell where)
 //   trapped  - in 燻しの間 with the unfinished comb; she does not press (it is not her comb, but it is a comb)
 //   hunt     - her own comb is in your hand: she comes for you. A pasted seal on her way stops her: she presses it, it chars and falls
+//   follow   - 2.2: up out of the hatch after you, through the house along the way you ran (G.trail), until ハル's charm ring at the 帳場
+//              stops her (「襲われたら終わりにして婆さんの部屋の手前まで逃げる」); upstairs (floor 1), so no room graph: your own trail
 // She never lunges or teleports; she is slower than a walking player. Touching you is a catch (story.js decides what that resets).
 import * as THREE from 'three';
 import { buildChigusa } from './people.js';
 
-export const SPEED = { pace: 0.7, flue: 0.9, room: 1.1, hunt: 1.65, calm: 0.8 };
+export const SPEED = { pace: 0.7, flue: 0.9, room: 1.1, hunt: 1.65, follow: 1.8, calm: 0.8 };
 // the graph: each edge joins two rooms through a doorway; pts runs from room a's side to room b's side
 export const EDGES = [
   { id: 'e_doro', a: 'MURO', b: 'DORO', pts: [[2.6, -0.3], [2.6, -1.7]], charm: 'F_DORO' },
@@ -21,8 +23,8 @@ export const EDGES = [
 
 export function installGhost(ext, G) {
   let ctx = null, fig = null, glow = null;
-  const H = G.gh = { mode: 'off', room: 'OKUMURO', x: 2.6, z: -25.8, path: [], wait: 0, fade: 0, rise: 0, onCatch: null, hidden: false, pressing: null, repath: 0, paceI: 0 };
-  const roomAt = (x, z) => ctx.world.roomAt(x, z, ctx.world.floorY(0) + 1);
+  const H = G.gh = { floor: 0, mode: 'off', room: 'OKUMURO', x: 2.6, z: -25.8, path: [], wait: 0, fade: 0, rise: 0, onCatch: null, hidden: false, pressing: null, repath: 0, paceI: 0 };
+  const roomAt = (x, z) => ctx.world.roomAt(x, z, ctx.world.floorY(H.floor || 0) + 1);
   const blocked = (e) => {
     if (e.seal && G.sealN(e.seal) > 0) return { seal: e.seal };
     if (e.charm && !G.peeled.includes(e.charm)) return { charm: e.charm };
@@ -63,6 +65,7 @@ export function installGhost(ext, G) {
   G.ghostRoute = (troom, tx, tz) => plan(troom, tx, tz);
 
   G.ghostStart = (mode, o = {}) => {
+    H.floor = o.floor || 0; H.trailI = 0;
     H.mode = mode; H.path = []; H.inEdge = null; H.wait = o.wait || 0; H.fade = 0; H.rise = o.rise || 0; H.onCatch = o.onCatch || null; H.repath = 0; H.pressing = null; H.hidden = false;
     if (o.at) { H.room = o.at.room; H.x = o.at.x; H.z = o.at.z; }
   };
@@ -90,14 +93,25 @@ export function installGhost(ext, G) {
     if (!fig) return;
     T += dt;
     for (const S of G.seals.values()) S.press = false;
-    if (H.mode === 'off' || ctx.floor !== 0) { fig.root.visible = false; glow.intensity = 0; H.pressing = null; return; }
+    if (H.mode === 'off' || ctx.floor !== (H.floor || 0)) { fig.root.visible = false; glow.intensity = 0; H.pressing = null; return; }
     if (!active) return;
     if (H.fade > 0) { H.fade += dt; if (H.fade > 1.2) { const m = H.mode; G.ghostStop(); ext.emit('kushi:ghost-gone', { mode: m }); return; } }
     if (H.wait > 0) H.wait -= dt;
     if (H.rise > 0) H.rise -= dt;
-    const tg = target();
+    const tg = H.mode === 'follow' ? null : target();
     let pressing = null;
-    if (tg && H.wait <= 0 && H.rise <= 0 && H.fade <= 0) {
+    if (H.mode === 'follow' && H.wait <= 0 && H.rise <= 0 && H.fade <= 0) {
+      // along the way you ran: the trail's points one after another, then straight at you once she is on your last point
+      const T0 = G.trail || [];
+      let step = SPEED.follow * (ctx.calm ? SPEED.calm : 1) * dt;
+      while (step > 0) {
+        const p = H.trailI < T0.length ? T0[H.trailI] : { x: ctx.camera.position.x, z: ctx.camera.position.z }, d = Math.hypot(p.x - H.x, p.z - H.z);
+        if (d <= step) { H.x = p.x; H.z = p.z; step -= d; if (H.trailI < T0.length) H.trailI++; else break; }
+        else { H.x += ((p.x - H.x) / d) * step; H.z += ((p.z - H.z) / d) * step; step = 0; }
+      }
+      H.path = [{ x: ctx.camera.position.x, z: ctx.camera.position.z }];
+      const r = roomAt(H.x, H.z); if (r) H.room = r;
+    } else if (tg && H.wait <= 0 && H.rise <= 0 && H.fade <= 0) {
       H.repath -= dt;
       if ((H.repath <= 0 && !H.inEdge) || !H.path.length) { H.path = plan(tg.room, tg.x, tg.z).pts; H.repath = 0.4; H.inEdge = null; }
       const sp = (H.mode === 'hunt' ? SPEED.hunt : H.mode === 'cage' ? (tg.room === 'DORO' ? SPEED.room : SPEED.pace) : H.hidden ? SPEED.flue : SPEED.room) * (ctx.calm ? SPEED.calm : 1);
@@ -127,7 +141,7 @@ export function installGhost(ext, G) {
     // the figure
     const vis = !H.hidden && H.mode !== 'off';
     fig.root.visible = vis;
-    const fy = ctx.world.floorY(0);
+    const fy = ctx.world.floorY(H.floor || 0);
     glow.position.set(H.x, fy + 1.3, H.z); glow.intensity = vis ? (H.fade > 0 ? Math.max(0, 1 - H.fade / 1.2) : 1) * (2.0 + Math.sin(T * 7) * 0.4) : 0;
     fig.root.position.set(H.x, fy - (H.rise > 0 ? Math.min(1.6, H.rise * 0.7) : 0), H.z);
     const look = H.path[0] || { x: cam.x, z: cam.z };

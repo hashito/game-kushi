@@ -330,7 +330,8 @@
       "room": "MISE",
       "x": 5.35,
       "z": 22.75,
-      "label": "帳場の格子"
+      "label": "帳場の格子",
+      "talk": true
     },
     {
       "id": "S_PHONE",
