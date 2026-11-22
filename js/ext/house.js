@@ -385,7 +385,7 @@ export function installHouse(ext, G) {
     for (const l of lamps) { l.i *= DIM[l.room] ?? 0.4; l.d *= 0.85; }
     const mise = lamps.find((l) => l.room === 'MISE'); if (mise) { mise.x = 6.5; mise.z = 21.0; mise.y = fy('MISE') + 0.9; mise.i = 3.2; mise.d = 7; }
     for (const o of [...W.group.children]) if (/^lamp(shade|bulb|cord):(MURO|DORO|ITA|IBUSHI|KAME|OKUMURO|MISE)/.test(o.name)) o.visible = false;
-    G.muroGlow = { room: 'MURO', floor: 0, x: 6.6, y: 2.6, z: 0.0, i: 0, d: 6 }; lamps.push(G.muroGlow);
+    G.muroGlow = { room: 'MURO', floor: 0, x: 6.6, y: 2.6, z: 0.0, i: 0, d: 7.5 }; lamps.push(G.muroGlow);
     // 2.4.0 #6: the workshop's lamp through the open hatch falls on the kiln's rim - the one place you can make out before the candle is lit
     G.kilnGlow = { room: 'MURO', floor: 0, x: 5.4, y: 1.5, z: 1.7, i: 0, d: 2.6 }; lamps.push(G.kilnGlow);
     G.boxGlow = { room: 'OKUMURO', floor: 0, x: 2.6, y: 0.8, z: -25.6, i: 0, d: 5 }; lamps.push(G.boxGlow);

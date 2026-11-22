@@ -39,6 +39,7 @@ export function installStory(ext, G) {
   const tryDone = (id) => { if (!done(id) && ctx.canStart(task(id)) === true) { ctx.completeTask(id); return true; } return false; };
   const later = (f, ms = 400) => setTimeout(f, ms);
   const cam = () => ctx.camera.position;
+  const MURO_I = 3.5;   // the workshop light down the open hatch (2.4.1, P27: 0.7 left the 室 and its ladder - the way out - black)
   const removeItem = (id) => { const i = ctx.state.inv.indexOf(id); if (i >= 0) ctx.state.inv.splice(i, 1); };
   G.ev = G.ev || [];
   let flueSnap = null, huntSnap = null;   // what a catch puts back (persisted)
@@ -48,7 +49,7 @@ export function installStory(ext, G) {
     if (!ctx || !G.usu) return;
     if (done('T_USU')) G.moveUsu(true);
     G.hatchCharm.visible = !done('T_HATCH') || (done('T_SEAL') && !done('T_RETURN'));
-    G.muroGlow.i = done('T_HATCH') ? 0.7 : 0; if (G.kilnGlow) G.kilnGlow.i = done('T_HATCH') ? 0.55 : 0; if (G.kilnPatch) for (const m of G.kilnPatch) m.visible = done('T_HATCH');
+    G.muroGlow.i = done('T_HATCH') ? MURO_I : 0; if (G.kilnGlow) G.kilnGlow.i = done('T_HATCH') ? 0.55 : 0; if (G.kilnPatch) for (const m of G.kilnPatch) m.visible = done('T_HATCH');
     G.combBox.visible = !done('T_BOX'); G.boxCord.visible = !done('T_BOX'); G.boxCharm.visible = !done('T_BOX');
     if (G.lure) G.lure.visible = done('T_LURE');
     if (done('T_TRAP') && !G.peeled.includes('F_FLUE')) G.peelQuiet('F_FLUE');
@@ -144,6 +145,9 @@ export function installStory(ext, G) {
     ctx = c;
     RUN0 = ctx.fp.o.run;
     // the light
+    // 2.4.1 (P27 「地下が暗すぎる」): a candle lights all round, not only ahead - a small warm halo goes with the lit candle underground, so the
+    // room's walls and its doorways read without sweeping the flame about; past ~4 m it is still black. One light, made here (no recompile later)
+    G.halo = new THREE.PointLight(0xffb070, 0, HALO_D, 1.6); G.halo.name = 'kc-candle-halo'; ctx.scene.add(G.halo);
     const l0 = ctx.setLight; G.light0 = (on) => { l0(on); if (on && ctx.flashlight) LIT = ctx.flashlight.intensity || LIT; };
     ctx.setLight = (on) => {
       if (!on) return l0(false);
@@ -256,7 +260,7 @@ export function installStory(ext, G) {
   // 2.4.0 #5 「電話の後、婆さんのネタバラシは聞きに行く形に」: after the call the player walks back to the lattice and asks
   ext.registerTask('T_HARU2', { run: async () => { await talk('haru_dead', '帳場の格子'); return true; } });
   ext.registerTask('T_USU', { canStart: () => (has('KOTEKO') ? true : W.usu_need), onDone: () => { G.moveUsu(); ctx.sound('noise', 'thud'); later(() => say('usu_done', 5), 1300); hatchSpot(); } });
-  ext.registerTask('T_HATCH', { run: async () => { ctx.sound('paper'); G.hatchCharm.visible = false; ctx.sound('creak'); G.setHatch(true); return true; }, onDone: () => { G.muroGlow.i = 0.7; if (G.kilnGlow) G.kilnGlow.i = 0.55; if (G.kilnPatch) for (const m of G.kilnPatch) m.visible = true; ctx.world.setLampFloor(ctx.floor, true); hatchSpot(); G.ghostStart('cage', { at: CAGE_AT }); later(() => talk('hatch_done', '揚げ戸の札')); } });
+  ext.registerTask('T_HATCH', { run: async () => { ctx.sound('paper'); G.hatchCharm.visible = false; ctx.sound('creak'); G.setHatch(true); return true; }, onDone: () => { G.muroGlow.i = MURO_I; if (G.kilnGlow) G.kilnGlow.i = 0.55; if (G.kilnPatch) for (const m of G.kilnPatch) m.visible = true; ctx.world.setLampFloor(ctx.floor, true); hatchSpot(); G.ghostStart('cage', { at: CAGE_AT }); later(() => talk('hatch_done', '揚げ戸の札')); } });
 
   // ---------------- L3: the 室, the corridor, the lattice, the flue ----------------
   ext.registerTask('T_LIGHT', { canStart: () => (has('TESHOKU') && has('MATCHES') ? true : W.light_need), onDone: () => { G.light0(true); ctx.sound('lighter'); later(() => talk('light_done', '室')); } });
@@ -324,7 +328,10 @@ export function installStory(ext, G) {
   ext.registerTask('T_SEAL', { run: async () => { G.seal = null; sealEl.hidden = true; G.setHatch(false); ctx.sound('noise', 'thud'); ctx.sound('stamp'); G.hatchCharm.visible = true; removeItem('OLD_FUDA'); return true; }, onDone: () => { hatchSpot(); later(() => talk('seal_done', '揚げ戸')); } });
 
   // ---------------- L5: the questions, the return, the endings ----------------
-  ext.registerTask('T_THINK', { run: async () => {
+  // 2.4.1: the thinking and the return are the other branch - once the comb was given (T_END), they close: no stale 「作業台で、考えをまとめる」
+  // on the guide or the map on the walk to the front door, and no return of a comb no longer held (kit check-playtest P59)
+  const decided = () => (done('T_END') ? W.bench_after : true);
+  ext.registerTask('T_THINK', { canStart: decided, run: async () => {
     const Q = ctx.data.fuda.think;
     await ctx.talk([{ who: '私', text: Q.intro }], { title: '作業台' });
     for (const [i, q] of Q.questions.entries()) {
@@ -344,7 +351,7 @@ export function installStory(ext, G) {
     await talk('think_done', '作業台');
     return true;
   }, onDone: () => hatchSpot() });
-  ext.registerTask('T_RETURN', { run: async () => {
+  ext.registerTask('T_RETURN', { canStart: decided, run: async () => {
     const v = await ctx.choose({ who: '私', title: '揚げ戸', text: '揚げ戸の札をはがして、櫛を千草さんに返す。\n返した櫛は、ハルさんには渡せなくなる。', options: [{ id: 'no', label: 'まだ返さない' }, { id: 'yes', label: '札をはがし、櫛を返す', primary: true }] });
     if (v !== 'yes') { if (v) ans('return_wait'); return false; }
     ctx.sound('paper'); G.hatchCharm.visible = false; G.setHatch(true); ctx.sound('creak');
@@ -404,6 +411,7 @@ export function installStory(ext, G) {
 
   // ---------------- every frame ----------------
   let flick = 0, flueT = 0;
+  const HALO = 4.5, HALO_D = 4.5;   // the candle's halo underground (2.4.1)
   function update(dt, active) {
     if (!active || !ctx) return;
     const c = cam(), room = ctx.state.room;
@@ -421,6 +429,7 @@ export function installStory(ext, G) {
       if (flick > 0) { flick -= dt; ctx.flashlight.intensity = flick > 0 ? L * (0.25 + Math.random() * 0.4) : L; }
       else ctx.flashlight.intensity = L;
     }
+    if (G.halo) { const on = ctx.lightOn && ctx.floor === 0 && LIT && ctx.flashlight; G.halo.intensity = on ? HALO * (ctx.flashlight.intensity / LIT) : 0; if (on) G.halo.position.set(c.x, c.y - 0.3, c.z); }
     if (G.gh.mode === 'follow' && ctx.floor === 1) { const T0 = G.trail || (G.trail = []), l = T0[T0.length - 1]; if (!l || Math.hypot(c.x - l.x, c.z - l.z) > 0.35) T0.push({ x: c.x, z: c.z }); }   // the way you ran: she follows it
     if (ctx.floor === 0) {
       // the corridor: a bell far ahead, then the sound of combing from behind the lattice

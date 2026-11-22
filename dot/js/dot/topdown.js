@@ -84,9 +84,11 @@ export function installTopdown(ext, { D, mat, locomotion, turnToward }) {
     W.pick = (camera) => {
       const opts = { colliders: W.colliders, touch: fp.isTouch, viewH: innerHeight };
       const direct = pickInteractable(camera, W.interactables, 2.4, null, opts);
-      if (direct || script()) return direct;
+      // 2.4.1: the look ray through a thing wins; a cone pick (a thing only near the ray) waits for the auto-aim below - seen from above the
+      // view looks past what is in front (pitch -0.32), so the cone found the kiln's body behind its rim and took the rim's [E] (室で、手燭に火を入れる)
+      if (script() || (direct && direct.via === 'ray')) return direct;
       const p = camera.position, fx = -Math.sin(fp.yaw), fz = -Math.cos(fp.yaw);
-      let best = null, bs = 1e9;
+      let best = null, bs = 1e9, bo = null, bd = 0;
       for (const o of W.interactables) {
         if (!o.visible) continue;
         const e = o.matrixWorld.elements;
@@ -101,12 +103,14 @@ export function installTopdown(ext, { D, mat, locomotion, turnToward }) {
         const ang = Math.acos(Math.max(-1, Math.min(1, (vx * fx + vz * fz) / vl)));
         if (d > 0.3 && ang > 1.25) continue;
         const s = d + ang * 0.6;
-        if (s < bs) { bs = s; best = cen.clone(); }
+        if (s < bs) { bs = s; best = cen.clone(); bo = o; bd = d; }
       }
-      if (!best) return null;
+      if (!best) return direct;
       aim.position.copy(p); aim.fov = camera.fov; aim.aspect = camera.aspect; aim.near = camera.near; aim.far = camera.far; aim.updateProjectionMatrix();
       aim.lookAt(best); aim.updateMatrixWorld();
-      return pickInteractable(aim, W.interactables, 2.4, null, opts);
+      const r = pickInteractable(aim, W.interactables, 2.4, null, opts);
+      // the thing in front of the player is the one: aimed at its middle, a bigger thing behind it must not take it
+      return r && r.object === bo ? r : { object: bo, ...bo.userData.interact, distance: bd, via: 'aim' };
     };
     // a tap on the screen: the thing under the finger, seen from the top camera (within reach of the player)
     const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), hit = new THREE.Vector3();

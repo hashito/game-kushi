@@ -170,7 +170,9 @@ export function installFuda(ext, G) {
       // a door with a seal spot: while the seal is offered, the door's own [E] is the seal (aiming at the leaf or at the post both paste)
       // 2.4.0: only a seal with "leaf" takes the door's [E] (the practice fusuma, 燻しの間's door); the seals put back on every other door are
       // pasted on the post, so the door itself still opens and shuts with [E] (#10 「各部屋でも札を再度貼れるように」)
-      if (S.door && S.def.leaf) { const leaf = want && (G.sealLeaf ? G.sealLeaf(S.def.id) !== false : true); for (const o of I) { const it = o.userData && o.userData.interact; if (!it || it.id !== S.door || !(it.kind === 'door' || it.kind === 'sealdoor')) continue; it.kind = leaf ? 'sealdoor' : 'door'; it.seal = S.def.id; } }
+      // 2.4.1: while the door's own charm is still on (燻しの間's F_IBU), the door's [E] peels it (charmdoor), as on every other charmed door:
+      // the first refresh ran before answers.js and left 「[E] 扉（鍵がかかっている）」 on the leaf, so the aim on the door did nothing (select-range F_IBU)
+      if (S.door && S.def.leaf) { const leaf = want && (G.sealLeaf ? G.sealLeaf(S.def.id) !== false : true), held = [...charms.values()].some((C) => C.door === S.door && !G.peeled.includes(C.def.id)); for (const o of I) { const it = o.userData && o.userData.interact; if (!it || it.id !== S.door || !(it.kind === 'door' || it.kind === 'sealdoor' || it.kind === 'charmdoor')) continue; it.kind = held ? 'charmdoor' : leaf ? 'sealdoor' : 'door'; it.seal = S.def.id; } }
     }
   };
   function showSeal(S) {
