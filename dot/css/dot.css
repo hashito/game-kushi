@@ -103,3 +103,11 @@
 :root[data-dot] body.gf-phone #kc-fuda, :root[data-dot] body.gf-phone .kc-fuda { padding: 14px 16px !important; }
 :root[data-dot] body.gf-phone #prompt:not(:empty) { padding: 14px 18px !important; }
 :root[data-dot] #gf-reader aside.iv-voice { padding-top: 14px !important; padding-bottom: 14px !important; }
+
+/* 2.4.0 (kit P44 on the dot layer): DotGothic16 is taller and wider than the serif, so on a short landscape phone (667x375, 844x340) the
+   steady-hand and trace-path mini games scrolled and 閉じる fell off the screen. The frame's words get smaller and tighter there. */
+@media (max-height: 420px) {
+  :root[data-dot] .mgx { font-size: 12px; letter-spacing: 0; line-height: 1.3; }
+  :root[data-dot] .mgx .mgx-head { padding-block: 2px; }
+  :root[data-dot] .mgx p, :root[data-dot] .mgx .mgx-help { margin-block: 2px; }
+}
