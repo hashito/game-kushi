@@ -10,11 +10,13 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { makeItemModel } from '../kit/item-kinds.js';
 import { buildHaru } from './people.js';
+import { ringPlan } from './ring.js';
 
 // where each station's invisible [E] box goes (height above the floor; x / z moves; scale of the box)
 const HIT = {
   S_CHOBA: { y: 1.0, dx: 0.35, dz: -0.2, s: [2.0, 1.4, 1.4] } /* 2.2: ハル is easy to speak to (「話しかけづらい」): a wide box along the lattice, talk reach in plan.json */, S_PHONE: { y: 0.7, s: [0.6, 0.6, 0.6] }, S_BUTSUDAN: { y: 0.9 }, S_BENCH: { y: 0.9 },
-  S_LIGHT: { y: 0.35, s: [1.0, 0.5, 1.0] }, S_SHELF: { y: 1.0 }, S_RACK: { y: 1.0, s: [0.5, 1.2, 1.2] }, S_KOSHI: { y: 1.2, s: [1.0, 1.6, 0.3] },
+  S_LIGHT: { y: 0.42, s: [1.2, 0.3, 0.4] } /* 2.4.0 #6: on the kiln's front rim (it was a box on the bare floor a metre before the kiln) */, S_SHELF: { y: 1.0 }, S_RACK: { y: 1.0, s: [0.5, 1.2, 1.2] }, S_KOSHI: { y: 1.2, s: [1.0, 1.6, 0.3] },
+  S_OUT: { y: 1.05, s: [1.6, 1.9, 0.3] },
 };
 
 /** a boxwood grain texture (yellow, fine lines), drawn once */
@@ -86,10 +88,16 @@ export function installHouse(ext, G) {
     }
 
     // ---------------- 表の土間: the front door (a lattice door that will not open), a charm on it too, the step up into the shop ----------------
-    { const z = 25.9, x = 1.3; box('OMOTE', x, z, 1.7, 2.1, 0.08, M.wood, 0, false);
+    { const z = 25.9, x = 1.3, k0 = grp.children.length;
+      box('OMOTE', x, z, 1.7, 2.1, 0.08, M.wood, 0, false);
       for (let i = 1; i < 8; i++) box('OMOTE', x - 0.85 + i * 0.2125, z - 0.05, 0.03, 2.0, 0.03, M.dark, 0.05, false);
       plane('OMOTE', x, z - 0.045, 1.6, 1.95, M.paper, 1.05, Math.PI);
-      const c = new THREE.Mesh(G.charmGeo, G.paperM); c.position.set(x + 0.72, fy('OMOTE') + 1.6, z - 0.075); c.rotation.y = Math.PI; grp.add(c);
+      const c = new THREE.Mesh(G.charmGeo, G.paperM); c.position.set(x + 0.72, fy('OMOTE') + 1.6, z - 0.075); c.rotation.y = Math.PI; grp.add(c); G.frontCharm = c;
+      // 2.4.0 (#11 「最後に玄関を開ける…まで歩いて」): the front door is one group that slides open at the very end, when the player opens it.
+      // Behind it, the night street: the headlights of 野口さん's car (a lit plane, no new light)
+      G.frontDoor = new THREE.Group(); for (const o of grp.children.slice(k0)) G.frontDoor.add(o); grp.add(G.frontDoor); G.frontK = 0;
+      const night = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 2.1), new THREE.MeshBasicMaterial({ color: 0x2a3036 })); night.position.set(x, fy('OMOTE') + 1.05, z + 0.12); night.rotation.y = Math.PI; night.name = 'kc-night'; grp.add(night);
+      for (const dx of [-0.42, 0.42]) { const hl = new THREE.Mesh(new THREE.CircleGeometry(0.09, 16), new THREE.MeshBasicMaterial({ color: 0xfff1c8 })); hl.position.set(x + dx, fy('OMOTE') + 0.62, z + 0.11); hl.rotation.y = Math.PI; hl.name = 'kc-headlight'; grp.add(hl); }
       box('OMOTE', 0.35, 22.4, 0.5, 0.06, 0.32, M.dark, 0, false); box('OMOTE', 2.2, 22.4, 0.2, 0.05, 0.3, M.straw, 0, false); }
     box('OMOTE', 2.5, 23.4, 0.16, 0.3, 3.0, M.dark, 0, false);   // the 框 board along the step
     // 2.0: a water jar, an oiled-paper umbrella in the corner, a shoe cupboard along the west wall
@@ -186,8 +194,23 @@ export function installHouse(ext, G) {
     W.colliders.push({ box: new THREE.Box3(new THREE.Vector3(0.87, fy('SAGYO'), 4.4), new THREE.Vector3(1.37, fy('SAGYO') + 1.4, 4.8)), off: false });
     box('SAGYO', 2.6, 4.6, 0.7, 0.7, 0.4, M.dark);
     box('SAGYO', 3.6, -0.9, 1.2, 0.8, 0.03, M.wood, 1.1, false);
-    G.hatchLid = box('SAGYO', 6.6, -0.5, 0.82, 0.05, 0.92, M.timber, 0, false);
-    G.hatchCharm = new THREE.Mesh(G.charmGeo, G.oldM); G.hatchCharm.rotation.set(-Math.PI / 2, 0, 0.2); G.hatchCharm.position.set(6.6, fy('SAGYO') + 0.056, -0.35); grp.add(G.hatchCharm);
+    // 2.4.0 (#8 「はしごの部分で穴があいている感じに」): the hatch is a lid on a hinge along its north edge. Open, it stands against the north
+    // wall and the floor shows a real hole: a dark rim of boards, the shaft lined down through the floor's thickness, darkness below with the
+    // ladder's head in it. A collider keeps you from walking over the hole (the ladder is [E]).
+    { const y0 = fy('SAGYO'), x0 = 6.2, x1 = 7.0, z0 = -0.96, z1 = -0.04, cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, W0 = x1 - x0, D0 = z1 - z0;
+      const rim = M.dark, lining = std(0x1a120c, { roughness: 1, side: THREE.DoubleSide });
+      for (const [w, d, x, z] of [[W0 + 0.16, 0.08, cx, z0 - 0.04], [W0 + 0.16, 0.08, cx, z1 + 0.04], [0.08, D0, x0 - 0.04, cz], [0.08, D0, x1 + 0.04, cz]]) { const m = new THREE.Mesh(new THREE.BoxGeometry(w, 0.03, d), rim); m.position.set(x, y0 + 0.012, z); m.name = 'kc-hole-rim'; m.receiveShadow = true; grp.add(m); }
+      const depth = 0.5;
+      for (const [w, rot, x, z] of [[W0 - 0.08, 0, cx, z0 + 0.037], [W0 - 0.08, Math.PI, cx, z1 - 0.037], [D0 - 0.08, Math.PI / 2, x0 + 0.037, cz], [D0 - 0.08, -Math.PI / 2, x1 - 0.037, cz]]) { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, depth), lining); m.position.set(x, y0 - depth / 2 - 0.01, z); m.rotation.y = rot; m.name = 'kc-hole-shaft'; m.userData.rectOk = true; grp.add(m); }
+      const dark = new THREE.Mesh(new THREE.PlaneGeometry(W0, D0), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.6, depthWrite: false, side: THREE.DoubleSide }));
+      dark.rotation.x = -Math.PI / 2; dark.position.set(cx, y0 - 0.72, cz); dark.name = 'kc-hole-dark'; dark.renderOrder = 2; grp.add(dark);
+      G.hatchPivot = new THREE.Group(); G.hatchPivot.position.set(cx, y0, z0); grp.add(G.hatchPivot);
+      G.hatchLid = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.05, 0.92), M.timber); G.hatchLid.position.set(0, 0.025, 0.46); G.hatchLid.castShadow = true; G.hatchLid.name = 'kc-hatch-lid'; G.hatchPivot.add(G.hatchLid);
+      G.hatchCharm = new THREE.Mesh(G.charmGeo, G.oldM); G.hatchCharm.rotation.set(-Math.PI / 2, 0, 0.2); G.hatchCharm.position.set(0, 0.056, 0.61); G.hatchPivot.add(G.hatchCharm);
+      G.holeCol = { box: new THREE.Box3(new THREE.Vector3(x0, y0, z0), new THREE.Vector3(x1, y0 + 0.9, z1)), off: true }; W.colliders.push(G.holeCol);
+      G.hatchOpen = false; G.hatchTo = 0; G.hatchK = 0;
+      G.setHatch = (open, instant) => { G.hatchOpen = !!open; G.hatchTo = open ? 1 : 0; if (instant) G.hatchK = G.hatchTo; G.holeCol.off = !open; G.hatchPivot.rotation.x = -1.62 * G.hatchK; };
+    }
     G.usu = new THREE.Group(); { const u1 = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.42, 0.28, 20), M.stone); u1.position.y = 0.14; const u2 = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.4, 0.26, 20), M.stone); u2.position.y = 0.41; G.usu.add(u1, u2); }
     G.usu.position.set(6.6, fy('SAGYO'), -0.5); grp.add(G.usu);
     G.usuCol = { box: new THREE.Box3(new THREE.Vector3(6.2, fy('SAGYO'), -0.9), new THREE.Vector3(7.0, fy('SAGYO') + 0.6, -0.1)), off: false }; W.colliders.push(G.usuCol);
@@ -202,7 +225,19 @@ export function installHouse(ext, G) {
 
     // =====================================================================================================================================
     // ---------------- 室 (MURO): the kiln, the stacked boards, the ledger shelf, the bell-pull cord, the claw marks on the hatch ----------------
-    box('MURO', 5.2, 2.6, 1.2, 0.35, 0.9, M.clay); box('MURO', 5.2, 2.6, 0.9, 0.03, 0.6, M.ash, 0.35, false);
+    // the kiln (燻し炉): a low clay hearth with a raised rim, cold ash and charred sticks inside, an iron grate. Its front rim is flat and broad:
+    // the place to set the candlestick out of the draught from the hatch (2.4.0 #6: what it is, and why the rim)
+    box('MURO', 5.2, 2.6, 1.2, 0.3, 0.9, M.clay);
+    for (const [w, d, x, z] of [[1.24, 0.16, 5.2, 2.17], [1.24, 0.1, 5.2, 3.03], [0.1, 0.9, 4.6, 2.6], [0.1, 0.9, 5.8, 2.6]]) box('MURO', x, z, w, 0.12, d, M.clay, 0.3);
+    box('MURO', 5.2, 2.62, 1.0, 0.03, 0.66, M.ash, 0.3, false); for (let i = 0; i < 5; i++) box('MURO', 4.85 + i * 0.17, 2.62, 0.03, 0.02, 0.6, M.iron, 0.34, false);
+    // 2.4.0 #6: the workshop lamp's light through the open hatch lies on the kiln's front rim - a soft pale patch (shown by story.js once the
+    // hatch is open), so the rim is the one thing you can make out in the dark cellar before the candle is lit
+    { const cv = document.createElement('canvas'); cv.width = cv.height = 64; const x = cv.getContext('2d'), gr = x.createRadialGradient(32, 32, 2, 32, 32, 31);
+      gr.addColorStop(0, '#fff'); gr.addColorStop(1, '#000'); x.fillStyle = gr; x.fillRect(0, 0, 64, 64);
+      const am = new THREE.CanvasTexture(cv);
+      const mk = (w, d, y, z, op) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ color: 0xffe0b0, alphaMap: am, transparent: true, opacity: op, depthWrite: false, blending: THREE.AdditiveBlending, fog: false })); m.rotation.x = -Math.PI / 2; m.position.set(5.2, fy('MURO') + y, z); m.name = 'kc-kiln-light'; m.userData.dot = 'light'; m.renderOrder = 3; grp.add(m); return m; };
+      G.kilnPatch = [mk(1.3, 0.2, 0.425, 2.17, 0.6), mk(2.4, 1.4, 0.012, 1.6, 0.22)]; for (const m of G.kilnPatch) m.visible = false; }
+    for (let i = 0; i < 4; i++) { const st = box('MURO', 5.0 + i * 0.14, 2.55 + (i % 2) * 0.12, 0.34, 0.04, 0.04, M.black, 0.36, false, 0.4 + i * 0.5); st.name = 'kc-kiln-stick'; }
     for (let i = 0; i < 5; i++) box('MURO', 8.7, -0.35 + i * 0.5, 0.42, 1.3 + (i % 2) * 0.4, 0.45, M.boxwood, 0, true);
     // the ledger shelf on the west wall (the 札の控え lies on it: data/docs.json DOC_HIKAE)
     box('MURO', 1.24, 3.6, 0.32, 0.03, 0.9, M.wood, 1.0, false); for (const s of [-1, 1]) box('MURO', 1.24, 3.6 + s * 0.4, 0.3, 0.2, 0.03, M.dark, 0.8, false);
@@ -221,11 +256,11 @@ export function installHouse(ext, G) {
     {
       const y = fy('DORO') + 2.75, cord = [];
       const run = (pts) => { for (let i = 0; i < pts.length - 1; i++) cord.push([pts[i], pts[i + 1]]); };
-      run([[3.6, 3.9], [3.3, 0.2], [3.3, -18.6]]); run([[3.3, -6], [-2.0, -6]]); run([[3.3, -9], [8.5, -9]]); run([[3.3, -19.4], [3.3, -24.0]]);
+      run([[3.6, 3.9], [3.3, 0.2], [3.3, -18.6]]); run([[3.3, -6], [-2.0, -6]]); run([[3.3, -9], [8.5, -9]]); run([[3.3, -19.4], [3.3, -24.0]]); run([[3.3, -14.6], [-2.4, -14.6]]);
       const geos = [];
       for (const [[ax, az], [bx, bz]] of cord) { const L = Math.hypot(bx - ax, bz - az), g = new THREE.CylinderGeometry(0.006, 0.006, L, 4); g.rotateZ(Math.PI / 2); g.rotateY(-Math.atan2(bz - az, bx - ax)); g.translate((ax + bx) / 2, y, (az + bz) / 2); geos.push(g); }
       const cm = new THREE.Mesh(mergeGeometries(geos), M.straw); cm.name = 'kc-bellcord'; grp.add(cm);
-      for (const [x, z] of [[3.3, -2.5], [3.3, -7.5], [3.3, -12.5], [3.3, -17.0], [-1.0, -6], [6.5, -9], [8.3, -9], [3.3, -21.5], [3.3, -24.0]]) {
+      for (const [x, z] of [[3.3, -2.5], [3.3, -7.5], [3.3, -12.5], [3.3, -17.0], [-1.0, -6], [6.5, -9], [8.3, -9], [3.3, -21.5], [3.3, -24.0], [-1.0, -14.6]]) {
         const b = makeItemModel('bell', { scale: 2.2 }); if (!b) continue; const hold = new THREE.Group(); hold.position.set(x, y, z); b.position.y = -0.11; hold.add(b);
         const str = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.06, 3), M.straw); str.position.y = -0.03; hold.add(str); grp.add(hold);
         G.bells.push({ x, z, y: y - 0.05, hold, swing: 0 });
@@ -234,7 +269,7 @@ export function installHouse(ext, G) {
 
     // ---------------- 土の廊下 (DORO): a broken crate, a stack of boards, the lattice door of 奥の室 at the end ----------------
     box('DORO', 3.25, -4.5, 0.5, 0.45, 0.6, M.timber); box('DORO', 3.25, -4.5, 0.55, 0.04, 0.62, M.timber, 0.45, false, 0.15);
-    box('DORO', 1.92, -14.5, 0.36, 0.8, 0.5, M.boxwood);
+    box('DORO', 1.92, -12.2, 0.36, 0.8, 0.5, M.boxwood);   // 2.4.0: moved off 甕の間's new doorway (P12)
     // 奥の室's lattice door (格子戸, 2.0 「格子戸が存在しないように見えます」): a real frame and bars you can see through, the waxed charm in the
     // middle; it slides open when the charm is off
     {
@@ -246,8 +281,11 @@ export function installHouse(ext, G) {
       const m = new THREE.Mesh(mergeGeometries(geos), TX('wood_dark', 0x5a4434, std(0x2a1c12))); m.castShadow = true; g.add(m);
       g.position.set(2.6, y0, z); grp.add(g); G.koshi = g;
       box('DORO', 1.94, -18.98, 0.1, 2.4, 0.16, M.dark, 0, false); box('DORO', 3.26, -18.98, 0.1, 2.4, 0.16, M.dark, 0, false); box('DORO', 2.6, -18.98, 1.42, 0.14, 0.16, M.dark, 2.3, false);
-      G.koshiCol = { box: new THREE.Box3(new THREE.Vector3(1.95, y0, -19.06), new THREE.Vector3(3.25, y0 + 2.3, -18.94)), off: false, gate: true };   // a story gate (opens at T_KOSHI) W.colliders.push(G.koshiCol);
-      G.openKoshi = (instant) => { G.koshiCol.off = true; G.koshiTo = instant ? 1 : 0.0001; if (instant) G.koshi.position.x = 2.6 + 1.15; };
+      // 2.4.0 (#7 「奥の部屋に扉があかなくても入れてしまう」): the lattice was drawn but its collider was never added (the push sat inside a
+      // comment). It is now the plan's door D_KOSHI (closable, look none): the kit's collider blocks it while it is shut, the story locks it
+      // until the waxed charm is off (#10: then [E] opens it), and this lattice slides with the door (tools/check-playtest.mjs P54)
+      G.koshiK = 0;
+      G.openKoshi = (instant) => { const d = W.doors.get('D_KOSHI'); if (d && !d.isOpen) d.open(); if (instant) { G.koshiK = 1; G.koshi.position.x = 2.6 + 1.15; } };
     }
 
     // ---------------- 板の間 (ITA): racks of boxwood boards on two walls, boards leaning, a bench with tally tags ----------------
@@ -284,6 +322,23 @@ export function installHouse(ext, G) {
       const v = plane(room, x, z + s * 0.0855, 0.68, 0.7, M.void, 0.36, facing === 'n' ? Math.PI : 0); v.name = 'kc-flue-dark';   // 2.1.0: 5.5 mm off the wall (at 1 mm the two flickered: P21), still behind the flue charm (1 cm)
     };
     flueMouth('IBUSHI', 7.5, -13, 's'); flueMouth('OKUMURO', 5.5, -19, 'n');
+    // 2.4.0 (#9): the flue's other two branches: 板の間 and the new 甕の間, each mouth shut with a wooden lid and one of ハル's old charms
+    flueMouth('ITA', -3.0, -9, 's'); flueMouth('KAME', -1.5, -18, 's');
+    // (their wooden lids are fuda.js seals K_ITAM / K_KAMEM: closed, with ハル's old charm on them)
+    // ---------------- 甕の間 (KAME, 2.4.0 「もう少し地下室が大きくても」): the jars the boards were soaked in, a trough, the rope, a lamp niche ----------------
+    {
+      const y0 = fy('KAME');
+      for (const [x, z, r] of [[-3.7, -12.0, 0.42], [-3.7, -13.2, 0.38], [-3.7, -14.4, 0.42], [-3.7, -15.7, 0.36], [0.6, -17.2, 0.4]]) {
+        cyl('KAME', x, z, r * 0.8, r, 0.85, M.ceramic, 0, true, 20); cyl('KAME', x, z, r * 0.82, r * 0.82, 0.02, M.black, 0.84, false, 20);
+        const lid = cyl('KAME', x + 0.05, z, r * 0.86, r * 0.86, 0.035, M.wood, 0.86, false, 20); lid.rotation.z = 0.05;
+      }
+      cyl('KAME', -3.7, -13.2, 0.28, 0.28, 0.01, std(0x0b1214, { roughness: 0.15 }), 0.855, false, 20).name = 'kc-kame-water';   // one lid off: black water
+      for (let i = 0; i < 5; i++) { const b = box('KAME', -1.4 + i * 0.05, -12.0, 0.03, 0.06, 1.6, M.boxwood, 0.12, false); b.rotation.x = 0.02 * i; }
+      box('KAME', -1.3, -12.0, 2.0, 0.12, 0.7, M.timber); box('KAME', -1.3, -12.0, 1.8, 0.02, 0.5, std(0x0b1214, { roughness: 0.15 }), 0.12, false);   // the soaking trough
+      for (let i = 0; i < 6; i++) { const rg = cyl('KAME', 0.9, -12.1, 0.2 - i * 0.012, 0.2 - i * 0.012, 0.03, M.straw, i * 0.03, false, 18); rg.name = 'kc-rope'; }
+      box('KAME', -4.3, -16.6, 0.2, 0.3, 0.4, M.stone, 1.3, false); item('candlestick', 'KAME', -4.25, -16.6, 1.6, 0, 1.0);
+      W.colliders.push({ box: new THREE.Box3(new THREE.Vector3(-2.3, y0, -12.35), new THREE.Vector3(-0.3, y0 + 0.3, -11.65)), off: false });
+    }
 
     // ---------------- 奥の室 (OKUMURO): the shelf, the box with its cord and charm, the remains, the burnt-out candlestick ----------------
     {
@@ -315,7 +370,7 @@ export function installHouse(ext, G) {
       if (h.s) mesh.scale.set(h.s[0] / 0.9, h.s[1] / 1.1, h.s[2] / 0.5);
     }
     G.hatchHit = W.interactables.find((o) => o.name === 'station:S_HATCH');
-    if (G.hatchHit) { G.hatchHit.position.set(6.6, fy('SAGYO') + 0.12, -0.5); G.hatchHit.scale.set(0.9 / 0.9, 0.24 / 1.1, 1.0 / 0.5); }
+    if (G.hatchHit) { G.hatchHit.position.set(6.6, fy('SAGYO') + 0.12, -0.5); G.hatchHit.scale.set(0.9 / 0.9, 0.24 / 1.1, 1.0 / 0.5); G.hatchHit.userData.noOwnMesh = true; }
     const usuHit = W.interactables.find((o) => o.name === 'station:S_USU');
     if (usuHit) { usuHit.position.set(6.6, fy('SAGYO') + 0.4, -0.5); usuHit.scale.set(0.95 / 0.9, 0.8 / 1.1, 0.95 / 0.5); G.usuHit = usuHit; }
     G.koshiHit = W.interactables.find((o) => o.name === 'station:S_KOSHI');
@@ -329,8 +384,10 @@ export function installHouse(ext, G) {
     const DIM = { OMOTE: 0.32, MISE: 0.42, NAKA: 0.4, HASHIRI: 0.32, OKU: 0.36, ROKA: 0.28, SAGYO: 0.42 };
     for (const l of lamps) { l.i *= DIM[l.room] ?? 0.4; l.d *= 0.85; }
     const mise = lamps.find((l) => l.room === 'MISE'); if (mise) { mise.x = 6.5; mise.z = 21.0; mise.y = fy('MISE') + 0.9; mise.i = 3.2; mise.d = 7; }
-    for (const o of [...W.group.children]) if (/^lamp(shade|bulb|cord):(MURO|DORO|ITA|IBUSHI|OKUMURO|MISE)/.test(o.name)) o.visible = false;
+    for (const o of [...W.group.children]) if (/^lamp(shade|bulb|cord):(MURO|DORO|ITA|IBUSHI|KAME|OKUMURO|MISE)/.test(o.name)) o.visible = false;
     G.muroGlow = { room: 'MURO', floor: 0, x: 6.6, y: 2.6, z: 0.0, i: 0, d: 6 }; lamps.push(G.muroGlow);
+    // 2.4.0 #6: the workshop's lamp through the open hatch falls on the kiln's rim - the one place you can make out before the candle is lit
+    G.kilnGlow = { room: 'MURO', floor: 0, x: 5.4, y: 1.5, z: 1.7, i: 0, d: 2.6 }; lamps.push(G.kilnGlow);
     G.boxGlow = { room: 'OKUMURO', floor: 0, x: 2.6, y: 0.8, z: -25.6, i: 0, d: 5 }; lamps.push(G.boxGlow);
     W.setLampFloor && W.setLampFloor(ctx.floor || 1, true);
 
@@ -340,9 +397,9 @@ export function installHouse(ext, G) {
 
     // ---------------- sounds of the house: the black phone's bell, the little bells of the cord ----------------
     // 黒電話 (2.0, 「電話がなる場合は電話の音がなるべきです」): a clapper between two gongs, about 16 strikes a second for a second, from the phone
-    G.phoneRing = () => {
+    G.phoneRing = (first = false) => {
       const A = ctx.audio; if (!A || !A.tone) return; const pos = G.phoneAt;
-      for (let k = 0; k < 17; k++) { const f = k % 2 ? 1980 : 1720; A.tone({ at: k * 0.06, dur: 0.12, freq: f, type: 'triangle', gain: 0.07, pos, wet: 0.4 }); A.tone({ at: k * 0.06, dur: 0.08, freq: f * 2.76, type: 'sine', gain: 0.018, pos, wet: 0.4 }); }
+      for (const t of ringPlan(first)) A.tone({ at: t.at, dur: t.dur, freq: t.freq, type: t.type, gain: t.gain, pos: t.near && !first ? pos : null, wet: first ? 0.25 : 0.4, attack: 0.003 });
     };
     G.bellAt = (pos, gain = 0.05) => {
       const A = ctx.audio; if (!A || !A.tone) return;
@@ -358,7 +415,9 @@ export function installHouse(ext, G) {
       t += dt;
       for (const [i, f] of G.flames.entries()) if (f.visible) f.scale.y = 1 + Math.sin(t * 9 + i * 1.7) * 0.18 + Math.sin(t * 23 + i) * 0.08;
       if (G.usuTo > 0 && G.usuTo < 1) { G.usuTo = Math.min(1, G.usuTo + dt / 1.2); const k = G.usuTo; G.usu.position.set(6.6 + 0.85 * k, fy('SAGYO'), -0.5 + 0.9 * k); G.usu.rotation.z = -k * 0.3; }
-      if (G.koshiTo > 0 && G.koshiTo < 1) { G.koshiTo = Math.min(1, G.koshiTo + dt / 1.4); G.koshi.position.x = 2.6 + 1.15 * G.koshiTo; }
+      { const dk = W.doors.get('D_KOSHI'), to = dk && dk.isOpen ? 1 : 0; if (G.koshiK !== to) { G.koshiK = to > G.koshiK ? Math.min(1, G.koshiK + dt / 1.2) : Math.max(0, G.koshiK - dt / 1.2); G.koshi.position.x = 2.6 + 1.15 * G.koshiK; } }
+      if (G.hatchK !== G.hatchTo) { G.hatchK = G.hatchTo > G.hatchK ? Math.min(1, G.hatchK + dt / 0.9) : Math.max(0, G.hatchK - dt / 0.7); const e = G.hatchK * G.hatchK * (3 - 2 * G.hatchK); G.hatchPivot.rotation.x = -1.62 * e; }
+      if (G.frontTo != null && G.frontK !== G.frontTo) { G.frontK = Math.min(1, (G.frontK || 0) + dt / 1.6); G.frontDoor.position.x = -1.5 * (G.frontK * G.frontK * (3 - 2 * G.frontK)); }
       for (const b of G.bells) if (b.swing > 0) { b.swing = Math.max(0, b.swing - dt * 0.8); b.hold.rotation.z = Math.sin(t * 14) * 0.35 * b.swing; }
       if (G.ember) G.ember.material.color.setRGB(0.35 + Math.sin(t * 2) * 0.05, 0.1, 0.03);
     } }, inst: null });

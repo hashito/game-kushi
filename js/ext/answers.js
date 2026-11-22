@@ -20,7 +20,8 @@ export function installAnswers(ext, G) {
         if (!done('T_SEAL')) return W.seal_first;
         return null;
       case 'T_PHONE': return W.phone_dead;
-      case 'T_USU': return done('T_PHONE') ? null : W.usu_phone;
+      case 'T_USU': return done('T_HARU2') ? null : done('T_PHONE') ? W.usu_haru : W.usu_phone;
+      case 'T_OUT': return done('T_END') ? null : W.out_early;
       case 'T_HATCH': return done('T_USU') ? null : W.hatch_usu;
       case 'T_SEAL': return null;
       case 'T_RETURN': return done('T_THINK') ? null : W.give_wait;

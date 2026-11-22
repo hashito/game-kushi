@@ -2,7 +2,7 @@
 // prepare() makes the world agree with the tasks done on the way (they ran quietly): the mill, the hatch, the charms in hand, the seals,
 // and where 千草さん is (G.placeGhost, the same code a resumed save uses).
 const L1 = ['T_CHOBA', 'T_PEEL1', 'T_PASTE1'];
-const L2 = ['T_HASHIRI', 'T_OKU', 'T_SAGYO', 'T_PHONE', 'T_USU', 'T_HATCH'];
+const L2 = ['T_HASHIRI', 'T_OKU', 'T_SAGYO', 'T_PHONE', 'T_HARU2', 'T_USU', 'T_HATCH'];
 const L3a = ['T_LIGHT', 'T_HIKAE', 'T_DORO'], L3b = [...L3a, 'T_KOSHI_SEE'], L3c = [...L3b, 'T_LURE', 'T_TRAP'], L3d = [...L3c, 'T_KOSHI', 'T_OKUMURO', 'T_FLUE2'];
 const ITEMS2 = ['TESHOKU', 'MATCHES', 'KOTEKO'];
 const PEEL1 = ['F_NAKA'], PEEL2 = [...PEEL1, 'F_HASHIRI', 'F_OKU', 'F_ROKA', 'F_SAGYO'], PEEL3 = [...PEEL2, 'F_DORO', 'F_IBU'];
@@ -19,16 +19,20 @@ export const SCENES = [
   { id: 'muro', group: '地下', label: '室（手燭に火を入れる）', tasks: [...L1, ...L2], items: ITEMS2, peeled: PEEL2, fuda: 5, at: { x: 6.6, z: 1.2, yaw: 2.4, floor: 0 } },
   { id: 'doro', group: '地下', label: '土の廊下', tasks: [...L1, ...L2, ...L3a], items: [...ITEMS2, 'KAKE_KUSHI'], peeled: [...PEEL2, 'F_DORO'], fuda: 6, light: true, at: { x: 2.6, z: -2.5, yaw: 0, floor: 0 } },
   { id: 'koshi', group: '地下', label: '奥の室の格子戸（はじめて見る）', tasks: [...L1, ...L2, ...L3a], items: [...ITEMS2, 'KAKE_KUSHI'], peeled: [...PEEL2, 'F_DORO'], fuda: 6, light: true, ghost: true, at: { x: 2.6, z: -14.0, yaw: 0, floor: 0 } },
-  { id: 'ita', group: '地下', label: '板の間（壁の札）', tasks: [...L1, ...L2, ...L3b], items: [...ITEMS2, 'KAKE_KUSHI'], peeled: [...PEEL2, 'F_DORO', 'F_ITA'], fuda: 7, light: true, ghost: true, at: { x: -2.0, z: -6.0, yaw: Math.PI / 2, floor: 0 } },
+  { id: 'ita', group: '地下', label: '板の間（煙道の蓋）', tasks: [...L1, ...L2, ...L3b], items: [...ITEMS2, 'KAKE_KUSHI'], peeled: [...PEEL2, 'F_DORO', 'F_ITA'], fuda: 7, light: true, ghost: true, at: { x: -2.0, z: -6.0, yaw: Math.PI / 2, floor: 0 } },
+  { id: 'kame', group: '地下', label: '甕の間（煙道の蓋）', tasks: [...L1, ...L2, ...L3b], items: [...ITEMS2, 'KAKE_KUSHI'], peeled: [...PEEL2, 'F_DORO', 'F_KAME'], fuda: 4, light: true, ghost: true, at: { x: 0.4, z: -14.6, yaw: Math.PI / 2, floor: 0 } },
+  { id: 'hatch-hole', group: '家', label: '作業場の揚げ戸（開いた穴）', tasks: [...L1, ...L2], items: ITEMS2, peeled: PEEL2, fuda: 2, at: { x: 6.6, z: 1.4, yaw: 0, floor: 1 } },
   { id: 'ibushi', group: '地下', label: '燻しの間（櫛を置く）', tasks: [...L1, ...L2, ...L3b], items: [...ITEMS2, 'KAKE_KUSHI'], peeled: PEEL3, fuda: 7, light: true, ghost: true, at: { x: 5.0, z: -9.0, yaw: -Math.PI / 2, floor: 0 } },
   { id: 'flue', group: '地下', label: '燻しの間（煙道の札をはがす前）', tasks: [...L1, ...L2, ...L3b, 'T_LURE'], items: ITEMS2, peeled: PEEL3, fuda: 7, light: true, ghost: true, at: { x: 7.5, z: -11.8, yaw: 0, floor: 0 } },
   { id: 'wax', group: '地下', label: '格子戸の蝋をとかす', tasks: [...L1, ...L2, ...L3c], items: ITEMS2, peeled: [...PEEL3, 'F_FLUE'], seals: { K_IBU: 1 }, fuda: 6, light: true, ghost: true, at: { x: 2.6, z: -17.8, yaw: 0, floor: 0 } },
-  { id: 'okumuro', group: '地下', label: '奥の室（奥の棚）', tasks: [...L1, ...L2, ...L3c, 'T_KOSHI'], items: ITEMS2, peeled: [...PEEL3, 'F_FLUE', 'F_KOSHI'], seals: { K_IBU: 1 }, fuda: 6, light: true, ghost: true, at: { x: 2.6, z: -21.0, yaw: 0, floor: 0 } },
+  { id: 'okumuro', group: '地下', label: '奥の室（格子戸の札がはがれた）', tasks: [...L1, ...L2, ...L3c, 'T_KOSHI'], items: ITEMS2, peeled: [...PEEL3, 'F_FLUE', 'F_KOSHI'], seals: { K_IBU: 1 }, fuda: 6, light: true, ghost: true, at: { x: 2.6, z: -17.6, yaw: 0, floor: 0 } },
   { id: 'shelf', group: '地下', label: '奥の棚の前（櫛を取る前）', tasks: [...L1, ...L2, ...L3d], items: ITEMS2, peeled: [...PEEL3, 'F_FLUE', 'F_KOSHI'], seals: SEALED, fuda: 5, light: true, ghost: true, at: { x: 2.6, z: -24.6, yaw: 0, floor: 0 } },
   { id: 'escape', group: '地下', label: '櫛を持って逃げる（奥の室）', tasks: [...L1, ...L2, ...L3d, 'T_BOX'], items: [...ITEMS2, 'COMB'], peeled: [...PEEL3, 'F_FLUE', 'F_KOSHI'], seals: SEALED, fuda: 5, hunt: true, at: { x: 2.6, z: -24.6, yaw: Math.PI, floor: 0 } },
   { id: 'escape-doro', group: '地下', label: '逃げる（燻しの間の戸の前）', tasks: [...L1, ...L2, ...L3d, 'T_BOX'], items: [...ITEMS2, 'COMB'], peeled: [...PEEL3, 'F_FLUE', 'F_KOSHI'], seals: SEALED, fuda: 5, hunt: true, at: { x: 2.6, z: -11.0, yaw: Math.PI, floor: 0 } },
   { id: 'bench', group: '家', label: '作業台（考えをまとめる）', tasks: DONE, items: [...ITEMS2, 'COMB'], peeled: [...PEEL3, 'F_FLUE', 'F_KOSHI'], fuda: 3, at: { x: 1.6, z: 2.2, yaw: Math.PI / 2, floor: 1 } },
   { id: 'end-give', group: '家', label: '帳場（櫛を持って戻った）', tasks: DONE, items: [...ITEMS2, 'COMB'], peeled: [...PEEL3, 'F_FLUE', 'F_KOSHI'], fuda: 3, at: { x: 4.9, z: 23.2, yaw: -0.9, floor: 1 } },
+  { id: 'phone', group: '家', label: '作業場（電話が鳴る前）', tasks: [...L1, 'T_HASHIRI', 'T_OKU'], items: ['TESHOKU', 'MATCHES'], peeled: [...PEEL1, 'F_HASHIRI', 'F_OKU', 'F_ROKA'], fuda: 2, at: { x: 2.6, z: 4.6, yaw: Math.PI, floor: 1 } },
+  { id: 'out', group: '家', label: '表の戸（最後に開ける）', tasks: [...DONE, 'T_THINK', 'T_RETURN', 'T_END'], items: ITEMS2, peeled: [...PEEL3, 'F_FLUE', 'F_KOSHI'], flags: ['returned', 'chose_keep'], fuda: 3, at: { x: 1.3, z: 22.6, yaw: Math.PI, floor: 1 } },
   { id: 'end', group: '家', label: '帳場（結末の前・手紙あり）', tasks: [...DONE, 'T_THINK', 'T_RETURN', 'T_SQ1'], items: ITEMS2, peeled: [...PEEL3, 'F_FLUE', 'F_KOSHI'], flags: ['letters', 'returned'], fuda: 3, at: { x: 4.9, z: 23.4, yaw: -0.9, floor: 1 } },
 ];
 export function installTests(ext, G) {

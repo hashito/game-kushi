@@ -10,16 +10,11 @@
 // She never lunges or teleports; she is slower than a walking player. Touching you is a catch (story.js decides what that resets).
 import * as THREE from 'three';
 import { buildChigusa } from './people.js';
+import { EDGES, edgeStrength, weakest } from './roads.js';
+export { EDGES, edgeStrength, weakest };
 
 export const SPEED = { pace: 0.7, flue: 0.9, room: 1.1, hunt: 1.65, follow: 1.8, calm: 0.8 };
-// the graph: each edge joins two rooms through a doorway; pts runs from room a's side to room b's side
-export const EDGES = [
-  { id: 'e_doro', a: 'MURO', b: 'DORO', pts: [[2.6, -0.3], [2.6, -1.7]], charm: 'F_DORO' },
-  { id: 'e_ita', a: 'DORO', b: 'ITA', pts: [[2.2, -6], [1.0, -6]], charm: 'F_ITA' },
-  { id: 'e_ibu', a: 'DORO', b: 'IBUSHI', pts: [[3.0, -9], [4.2, -9]], charm: 'F_IBU', seal: 'K_IBU' },
-  { id: 'e_koshi', a: 'DORO', b: 'OKUMURO', pts: [[2.6, -18.3], [2.6, -19.7]], charm: 'F_KOSHI' },
-  { id: 'e_flue', a: 'IBUSHI', b: 'OKUMURO', pts: [[7.5, -12.3], [7.5, -13.2], [6.6, -15.8], [5.5, -18.8], [5.5, -19.7]], charm: 'F_FLUE', seal: 'K_FLUE', sealAt: 'b', hidden: true },
-];
+// the roads (EDGES) and the weakest-road search live in roads.js (pure, tested)
 
 export function installGhost(ext, G) {
   let ctx = null, fig = null, glow = null;
@@ -30,34 +25,24 @@ export function installGhost(ext, G) {
     if (e.charm && !G.peeled.includes(e.charm)) return { charm: e.charm };
     return null;
   };
-  /** the rooms from a to b (breadth first, ignoring charms): [{ e, fwd }] */
-  function route(a, b) {
-    if (a === b) return [];
-    const prev = new Map([[a, null]]), q = [a];
-    while (q.length) {
-      const r = q.shift();
-      for (const e of EDGES) {
-        const n = e.a === r ? e.b : e.b === r ? e.a : null; if (!n || prev.has(n)) continue;
-        prev.set(n, { e, from: r }); q.push(n);
-      }
-    }
-    if (!prev.has(b)) return null;
-    const out = []; let r = b; while (prev.get(r)) { const p = prev.get(r); out.unshift({ e: p.e, fwd: p.e.a === p.from }); r = p.from; }
-    return out;
-  }
+  // the roads she may take: in her cage (奥の室, before the trap) only the lattice; otherwise every road
+  const edgesFor = () => (H.mode === 'cage' ? EDGES.filter((e) => e.id === 'e_koshi') : EDGES);
+  /** the rooms from a to b along the weakest road: [{ e, fwd }] */
+  function route(a, b) { const w = weakest(a, b, G.sealN, G.peeled, edgesFor()); return w ? w.legs : null; }
+  G.weakest = (a, b) => weakest(a, b, G.sealN, G.peeled);
   /** waypoints toward (tx, tz) in room troom; stops before the first charm in the way */
   function plan(troom, tx, tz) {
     const legs = route(H.room, troom); if (!legs) return { pts: [], stop: null };
     const pts = [];
     for (const { e, fwd } of legs) {
-      const p = fwd ? e.pts : [...e.pts].reverse(), b = blocked(e);
+      const p = fwd ? e.pts : [...e.pts].reverse(), b = blocked(e), dest = fwd ? e.b : e.a;
       if (b) {
-        // a seal on the far mouth of the flue: she crawls up to it, unseen, and presses it from inside
-        if (b.seal && e.sealAt && e.sealAt === (fwd ? 'b' : 'a')) { p.slice(0, -1).forEach(([x, z], i) => pts.push({ x, z, hidden: !!e.hidden && i > 0, edge: e.id, end: false })); const q = pts[pts.length - 1]; q.press = { ...b, edge: e.id }; return { pts, stop: b }; }
+        // a block on the far mouth of a flue: she crawls up to it, unseen, and presses it from inside
+        if (e.at && e.at === (fwd ? 'b' : 'a')) { p.slice(0, -1).forEach(([x, z], i) => pts.push({ x, z, hidden: !!e.hidden && i > 0, edge: e.id, end: false })); const q = pts[pts.length - 1]; q.press = { ...b, edge: e.id }; return { pts, stop: b }; }
         pts.push({ x: p[0][0], z: p[0][1], press: { ...b, edge: e.id } }); return { pts, stop: b };
       }
-      // a flue: hidden between its two mouths; once she is in an edge she follows it to its end (no turning back at a re-plan)
-      p.forEach(([x, z], i) => pts.push({ x, z, hidden: !!e.hidden && i > 0 && i < p.length - 1, edge: e.id, end: i === p.length - 1 }));
+      // a flue: hidden between its two mouths (and at the fork); once she is in an edge she follows it to its end (no turning back at a re-plan)
+      p.forEach(([x, z], i) => pts.push({ x, z, hidden: !!e.hidden && i > 0 && (i < p.length - 1 || dest === 'J'), edge: e.id, end: i === p.length - 1, node: i === p.length - 1 ? dest : null }));
     }
     pts.push({ x: tx, z: tz });
     return { pts, stop: null };
@@ -104,6 +89,14 @@ export function installGhost(ext, G) {
       // along the way you ran: the trail's points one after another, then straight at you once she is on your last point
       const T0 = G.trail || [];
       let step = SPEED.follow * (ctx.calm ? SPEED.calm : 1) * dt;
+      // 2.4.0 (#10): a charm put back on a door behind you holds her there until it chars off (9 s a charm upstairs)
+      const nextP = H.trailI < T0.length ? T0[H.trailI] : { x: ctx.camera.position.x, z: ctx.camera.position.z };
+      for (const S of G.seals.values()) {
+        if (!S.door || S.n <= 0 || S.def.house !== true) continue;
+        const d0 = ctx.data.plan.doors.find((x) => x.id === S.door); if (!d0) continue;
+        const sx = nextP.x - H.x, sz = nextP.z - H.z, L2 = sx * sx + sz * sz || 1e-6, t = Math.max(0, Math.min(1, ((d0.x - H.x) * sx + (d0.z - H.z) * sz) / L2));
+        if (Math.hypot(H.x + sx * t - d0.x, H.z + sz * t - d0.z) < 0.7 && Math.hypot(H.x - d0.x, H.z - d0.z) < 1.4) { pressing = { seal: S.def.id }; step = 0; break; }
+      }
       while (step > 0) {
         const p = H.trailI < T0.length ? T0[H.trailI] : { x: ctx.camera.position.x, z: ctx.camera.position.z }, d = Math.hypot(p.x - H.x, p.z - H.z);
         if (d <= step) { H.x = p.x; H.z = p.z; step -= d; if (H.trailI < T0.length) H.trailI++; else break; }
@@ -122,14 +115,16 @@ export function installGhost(ext, G) {
         // the charm she pressed is gone (burnt off, or peeled): go on through
         if (p.press && (p.press.seal ? G.sealN(p.press.seal) <= 0 : G.peeled.includes(p.press.charm))) { delete p.press; H.path = []; H.inEdge = p.edge && !p.end ? p.edge : null; if (H.inEdge) { const e = EDGES.find((x) => x.id === H.inEdge); const towardB = Math.hypot(e.pts[0][0] - H.x, e.pts[0][1] - H.z) > Math.hypot(e.pts[e.pts.length - 1][0] - H.x, e.pts[e.pts.length - 1][1] - H.z); const rest = towardB ? e.pts : [...e.pts].reverse(); const k = rest.findIndex(([x, z]) => Math.hypot(x - H.x, z - H.z) < 0.05); rest.slice(k + 1).forEach(([x, z], i, arr) => H.path.push({ x, z, hidden: !!e.hidden && i < arr.length - 1, edge: e.id, end: i === arr.length - 1 })); } break; }
         if (p.press && d < 0.45) { pressing = p.press; break; }
-        if (d <= step) { H.x = p.x; H.z = p.z; step -= d; if (p.press) { pressing = p.press; break; } H.inEdge = p.edge && !p.end ? p.edge : null; H.path.shift(); }
+        if (d <= step) { H.x = p.x; H.z = p.z; step -= d; if (p.press) { pressing = p.press; break; } H.inEdge = p.edge && !p.end ? p.edge : null; if (p.node) H.room = p.node; H.path.shift(); }
         else { H.x += ((p.x - H.x) / d) * step; H.z += ((p.z - H.z) / d) * step; step = 0; }
       }
-      const r = roomAt(H.x, H.z); if (r) H.room = r;
-      if (!H.path.length) H.hidden = false;
+      if (!H.hidden) { const r = roomAt(H.x, H.z); if (r) H.room = r; }
+      if (!H.path.length && H.room !== 'J') H.hidden = false;
     } else if (H.path[0] && H.path[0].press && Math.hypot(H.path[0].x - H.x, H.path[0].z - H.z) < 0.45) pressing = H.path[0].press;
-    // pressing: a seal chars only when she wants you (her comb is in your hand)
-    if (pressing && H.mode === 'hunt' && pressing.seal) { const S = G.seals.get(pressing.seal); if (S) S.press = true; }
+    // pressing: a seal (or a charm still on its door / lid) chars only when she wants you (her comb is in your hand)
+    G.charmPress = null;
+    if (pressing && (H.mode === 'hunt' || H.mode === 'follow') && pressing.seal) { const S = G.seals.get(pressing.seal); if (S) S.press = true; }
+    if (pressing && H.mode === 'hunt' && pressing.charm) G.charmPress = pressing.charm;
     const key = pressing ? `${pressing.seal || pressing.charm}` : '';
     if (key !== (H.pressKey || '')) { H.pressKey = key; H.pressing = pressing; if (pressing) ext.emit('kushi:ghost-press', { id: key, mode: H.mode }); }
     // touching you

@@ -66,10 +66,10 @@ export function installGuide(THREE, ctx, { D, mode }) {
   // a faint glow on it and a small ▼ floating above it (2.3: no ring on the floor). The mark is a child of the pickup:
   // it goes with it when it is taken (and is hidden while the pickup is). Same materials for all (nothing is built in play).
   const icv = document.createElement('canvas'); icv.width = icv.height = 32;
-  { const x = icv.getContext('2d'); x.fillStyle = 'rgba(0,0,0,0.55)'; x.beginPath(); x.moveTo(4, 7); x.lineTo(28, 7); x.lineTo(16, 27); x.closePath(); x.fill();
-    x.fillStyle = '#ffd88a'; x.beginPath(); x.moveTo(7, 9); x.lineTo(25, 9); x.lineTo(16, 24); x.closePath(); x.fill(); }
+  // 2.4.0 (#2 「▼が派手すぎる、小さく質素に」): a small, pale, thin chevron - no amber fill, no dark outline (kit check-playtest P53)
+  { const x = icv.getContext('2d'); x.strokeStyle = '#d8cdb4'; x.lineWidth = 3; x.lineJoin = 'round'; x.lineCap = 'round'; x.beginPath(); x.moveTo(9, 12); x.lineTo(16, 20); x.lineTo(23, 12); x.stroke(); }
   const itex = new THREE.CanvasTexture(icv); itex.colorSpace = THREE.SRGBColorSpace; itex.magFilter = THREE.NearestFilter;
-  const iconM = new THREE.SpriteMaterial({ map: itex, transparent: true, depthWrite: false, depthTest: false, fog: false }); iconM.name = 'dot-mark-icon';
+  const iconM = new THREE.SpriteMaterial({ map: itex, transparent: true, opacity: 0.55, depthWrite: false, depthTest: false, fog: false }); iconM.name = 'dot-mark-icon'; iconM.userData.guideMark = true;
   const softM = new THREE.SpriteMaterial({ map: tex, color: 0xffe2a8, transparent: true, opacity: 0.2, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }); softM.name = 'dot-mark-glow';
   // the guide's glows are light, not surfaces: the dot pass (dotifyScene) leaves them as they are (quantized, a soft glow went dark: 2.2 basement check)
   for (const m of [glowM, iconM, softM]) { m.userData.dot = 'light'; if (m.map) m.map.userData.dot = 'light'; }
@@ -79,7 +79,7 @@ export function installGuide(THREE, ctx, { D, mode }) {
       const ia = o.userData.interact;
       if (!ia || (ia.kind !== 'item' && ia.kind !== 'doc') || marks.has(o)) continue;
       const m = new THREE.Group(); m.name = 'dot-mark';
-      const ic = new THREE.Sprite(iconM); ic.scale.set(0.26, 0.26, 1); ic.renderOrder = 6; m.add(ic);
+      const ic = new THREE.Sprite(iconM); ic.scale.set(0.14, 0.14, 1); ic.userData.guideMark = true; ic.renderOrder = 6; m.add(ic);
       const gl = new THREE.Sprite(softM); gl.scale.set(0.4, 0.4, 1); gl.renderOrder = 5; m.add(gl);
       o.add(m); marks.set(o, { m, ic, gl });
     }
@@ -99,7 +99,7 @@ export function installGuide(THREE, ctx, { D, mode }) {
       o.getWorldPosition(wp);
       let F = ctx.world.floorY(0); for (let f = 1; f < 4; f++) { const y = ctx.world.floorY(f); if (Number.isFinite(y) && y <= wp.y + 0.05 && y > F) F = y; }   // the pickup's own floor
       const local = (y) => y - wp.y;   // the pickup is not scaled: world heights straight into its space
-      M.ic.position.y = local(Math.min(wp.y + 0.45, F + 1.75)) + 0.04 * k;
+      M.ic.position.y = local(Math.min(wp.y + 0.36, F + 1.75)) + 0.015 * k;
       M.gl.position.y = 0;
       M.ic.visible = sight.clear(M.ic);   // the ▼ draws over its own prop (no depth test) but never through a wall
     }

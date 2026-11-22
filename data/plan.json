@@ -155,6 +155,20 @@
       "wallTex": "plaster_soot"
     },
     {
+      "id": "KAME",
+      "name": "甕の間",
+      "x": -4.4,
+      "z": -18,
+      "w": 6,
+      "d": 7,
+      "floor": 0,
+      "kind": "room",
+      "type": "storage",
+      "furnish": false,
+      "floorTex": "dirt_floor",
+      "wallTex": "stone_wall"
+    },
+    {
       "id": "OKUMURO",
       "name": "奥の室",
       "x": -1.4,
@@ -202,8 +216,7 @@
       "look": "slide",
       "closable": true,
       "reason": "表の土間は、中戸の先で台所の走り庭へ土間のまま続く",
-      "unlock": "house",
-      "hint": "土間の奥の中戸。札が貼ってある。……今は、ハルさんの話が先だ。"
+      "hint": "土間の奥の中戸。札が貼ってある。……ハルさんの話を聞いてからだ。"
     },
     {
       "id": "D_OKU",
@@ -313,6 +326,18 @@
       "reason": "板を燻す部屋（奥の室と煙道でつながる）"
     },
     {
+      "id": "D_KAME",
+      "a": "DORO",
+      "b": "KAME",
+      "x": 1.6,
+      "z": -14.6,
+      "width": 1.1,
+      "look": "slide",
+      "closable": true,
+      "hint": "甕の間の板戸。札が貼ってある。",
+      "reason": "水を張った甕を並べた部屋（板を水に浸けてから燻した）。煙道の枝が来ている"
+    },
+    {
       "id": "D_KOSHI",
       "a": "DORO",
       "b": "OKUMURO",
@@ -320,8 +345,9 @@
       "z": -19,
       "width": 1.2,
       "look": "none",
-      "reason": "廊下の突き当たりの、奥の室の格子戸",
-      "open": true
+      "reason": "廊下の突き当たりの、奥の室の格子戸（2.4.0：閉じていれば通れない戸。札がはがれたら [E] で開ける）",
+      "closable": true,
+      "hint": "格子戸。蝋で塗りこめた札が貼ってある。"
     }
   ],
   "stations": [
@@ -372,8 +398,8 @@
       "id": "S_LIGHT",
       "room": "MURO",
       "x": 5.2,
-      "z": 1.6,
-      "label": "燻し炉の縁"
+      "z": 2.2,
+      "label": "燻し炉（いぶしろ）の縁"
     },
     {
       "id": "S_SHELF",
@@ -395,6 +421,13 @@
       "x": 2.6,
       "z": -18.6,
       "label": "格子戸の蝋の札"
+    },
+    {
+      "id": "S_OUT",
+      "room": "OMOTE",
+      "x": 1.3,
+      "z": 25.45,
+      "label": "表の戸"
     }
   ],
   "hides": [],

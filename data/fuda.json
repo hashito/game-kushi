@@ -19,21 +19,24 @@
       "door": "D_OKU",
       "side": "s",
       "stage": "L2",
-      "label": "奥の間の襖の札"
+      "label": "奥の間の襖の札",
+      "crumble": true
     },
     {
       "id": "F_ROKA",
       "door": "D_ROKA",
       "side": "s",
       "stage": "L2",
-      "label": "渡り廊下の板戸の札"
+      "label": "渡り廊下の板戸の札",
+      "crumble": true
     },
     {
       "id": "F_SAGYO",
       "door": "D_SAGYO",
       "side": "s",
       "stage": "L2",
-      "label": "作業場の板戸の札"
+      "label": "作業場の板戸の札",
+      "crumble": true
     },
     {
       "id": "F_DORO",
@@ -55,6 +58,13 @@
       "side": "w",
       "stage": "L3",
       "label": "燻しの間の板戸の札"
+    },
+    {
+      "id": "F_KAME",
+      "door": "D_KAME",
+      "side": "e",
+      "stage": "L3",
+      "label": "甕の間の板戸の札"
     }
   ],
   "walls": [
@@ -78,31 +88,26 @@
       "label": "煙道の口の札"
     },
     {
-      "id": "W_1",
+      "id": "W_ITAM",
       "room": "ITA",
-      "x": -4.31,
-      "y": 1.5,
-      "z": -7.2,
-      "face": "e",
-      "label": "壁の札"
-    },
-    {
-      "id": "W_2",
-      "room": "ITA",
-      "x": -4.31,
-      "y": 1.5,
-      "z": -5,
-      "face": "e",
-      "label": "壁の札"
-    },
-    {
-      "id": "W_3",
-      "room": "ITA",
-      "x": -2,
-      "y": 1.5,
-      "z": -8.91,
+      "x": -3.0,
+      "y": 0.42,
+      "z": -8.83,
       "face": "s",
-      "label": "壁の札"
+      "label": "煙道の蓋の札（ハルさんの古い札）",
+      "old": true,
+      "lid": "K_ITAM"
+    },
+    {
+      "id": "W_KAMEM",
+      "room": "KAME",
+      "x": -1.5,
+      "y": 0.42,
+      "z": -17.83,
+      "face": "s",
+      "label": "煙道の蓋の札（ハルさんの古い札）",
+      "old": true,
+      "lid": "K_KAMEM"
     }
   ],
   "think": {
@@ -200,24 +205,58 @@
       "door": "D_NAKA",
       "side": "s",
       "label": "中の間の襖",
-      "max": 1
+      "max": 1,
+      "leaf": true
     },
     {
       "id": "K_IBU",
       "door": "D_IBU",
       "side": "w",
       "label": "燻しの間の板戸",
-      "max": 3
+      "max": 3,
+      "leaf": true
     },
     {
       "id": "K_FLUE",
       "room": "OKUMURO",
       "x": 5.5,
       "y": 0.42,
-      "z": -19.09,
+      "z": -19.13,
       "face": "n",
       "label": "奥の室の煙道の口",
-      "max": 3
+      "max": 3,
+      "lid": true,
+      "lidOpen": true
+    },
+    {
+      "id": "K_ITAM",
+      "room": "ITA",
+      "x": -3.0,
+      "y": 0.42,
+      "z": -8.83,
+      "face": "s",
+      "label": "板の間の煙道の蓋",
+      "max": 2,
+      "lid": true
+    },
+    {
+      "id": "K_KAMEM",
+      "room": "KAME",
+      "x": -1.5,
+      "y": 0.42,
+      "z": -17.83,
+      "face": "s",
+      "label": "甕の間の煙道の蓋",
+      "max": 2,
+      "lid": true
+    },
+    {
+      "id": "K_KOSHI",
+      "door": "D_KOSHI",
+      "side": "s",
+      "label": "奥の室の格子戸",
+      "max": 2
     }
-  ]
+  ],
+  "doc": "seals: where a charm can go up. Door seals of every charmed door are made in js/ext/fuda.js (K_<door>, max 1, 'auto'): a peeled door charm can always be put back (2.4.0 #10). lid: a flue mouth with a wooden lid - closed first ([E] 蓋を閉める), then the charm goes on it (2.4.0 #9). leaf: the door's own [E] pastes too (the practice fusuma, 燻しの間's door). old: one of Haru's own charms (a lid already sealed): peeling it gives a charm and opens a road."
 }

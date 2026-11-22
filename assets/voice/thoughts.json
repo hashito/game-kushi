@@ -229,11 +229,6 @@
   "file": "t-letters_more.mp3",
   "sec": 0.8
  },
- "sq2_count": {
-  "text": "壁の札をはがした。燻しの間の戸に、重ねて貼れる。",
-  "file": "t-sq2_count.mp3",
-  "sec": 4
- },
  "okumuro_shelf": {
   "text": "棚の箱は、棚の柱に固い紐で縛りつけてある。",
   "file": "t-okumuro_shelf.mp3",
@@ -313,6 +308,161 @@
   "text": "ここでは、もうすることはない。",
   "file": "t-done_here.mp3",
   "sec": 2
+ },
+ "phone_after": {
+  "text": "……ハルさんが、先週亡くなっていた？　じゃあ、帳場の格子の奥にいるのは誰だ。帳場へ戻って、確かめよう。",
+  "file": "t-phone_after.mp3",
+  "sec": 8.1
+ },
+ "crumble": {
+  "text": "札は古くて、はがした端から、ぼろぼろに崩れた。……古い札は、もう貼れない。",
+  "file": "t-crumble.mp3",
+  "sec": 5.7
+ },
+ "lid_warn": {
+  "text": "これは、戸の札とは違う。ハルさんの古い札だ。蓋の向こうは煙道……はがしたら、ダメそうだ。……それでも札がいるなら、もう一度手をかけよう。",
+  "file": "t-lid_warn.mp3",
+  "sec": 10.5
+ },
+ "lid_peeled": {
+  "text": "蓋の札をはがした。札が一枚、手に入った。……でも、この蓋の向こうは、もう何も止めていない。",
+  "file": "t-lid_peeled.mp3",
+  "sec": 7.3
+ },
+ "lid_close": {
+  "text": "蓋を閉めた。閉めただけでは、押されれば開く。札を貼っておかないと。",
+  "file": "t-lid_close.mp3",
+  "sec": 5
+ },
+ "koshi_locked": {
+  "text": "格子戸は、蝋で塗りこめた札で閉じてある。札が貼ってあるうちは、開かない。",
+  "file": "t-koshi_locked.mp3",
+  "sec": 5.4
+ },
+ "koshi_outside": {
+  "text": "格子戸の札は、廊下の側から貼るものだ。",
+  "file": "t-koshi_outside.mp3",
+  "sec": 2.8
+ },
+ "box_open_oku": {
+  "text": "まだだ。この部屋の煙道の口が、開いたままだ。櫛を取れば、千草さんはあそこから真っすぐ来る。蓋を閉めて、札を貼っておこう。",
+  "file": "t-box_open_oku.mp3",
+  "sec": 9.6
+ },
+ "box_open_ita": {
+  "text": "まだだ。板の間の煙道の蓋に、札がない。燻しの間から煙道を回って、あそこから来られる。",
+  "file": "t-box_open_ita.mp3",
+  "sec": 7.2
+ },
+ "box_open_kame": {
+  "text": "まだだ。甕の間の煙道の蓋に、札がない。燻しの間から煙道を回って、あそこから来られる。",
+  "file": "t-box_open_kame.mp3",
+  "sec": 7.4
+ },
+ "box_open_koshi": {
+  "text": "まだだ。燻しの間から廊下へ抜ける道が、どこか開いている。",
+  "file": "t-box_open_koshi.mp3",
+  "sec": 4.3
+ },
+ "box_open_any": {
+  "text": "まだだ。燻しの間からここへ来る道のどこかに、札が一枚もない。",
+  "file": "t-box_open_any.mp3",
+  "sec": 4.7
+ },
+ "kame_in": {
+  "text": "甕の間。黄楊の板を浸けておいた甕が並んでいる。北の壁にも、蓋をした煙道の口がある。",
+  "file": "t-kame_in.mp3",
+  "sec": 6.7
+ },
+ "out_go": {
+  "text": "表の戸だ。玄関まで歩いて、自分の手で開けよう。",
+  "file": "t-out_go.mp3",
+  "sec": 3.8
+ },
+ "as_well": {
+  "text": "この井戸の札は、さっきまでの戸の札とは違う。……はがしたら、ダメそうだ。",
+  "file": "t-as_well.mp3",
+  "sec": 5.1
+ },
+ "as_tea": {
+  "text": "湯呑みが二つ。誰と飲むつもりだったんだろう。",
+  "file": "t-as_tea.mp3",
+  "sec": 2.9
+ },
+ "as_photo": {
+  "text": "花嫁の髪の、半月の櫛。……ハルさんの言う櫛は、これだろうか。",
+  "file": "t-as_photo.mp3",
+  "sec": 4.9
+ },
+ "as_kimono": {
+  "text": "着物が湿っている。この家で、誰が着たんだ。",
+  "file": "t-as_kimono.mp3",
+  "sec": 3.5
+ },
+ "as_amado": {
+  "text": "雨戸のすき間まで、札でふさいである。外から、何も入らないように。……それとも、中から出さないように。",
+  "file": "t-as_amado.mp3",
+  "sec": 7.4
+ },
+ "as_floor": {
+  "text": "カリ、カリ……。床の下に、何かいる。",
+  "file": "t-as_floor.mp3",
+  "sec": 3.4
+ },
+ "as_scratch": {
+  "text": "爪の跡だ。下から、何十回も。",
+  "file": "t-as_scratch.mp3",
+  "sec": 2.9
+ },
+ "as_kiln": {
+  "text": "燻し炉の縁は、揚げ戸からのすき間風の陰になっている。火をつけるなら、あそこだ。",
+  "file": "t-as_kiln.mp3",
+  "sec": 5.5
+ },
+ "as_writing": {
+  "text": "「おかあさん　あけて」。……千草さんが、ハルさんを呼んだんだ。",
+  "file": "t-as_writing.mp3",
+  "sec": 4.3
+ },
+ "as_flue": {
+  "text": "煙道は、人が這って通れるくらいの太さだ。岩の中で、どこかへ分かれている。",
+  "file": "t-as_flue.mp3",
+  "sec": 5.6
+ },
+ "as_bells": {
+  "text": "鈴の紐が、部屋という部屋へ伸びている。鳴れば、どこにいても分かる。",
+  "file": "t-as_bells.mp3",
+  "sec": 4.9
+ },
+ "as_candle": {
+  "text": "燃え尽きるまで、ここに一人で……。",
+  "file": "t-as_candle.mp3",
+  "sec": 2.1
+ },
+ "as_jars": {
+  "text": "甕の水が黒い。底が見えない。",
+  "file": "t-as_jars.mp3",
+  "sec": 2.6
+ },
+ "as_rope": {
+  "text": "縄が、新しい。……ここだけ、誰かが最近まで使っていたみたいだ。",
+  "file": "t-as_rope.mp3",
+  "sec": 5
+ },
+ "as_shoes": {
+  "text": "女物の草履。ハルさんのにしては、若い色だ。",
+  "file": "t-as_shoes.mp3",
+  "sec": 3.6
+ },
+ "usu_haru": {
+  "text": "臼の前に、帳場のハルさんに確かめたい。電話で聞いたことを。",
+  "file": "t-usu_haru.mp3",
+  "sec": 4.4
+ },
+ "out_early": {
+  "text": "表の戸は動かない。向こうから、誰かが押さえている。",
+  "file": "t-out_early.mp3",
+  "sec": 3.8
  },
  "not_yet": {
   "text": "今は、まだだ。左上の目標を先にしよう。",

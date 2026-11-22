@@ -208,35 +208,35 @@
   "haru_dead": [
     {
       "who": "ハル",
-      "where": "帳場の方から",
+      "where": "帳場の格子の奥",
       "text": "……聞いたか。",
       "id": "haru_dead-1",
       "voice": "assets/voice/haru_dead-1.mp3"
     },
     {
       "who": "ハル",
-      "where": "帳場の方から",
+      "where": "帳場の格子の奥",
       "text": "そうよ。わしは先週、死んだ。",
       "id": "haru_dead-2",
       "voice": "assets/voice/haru_dead-2.mp3"
     },
     {
       "who": "ハル",
-      "where": "帳場の方から",
+      "where": "帳場の格子の奥",
       "text": "死んだもんは、札を越えられん。わしが五十二年かけて貼った札が、今はわしを、あの格子の内に閉じこめとる。",
       "id": "haru_dead-3",
       "voice": "assets/voice/haru_dead-3.mp3"
     },
     {
       "who": "ハル",
-      "where": "帳場の方から",
+      "where": "帳場の格子の奥",
       "text": "戸を押さえるくらいはできる。じゃが、札の外へは一歩も出られん。",
       "id": "haru_dead-4",
       "voice": "assets/voice/haru_dead-4.mp3"
     },
     {
       "who": "ハル",
-      "where": "帳場の方から",
+      "where": "帳場の格子の奥",
       "text": "じゃから、生きとるあんたに頼んどる。櫛を持って来い。あの櫛がある限り、あの女は、この家から離れん。",
       "id": "haru_dead-5",
       "voice": "assets/voice/haru_dead-5.mp3"
@@ -249,7 +249,7 @@
     },
     {
       "who": "ハル",
-      "where": "帳場の方から",
+      "where": "帳場の格子の奥",
       "text": "……櫛を持って来い。そうしたら、戸を開けてやる。",
       "id": "haru_dead-7",
       "voice": "assets/voice/haru_dead-7.mp3"
@@ -290,7 +290,7 @@
     },
     {
       "who": "私",
-      "text": "手燭に火を入れよう。目の前の燻し炉（いぶしろ）の縁なら、手燭を置いてマッチを擦れる。",
+      "text": "手燭に火を入れよう。目の前の燻し炉（いぶしろ）――板を燻すための、低い土の炉だ。縁は、揚げ戸からのすき間風の陰になる。あそこなら、マッチの火が消えない。",
       "id": "muro_in-2",
       "voice": "assets/voice/muro_in-2.mp3"
     }
@@ -343,7 +343,7 @@
     },
     {
       "who": "私",
-      "text": "東の壁にも、黒い煙道の口がある。燻しの間に続いている。……櫛を取ったら、千草さんはここから来る。先に、この口に札を貼っておこう。",
+      "text": "東の壁に、黒い煙道の口。木の蓋が外れて、壁に立てかけてある。……櫛を取れば、千草さんはいちばん札の薄い道から来る。蓋を閉めて、札を貼っておこう。",
       "id": "okumuro-5",
       "voice": "assets/voice/okumuro-5.mp3"
     }
@@ -545,7 +545,7 @@
     },
     {
       "who": "私",
-      "text": "背中のほうで、表の戸が、すっと開く音がした。",
+      "text": "「戸は、開けてやる」。……表の戸のほうで、何かがゆるんだ気がした。",
       "id": "end_keep-2",
       "voice": "assets/voice/end_keep-2.mp3"
     }
@@ -629,9 +629,15 @@
     },
     {
       "who": "私",
-      "text": "燻しの間と奥の室は、煙道でつながっている。死んだ者は、煙道を這って通る。",
+      "text": "燻しの間の煙道は、岩の中で三つに分かれる。奥の室、板の間、甕の間。どの口にも木の蓋がある。蓋は、閉めて札を貼らなければ、押されれば開く。",
       "id": "hikae-3",
       "voice": "assets/voice/hikae-3.mp3"
+    },
+    {
+      "who": "私",
+      "text": "「死んだ者は、いちばん札の薄い道を来る」。板の間と甕の間の蓋の札は、ハルさんの古い札。はがせば札は手に入るが、その道が開く。",
+      "id": "hikae-5",
+      "voice": "assets/voice/hikae-5.mp3"
     },
     {
       "who": "私",
@@ -734,7 +740,7 @@
   "koshi_open": [
     {
       "who": "私",
-      "text": "札がはがれた。格子戸が、きしみながら横へすべった。……奥の室だ。",
+      "text": "札がはがれた。蝋の匂いが残っている。……格子戸に手をかければ、もう開く。",
       "id": "koshi_open-1",
       "voice": "assets/voice/koshi_open-1.mp3"
     },
@@ -748,7 +754,7 @@
   "flue2_done": [
     {
       "who": "私",
-      "text": "煙道の口に、札を貼った。……これで、来る道は燻しの間の戸だけだ。櫛を取ったら、戸の札が焦げ落ちる前に、廊下を抜けて、はしごまで走る。",
+      "text": "燻しの間からここへ来る道は、どれも札でふさいだ。千草さんは、いちばん札の薄い所を押してくる。櫛を取ったら、札が焦げ落ちる前に、はしごまで走る。",
       "id": "flue2_done-1",
       "voice": "assets/voice/flue2_done-1.mp3"
     }
@@ -808,6 +814,48 @@
       "text": "こっちじゃ！　店の間の、わしの札の内へ入れ！",
       "id": "chase_haru-1",
       "voice": "assets/voice/chase_haru-1.mp3"
+    }
+  ],
+  "out_give": [
+    {
+      "who": "私",
+      "text": "表の戸に手をかけた。今度は、軽く動いた。",
+      "id": "out_give-1",
+      "voice": "assets/voice/out_give-1.mp3"
+    },
+    {
+      "who": "私",
+      "text": "外は夜だった。道の向こうに、野口さんの車の灯りが見える。……振り返らずに、敷居をまたいだ。",
+      "id": "out_give-2",
+      "voice": "assets/voice/out_give-2.mp3"
+    }
+  ],
+  "out_keep": [
+    {
+      "who": "私",
+      "text": "表の戸が、すっと動いた。外は夜。野口さんの車の灯りが見える。",
+      "id": "out_keep-1",
+      "voice": "assets/voice/out_keep-1.mp3"
+    },
+    {
+      "who": "私",
+      "text": "背中のほうで、髪をすく音がした。ゆっくりと、一度だけ。",
+      "id": "out_keep-2",
+      "voice": "assets/voice/out_keep-2.mp3"
+    }
+  ],
+  "out_free": [
+    {
+      "who": "私",
+      "text": "表の戸を開けた。外は夜。野口さんの車の灯りが見える。",
+      "id": "out_free-1",
+      "voice": "assets/voice/out_free-1.mp3"
+    },
+    {
+      "who": "私",
+      "text": "振り返ると、店の間は空っぽだった。帳場の火鉢の火が、ふっと消えた。",
+      "id": "out_free-2",
+      "voice": "assets/voice/out_free-2.mp3"
     }
   ]
 }

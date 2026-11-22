@@ -296,6 +296,36 @@
       "key": "th-ibushi-flue",
       "size": "768x768",
       "prompt": "a low square opening in a sooty earthen wall of a dark cellar, framed by rough stones, pitch black inside, a single blank white paper strip pasted across the stone frame, candle light, soot stains around the opening"
+    },
+    {
+      "key": "roll-police",
+      "size": "1344x768",
+      "prompt": "early morning in a narrow street of a mountain village, an old wooden Japanese townhouse with its front sliding door open, two police officers in dark uniforms seen from behind carry a stretcher covered with a plain white sheet out of the doorway, a white police van parked, cold blue light, mist, no faces visible, no signs"
+    },
+    {
+      "key": "roll-noguchi",
+      "size": "1344x768",
+      "prompt": "night, a small white car with its headlights on parked in front of an old dark wooden Japanese townhouse, a middle-aged woman in a cardigan and a lanyard stands by the car seen from behind, looking at the open front door, warm light spilling from the doorway, no faces visible, no signs"
+    },
+    {
+      "key": "roll-office",
+      "size": "1344x768",
+      "prompt": "a small home-care office in the morning, a young man in a dark jacket seen from behind sits at a plain desk writing on a paper form with a pen, a cup of tea, a window with grey autumn light, no readable text, no faces"
+    },
+    {
+      "key": "roll-grave",
+      "size": "1344x768",
+      "prompt": "a small temple cemetery on a hillside in a Japanese mountain village in late autumn, two small old stone graves side by side, a half-moon shaped yellow boxwood comb laid on the stone step in front of them, a few red maple leaves, soft overcast light, no writing on the stones, plain stones"
+    },
+    {
+      "key": "roll-demolish",
+      "size": "1344x768",
+      "prompt": "an old wooden Japanese townhouse being torn down in grey winter light, a small yellow excavator, broken roof tiles and timber beams, dust, an empty narrow street, no people, no signs"
+    },
+    {
+      "key": "roll-empty-lot",
+      "size": "1344x768",
+      "prompt": "night, a small empty lot of bare earth between two old wooden houses in a narrow Japanese village street, a single street lamp, a young man in a dark jacket stands at the edge seen from behind, cold mist, no signs, no writing"
     }
   ],
   "seeds": {

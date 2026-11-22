@@ -55,20 +55,26 @@ export default async (api) => {
   await H.walkTo(6.6, 3.9); await use(7.6, 3.9, 0.08, 'KOTEKO'); await H.idle();
   await H.walkTo(1.3, 1.6); await H.face(0.45, 1.6, 0.86); await sleep(300); await shot('kakekushi'); await use(0.45, 1.6, 0.86, 'KAKE_KUSHI'); await H.idle();
   if (LET) { await H.walkTo(2.6, 3.6); await use(2.6, 4.5, 0.75, 'LETTER3'); await H.idle(); }
-  // the phone
-  await sleep(3000); await H.idle();
+  // the phone (2.4.0 #4: the first ring is loud through the house)
+  await sleep(2700); await shot('ring'); log('  ring', await G('g.state.flags.includes("ring_said")')); await sleep(600); await H.idle();
   await H.route([[5.3, 4.2], [5.3, 5.75], [5.3, 7.4], [5.3, 12.0], [5.3, 14.0], [3.6, 14.2]]); await shot('phone');
   await use(3.15, 13.55, 0.7, 'T_PHONE'); await H.idle(); await must('T_PHONE'); await shot('after-phone');
+  // 2.4.0 #5: ハル is asked, not heard automatically
+  if (await G('g.state.tasks.includes("T_HARU2")')) throw new Error('ERROR T_HARU2 done without asking');
+  await H.route([[3.9, 19.0], [3.9, 21.0], [4.9, 23.2]]); await H.face(5.7, 22.5, 1.0); await sleep(300); await shot('haru2');
+  await use(5.7, 22.55, 1.0, 'T_HARU2'); await H.idle(); await must('T_HARU2');
+  await H.route([[3.9, 21.0], [3.9, 19.0], [5.3, 14.0]]);
   if (LET) { await H.walkTo(6.5, 16.5); await use(7.45, 16.5, 0.9, 'T_SQ1'); await H.idle(); const lt = await G('g.state.flags.includes("letters")'); log('  letters', lt); if (!lt) throw new Error('ERROR letters not read'); }
   // the mill and the hatch
   await H.route([[5.3, 14.0], [5.3, 12.0], [5.3, 7.4], [5.3, 5.75], [5.3, 4.0], [6.6, 1.0]]);
   await H.face(6.6, -0.5, 0.4); await sleep(300); await shot('usu');
   await use(6.6, -0.5, 0.4, 'T_USU'); await H.idle(); await sleep(1500); await must('T_USU');
-  await use(6.6, -0.5, 0.1, 'T_HATCH'); await H.idle(); await must('T_HATCH'); await shot('hatch-open');
+  await use(6.6, -0.5, 0.1, 'T_HATCH'); await H.idle(); await must('T_HATCH'); await sleep(1200); await shot('hatch-open');
+  { const before = await H.pos(); await H.walkTo(6.6, -0.5, { tries: 1 }).catch(() => {}); const after = await H.pos(); log('  hole walk', JSON.stringify(after)); if (after.z < -0.1 && after.x > 6.2 && after.x < 7.0) throw new Error('ERROR walked onto the open hatch hole'); await H.walkTo(6.6, 1.0); }
   await st('L2 done'); if (UPTO === 'L2') return;
   // ---- L3: down ----
   await use(6.6, -0.5, 0.3, 'ladder down'); await sleep(1500); await H.idle(); await st('muro'); await shot('muro-dark');
-  await use(5.2, 1.6, 0.35, 'T_LIGHT'); await H.idle(); await must('T_LIGHT'); await shot('muro-lit');
+  await H.face(5.2, 2.2, 0.42); await sleep(300); await shot('kiln-rim'); await use(5.2, 2.2, 0.42, 'T_LIGHT'); await H.idle(); await must('T_LIGHT'); await shot('muro-lit');
   await H.face(6.6, -0.5, 3.0); await sleep(300); await shot('muro-scratches');
   await H.walkTo(1.9, 3.7); await H.face(1.24, 3.7, 1.05); await sleep(300); await shot('hikae-shelf');
   await use(1.24, 3.7, 1.05, 'DOC_HIKAE'); await H.idle(); await H.idle(); await must('T_HIKAE');
@@ -78,10 +84,13 @@ export default async (api) => {
   await H.walkTo(2.6, -16.0, { onStep: () => H.idle(200).then(() => false) }); await sleep(1500); await shot('koshi-coming');
   for (let i = 0; i < 40 && !(await G('g.state.tasks.includes("T_KOSHI_SEE")')); i++) { await sleep(500); if (i === 6) await shot('koshi-press'); await H.idle(500); }
   await H.idle(); await must('T_KOSHI_SEE');
-  if (LET) {   // the side room: three charms off the walls (T_SQ2)
+  if (LET) {   // 2.4.0 #9: 板の間's flue lid - ハル's old charm warns first, gives a charm, and the road must be covered again
     await H.walkTo(2.3, -5.43); await peel(1.695, -5.43); await H.idle(); await H.walkTo(0.4, -6.0); await shot('ita');
-    await H.walkTo(-3.6, -7.2); await peel(-4.31, -7.2, 1.5); await H.idle(); await H.walkTo(-3.6, -5.0); await peel(-4.31, -5.0, 1.5); await H.idle();
-    await H.walkTo(-2.0, -8.2); await peel(-2.0, -8.91, 1.5); await H.idle(); await must('T_SQ2'); await H.walkTo(0.4, -6.0); await H.walkTo(2.6, -6.0);
+    await H.walkTo(-3.0, -7.9); await H.face(-3.0, -8.83, 0.42); await sleep(300); await shot('ita-lid');
+    await peel(-3.0, -8.83, 0.42); await H.idle(); log('  warned', await G('g.state.flags.includes("warn_W_ITAM")'));
+    await peel(-3.0, -8.83, 0.42); await H.idle(); log('  W_ITAM', await G('kc.peeled.includes("W_ITAM")'), 'fuda', await G('kc.fuda'));
+    await use(-3.0, -8.83, 0.42, 'paste K_ITAM'); await H.idle(); await shot('ita-lid-sealed'); log('  K_ITAM', await G('kc.sealN("K_ITAM")'));
+    await H.walkTo(0.4, -6.0); await H.walkTo(2.6, -6.0);
   }
   await H.walkTo(2.6, -8.43); await peel(3.505, -8.43); await H.idle(); await H.walkTo(5.0, -9.0); await shot('ibushi');
   await H.route([[5.0, -10.4], [8.4, -10.4], [8.4, -9.0]]); await use(8.95, -9.0, 1.0, 'T_LURE'); await H.idle(); await must('T_LURE'); await shot('lure');
@@ -96,9 +105,16 @@ export default async (api) => {
   for (let i = 0; i < 60 && !(await G('g.state.tasks.includes("T_TRAP")')); i++) { await sleep(500); if (i === 4) await shot('flue-bells'); }
   await H.idle(); await must('T_TRAP'); await H.idle();
   await H.walkTo(2.6, -17.6); await G('(g.setLight(true), 1)'); await sleep(1500); await shot('koshi-wax');
-  await use(2.6, -18.6, 1.3, 'T_KOSHI'); await H.idle(); await must('T_KOSHI'); await sleep(1500); await H.idle(); await shot('koshi-open');
+  await use(2.6, -18.6, 1.3, 'T_KOSHI'); await H.idle(); await must('T_KOSHI'); await sleep(1500); await H.idle(); await shot('koshi-unsealed');
+  // 2.4.0 #7 #10: the lattice stays shut (and blocks) until the player opens it
+  { await H.walkTo(2.6, -20.0, { tries: 1 }).catch(() => {}); const q = await H.pos(); log('  through shut lattice?', JSON.stringify(q)); if (q.z < -19.05) throw new Error('ERROR walked through the shut lattice'); }
+  await H.walkTo(2.6, -17.8); await use(2.6, -18.95, 1.2, 'open D_KOSHI'); await sleep(1500); await shot('koshi-open');
   await H.walkTo(2.6, -21.0); await H.idle(); await must('T_OKUMURO'); await H.idle();
-  await H.walkTo(5.5, -20.0); await use(5.5, -19.09, 0.45, 'paste K_FLUE'); await H.idle(); await must('T_FLUE2');
+  // 2.4.0 #9: the comb is refused while a road is open (the oku flue lid stands open)
+  await H.walkTo(2.6, -25.5); await use(2.6, -26.3, 1.1, 'T_BOX (refused)'); await H.idle(); if (await G('g.state.tasks.includes("T_BOX")')) throw new Error('ERROR T_BOX with an open road');
+  await H.walkTo(5.5, -20.0); await H.face(5.5, -19.13, 0.42); await sleep(300); await shot('flue-lid-open');
+  await use(5.5, -19.13, 0.42, 'close K_FLUE lid'); await H.idle(); await shot('flue-lid-closed');
+  await use(5.5, -19.13, 0.42, 'paste K_FLUE'); await H.idle(); await shot('flue-lid-sealed'); await must('T_FLUE2');
   log('basement (s):', ((Date.now() - t0) / 1000).toFixed(0));
   await H.walkTo(2.6, -25.5); await H.face(2.6, -26.3, 1.1); await sleep(300); await shot('okumuro-shelf');
   await st('L3 done'); if (UPTO === 'L3') return;
@@ -130,6 +146,13 @@ export default async (api) => {
     await H.route([[5.3, 4.0], [5.3, 5.75], [5.3, 7.4], [5.3, 12.0], [5.3, 14.0], [3.9, 19.0], [3.9, 21.0], [4.9, 23.2]]);
     await pre([END]); await use(5.7, 22.5, 1.0, 'T_END ' + END); await sleep(800); await H.idle(3000); await H.idle();
   }
+  // 2.4.0 #11: walk to the front door and open it
+  await H.idle(); await must('T_END'); if (await G('g.state.ended')) throw new Error('ERROR ended before the front door');
+  await H.route([[3.6, 23.0], [1.7, 23.0], [1.3, 24.4]]); await H.face(1.3, 25.45, 1.05); await sleep(300); await shot('front-door');
+  await use(1.3, 25.45, 1.05, 'T_OUT'); await sleep(2000); await shot('front-open'); await H.idle(3000); await H.idle();
   await sleep(1500); await shot('ending');
+  // the end roll (2.4.0 #12): the pictures and the after-story below the ending's lines - scroll down through it
+  await sleep(8000); log('  roll', await G(`document.querySelectorAll('#gf-ending .gf-ending-roll').length`));
+  for (let i = 0; i < 6; i++) { const more = await G(`(() => { const el = document.getElementById('gf-ending'); if (!el) return false; const y0 = el.scrollTop; el.scrollTop += el.clientHeight * 0.8; return el.scrollTop > y0; })()`); await sleep(900); await shot(`ending-${i + 1}`); if (!more) break; }
   await st('end'); log('ending', await G('g.state.ended && (g.state.endingId || g.state.ending || true)'), await G('g.state.flags.filter((f) => /^end_/.test(f))'));
 };
