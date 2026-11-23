@@ -59,7 +59,7 @@ export function installStory(ext, G) {
     // 2.4.0 #11: after ハル's answer the front door is the player's to open (the look-only 表の戸 gives way to the S_OUT station)
     { const I = ctx.world.interactables; G.outHit = G.outHit || I.find((o) => o.name === 'station:S_OUT'); G.omoteLook = G.omoteLook || I.find((o) => { const it = o.userData && o.userData.interact; return it && it.id === 'OMOTE_DOOR'; });
       const swap = (o, want) => { if (!o) return; const i = I.indexOf(o); if (want && i < 0) I.push(o); if (!want && i >= 0) I.splice(i, 1); };
-      swap(G.outHit, done('T_END') && !done('T_OUT')); swap(G.omoteLook, !done('T_END'));
+      swap(G.outHit, done('T_END') && !done('T_OUT') && !G.frontTo);   /* 2.5.2 (D-10): the door's [E] is gone once it opens */ swap(G.omoteLook, !done('T_END'));
       // 2.5.0 #2 「黒電話をクリックするのに取れない場合があります」: the look-only 黒電話 sat on the phone too and took the click from the call;
       // until the call is taken, the phone is the station alone
       G.phoneLook = G.phoneLook || I.find((o) => { const it = o.userData && o.userData.interact; return it && it.id === 'NAKA_PHONE'; }); swap(G.phoneLook, done('T_PHONE')); }
@@ -409,10 +409,10 @@ export function installStory(ext, G) {
   });
   // 2.4.0 #11 「最後に玄関まで歩いて開ける」: the player walks to the front door and opens it; the ending comes after the door, by the player's hand
   ext.registerTask('T_OUT', { run: async () => {
-    ctx.sound('creak'); G.frontTo = 1; if (G.frontCharm) G.frontCharm.visible = false;
+    ctx.sound('creak'); G.frontTo = 1; if (G.frontCharm) G.frontCharm.visible = false; apply();
     // 2.5.1 (coordinator: D-32 見せてから語る): the eyes go out through the doorway to the lane and 野口さん's car while the door slides; the
     // player looks for a while; then the words, in a window at the bottom with no dimming, so the doorway stays in view
-    G.turnTo = { x: 0.6, y: ctx.world.floorY(1) + 1.0, z: 31.5, t: 1.6 };
+    G.turnTo = { x: 0.7, y: ctx.world.floorY(1) + 1.45, z: 31.5, t: 1.6 };   // 2.5.2: level enough that the sky over the roofs is in the view (D-4)
     await new Promise((r) => later(r, 3400));
     const cls = /\/dot\//.test(location.pathname) ? 'kc-out-top' : 'kc-out';   // the top view (/dot) sees the doorway at the bottom of the screen: the window stays at the top there
     document.body.classList.add(cls);

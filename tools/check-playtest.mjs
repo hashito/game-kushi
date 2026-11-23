@@ -58,6 +58,9 @@
 //   1.22.0 (the 鏡屋 dot play test rolled out): P42 a mark (▼, arrow, the next-place pointer, a glow) drawn through a wall, every room
 //   (tools/mark-sight.mjs; js/mark-sight.js markSight().clear() fixes it); P43 a pickup cut into by another thing - a wall clock over an
 //   item (tools/pick-overlap.mjs)
+//   P56 (1.37.0, 水無瀬病院 #5) the map shows two player arrows after a step in the same room (js/map-svg.js) (an error)
+//   P57 (1.37.0, 水無瀬病院 #16) the bloom halo of a bright point is a square tile, not round (js/render-presets.js Post, pixel lowres) (an error)
+//   P58 (1.37.0, 水無瀬病院 #6) a thought about a sound (音・鳴った・聞こえた・はねた) said with or before its sound (tools/cue-order.mjs; play scripts too) (an error)
 //   P52 (1.32.0, 夜勤明けの街 「ゾンビのゲーム重すぎて開かない」): the JS heap behind the title - over 400 MB a warning, over 600 MB an error
 //   1.28.0 (夜勤明けの街 play test 2026-11-22; tools/rest-check.mjs): P47 a placed thing floating - nothing under it within 4 cm, not a thin wall
 //   thing against a wall, not hanging (「空中にものが浮いています（ラジオや紙）」); P48 a thing of a known kind out of body size - desks 0.66-0.8 m,
@@ -74,8 +77,15 @@
 //       two panels overlap (errors), the portrait notice is missing (tools/phone-layout.mjs: 「メッセージや通知で領域を使いすぎている」)
 //   1.36.0 (札の家 play test 2026-11-22): P53 a loud guide mark (over 30 px at 3 m, or nearly opaque: a warning); P54 a closed door or a story
 //   gate a body walks through (an error); P55 an [E] spot with nothing visible within 0.45 m of its centre (a warning)
+//   P64 (1.39.0, 札の家 2.5.0 #7) an ending's kamishibai cards (endings.json pages): picture and voice files exist, words fit a phone card (js/kamishibai.js)
+//   P63 (1.39.0, 札の家 2.5.0 #2) a station that another [E] takes when aimed at from 1.2 / 1.8 m (over a quarter of the poses a warning, over half an error) (tools/station-aim.mjs)
+//   P59 (1.37.8, 札の家 2.4.0) on the shortest route to an end task (the walk out), the guide shows another task (an error) or a task of the branch
+//       not taken still starts (a warning) (tools/stale-guide.mjs: 「作業台で、考えをまとめる」 on the way to the front door); 1.39.2 (札の家 2.5.2): the end task's card also closes while its run plays (an error)
 //   1.31.0: P49 a document read keeps its emphasis (glow, marks) or cannot be read again (「読んだら強調表示をやめるようにしてください」)
-// Exit 1 on an error (P54, P4, P7, P9, P19, P24, P25 overlap, P26, P30, P31, P32, P33, P34, P35, P36, P37, P38, P39, P40, P41, P42, P43, P44, P46, P49, P47 / P48 with checks.rest = "error", P52 over 600 MB) or, with --strict, on a warning. The play scripts of a game check the rest (contact, speed, softlocks).
+//   1.38.0 (水無瀬病院 4th play test 2026-11-23; tools/water-edge.mjs): P60 a water surface whose side stands open over a lower or dry floor
+//   (a cut face: 「水の断面が見える」) (an error); P61 a figure reaching through a shut door (「モンスターが扉を少し貫通」) (an error); P62 a
+//   hiding place's look standing in a wall of its room (「ロッカーが壁に埋まっています」) (an error)
+// Exit 1 on an error (P54, P4, P7, P9, P19, P24, P25 overlap, P26, P30, P31, P32, P33, P34, P35, P36, P37, P38, P39, P40, P41, P42, P43, P44, P46, P49, P56, P57, P58, P59, P60, P61, P62, P63 (over half), P64, P47 / P48 with checks.rest = "error", P52 over 600 MB) or, with --strict, on a warning. The play scripts of a game check the rest (contact, speed, softlocks).
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -94,6 +104,11 @@ import { menuPicturesSource, headButtonsSource, pictureRoomSource } from './menu
 import { markSightSource } from './mark-sight.mjs';
 import { pickOverlapSource } from './pick-overlap.mjs';
 import { restSource, sizeSource } from './rest-check.mjs';
+import { cueOrderSource } from './cue-order.mjs';
+import { staleGuideSource } from './stale-guide.mjs';
+import { waterEdgeSource, doorClipSource, hideRoomSource } from './water-edge.mjs';
+import { KS_MAX_CHARS } from '../js/kit/kamishibai.js';
+import { stationAimSource } from './station-aim.mjs';
 const MARK_MAX = 30;   // P53: the guide mark's height on screen at 3 m, px on a 720 px view (js/guidance.js MARK_MAX_PX)
 // P26: in ctx.readLog order, a 'say' / 'talk' after an 'open' and before its 'close'
 const docOpenSay = (lg) => { let open = 0; for (const k of lg) { if (k === 'open') open++; else if (k === 'close') open = Math.max(0, open - 1); else if ((k === 'say' || k === 'talk') && open) return true; } return false; };
@@ -132,6 +147,17 @@ if (game.deaths) {
 {
   const walk = (d) => { for (const f of fs.existsSync(d) ? fs.readdirSync(d, { withFileTypes: true }) : []) { const q = path.join(d, f.name); if (f.isDirectory()) { if (!['kit', 'vendor', 'node_modules'].includes(f.name)) walk(q); } else if (/\.m?js$/.test(f.name)) { const src = fs.readFileSync(q, 'utf8'); if (/new Audio\([^)]*voice|voice[^\n]{0,80}decodeAudioData|createBufferSource\(\)[^\n]{0,200}voice/i.test(src)) Wn('P22', `${path.relative(dir, q)} plays a voice by itself: use ctx.voiceLine(src, null, { prio }) so two voices never overlap`); } } };
   walk(path.join(dir, 'js'));
+}
+// P64 (1.39.0, 札の家 2.5.0 #7 「最後は紙芝居風に各場面と言葉を見せて…ここも喋るように」): an ending told as a kamishibai (endings.json "pages",
+// js/kamishibai.js) has every card's picture and voice on disk and words that fit a phone card (KS_MAX_CHARS); a card without a voice is a warning
+{
+  const ends = data.endings ? readJson(data.endings) : null;
+  for (const e of Array.isArray(ends) ? ends : []) for (const [i, pg] of (Array.isArray(e.pages) ? e.pages : []).entries()) {
+    const at = `ending "${e.id}" card ${i + 1}`;
+    if (!pg.photo) E('P64', `${at} has no picture`); else if (!fs.existsSync(path.join(dir, pg.photo))) E('P64', `${at}: picture ${pg.photo} is missing`);
+    if (!pg.voice) Wn('P64', `${at} is not voiced (the kamishibai reads every card aloud)`); else if (!fs.existsSync(path.join(dir, pg.voice))) E('P64', `${at}: voice ${pg.voice} is missing`);
+    if ([...String(pg.text || '')].length > KS_MAX_CHARS) E('P64', `${at}: ${[...String(pg.text)].length} characters (over ${KS_MAX_CHARS}: split the card)`);
+  }
 }
 // P16: room names that do not fit their room on the map
 {
@@ -338,7 +364,7 @@ try {
   {
     const loudOk = !!(game.pointer && game.pointer.look === 'loud');
     const r = await G(`(() => {
-      const T = g.THREE, W = g.world, cam = g.camera, out = { p53: [], p54: [], p55: [] };
+      const T = g.THREE, W = g.world, cam = g.camera, out = { p53: [], p54: [], p54u: [], p55: [] };
       const shown = (o) => { for (let x = o; x; x = x.parent) if (x.visible === false) return false; return true; };
       g.scene.updateMatrixWorld(true);
       const fov = (cam.fov || 72) * Math.PI / 180, px = (m) => (m / (2 * 3 * Math.tan(fov / 2))) * 720;
@@ -362,6 +388,10 @@ try {
         if (!d || !d.def || d.isOpen || d.def.x == null || d.def.kind === 'stairs' || d.def.kind === 'lift') continue;
         if (d.def.open && !d.def.unlock) continue;
         const room = (g.data.plan.rooms || []).find((r) => r.id === d.def.a), fy = W.floorY ? W.floorY((room && room.floor) || 0) : 0;
+        // 1.39.4: a game's own world (ext.registerWorld) keeps its doors in its own walls (a cell grid): its contract door gives blocks(a, b),
+        // true when the step a -> b is stopped there; a provided world without it is listed as not measured (a warning), not as a door with no collider
+        if (!d.col && typeof d.blocks === 'function') { const R = room || {}, onX = R.w != null && (Math.abs(d.def.x - R.x) < 0.6 || Math.abs(d.def.x - (R.x + R.w)) < 0.6), ux = onX ? 1 : 0, uz = onX ? 0 : 1; const p = { x: d.def.x - 0.6 * ux, z: d.def.z - 0.6 * uz }, q = { x: d.def.x + 0.6 * ux, z: d.def.z + 0.6 * uz }; if (!(d.blocks(p, q) && d.blocks(q, p))) out.p54.push(id + ': closed, but a body walks through it (the game world)'); continue; }
+        if (!d.col && W.provided) { out.p54u.push(id); continue; }
         if (!d.col) { out.p54.push(id + ': closed, but it has no collider'); continue; }
         const b = d.col.box, ax = (b.max.x - b.min.x) < (b.max.z - b.min.z) ? 'x' : 'z';
         if (!across(d.def.x, d.def.z, ax, fy)) out.p54.push(id + ': closed, but a body walks through it');
@@ -384,6 +414,7 @@ try {
     })()`);
     for (const x of r.p53) Wn('P53', `a guide mark is loud (make it small and plain: kit js/guidance.js QUIET_MARK): ${x}`);
     for (const x of r.p54) E('P54', `a closed door lets a body through: ${x}`);
+    if (r.p54u.length) Wn('P54', `not measured: the game's own world gives no collider and no blocks(a, b) for ${r.p54u.length} closed door(s) (${r.p54u.slice(0, 6).join(', ')})`);
     for (const x of r.p55) Wn('P55', `an [E] spot floats beside its thing (nothing visible within 0.45 m of its centre): ${x}`);
   }
   // P17: people (js/npc-audit.js, 1.20.0): what the audit saw while the game ran, and now
@@ -591,6 +622,50 @@ try {
     })()`);
     for (const [id, why] of (Array.isArray(R) ? R : []).slice(0, 12)) E('P49', `doc "${id}": ${why}`);
   } else Wn('P49', 'ctx.wantsEmphasis is missing (kit < 1.31.0): read documents keep their emphasis');
+  // P56 (1.37.0, 水無瀬病院 #5 「マップで二重でやじるしがでる」): the map shows one player arrow - opened, the player moved inside the same room,
+  // opened again (js/map-svg.js baked a second, stale arrow into its static layer until 1.36.0)
+  if (await G('!!(g.tm && g.tm.open)')) {
+    const M = await G(`(async () => {
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms)), n = () => (document.querySelector('.ms-svg') ? document.querySelectorAll('.ms-svg .ms-playerG').length : -1), out = [];
+      const c = g.camera.position, x0 = c.x, z0 = c.z;
+      try {
+        g.tm.open('map'); await sleep(400); out.push(n()); g.tm.close(); await sleep(150);
+        const r0 = g.state.room; c.x += 0.6; c.z += 0.4; if (g.state.room !== r0) { c.x = x0 - 0.6; c.z = z0 - 0.4; }
+        g.tm.open('map'); await sleep(400); out.push(n()); g.tm.close(); await sleep(150);
+      } finally { c.x = x0; c.z = z0; }
+      return out;
+    })()`);
+    // 1.39.3 (荒川 rollout): a game with its own map in the map tab (荒川's canvas map, no js/map-svg.js) is not this check's - noted, not failed
+    if (Array.isArray(M) && M.every((k) => k === -1)) Wn('P56', 'the map tab has no js/map-svg.js map (.ms-svg): the game draws its own map, its arrow is not checked here');
+    else if (Array.isArray(M)) M.forEach((k, i) => { if (k !== 1) E('P56', `the map shows ${k} player arrows (${i ? 'opened again after a step in the same room' : 'first open'}); one is the live arrow (js/map-svg.js renderFloor marker: false)`); });
+  }
+  // P57 (1.37.0, 水無瀬病院 #16 「光が四角形に見える」): the bloom halo round one bright point is round, not a square tile. The game is set to the
+  // high tier (bloom on) for a moment; one tiny over-bright ball 3 m ahead is drawn alone through the post pass; the halo is measured at the
+  // same distance along the axes and the diagonals (a square / bilinear tent is much brighter on the diagonal)
+  if (await G('!!(g.look && g.look.setTier)')) {
+    const B = await G(`(async () => {
+      const T = g.THREE, L = g.look, tier0 = L.tier, R = g.renderer;
+      try {
+        if (L.tier !== 'high') L.setTier('high');
+        const P = L.post; if (!P || !P.bloomOn) return { skip: 'no bloom on the high tier' };
+        const S = new T.Scene(); S.background = new T.Color(0, 0, 0);
+        const cam = g.camera, fwd = new T.Vector3(0, 0, -1).applyQuaternion(cam.quaternion);
+        const ds = R.getDrawingBufferSize(new T.Vector2()), px = (2 * 3 * Math.tan((cam.fov * Math.PI) / 360)) / ds.y;   // one buffer pixel at 3 m
+        const mat = new T.MeshBasicMaterial({ toneMapped: false }); mat.color.setRGB(60, 60, 60);
+        const ball = new T.Mesh(new T.SphereGeometry(px * 0.6, 8, 6), mat); ball.position.copy(cam.position).addScaledVector(fwd, 3); S.add(ball);
+        P.render(S, cam, 0);
+        const gl = R.getContext(), w = ds.x, h = ds.y, buf = new Uint8Array(w * h * 4); gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, buf);
+        ball.geometry.dispose(); mat.dispose();
+        const lum = (x, y) => { x = Math.round(x); y = Math.round(y); if (x < 0 || y < 0 || x >= w || y >= h) return 0; const i = (y * w + x) * 4; return buf[i] * 0.2126 + buf[i + 1] * 0.7152 + buf[i + 2] * 0.0722; };
+        const cx = w / 2, cy = h / 2, rows = [];
+        // 1.37.9: from 3 px (at 2 px the diagonal sample rounds to 1 px off the centre, onto the ball itself on an even buffer: 63 against
+        // 2.5 on a game whose bloom leaves no halo at all - a false P57 on 水無瀬病院's normal version at 1280x720)
+        for (const d of [3, 4, 5, 6, 8]) { const ax = (lum(cx + d, cy) + lum(cx - d, cy) + lum(cx, cy + d) + lum(cx, cy - d)) / 4, q = d / Math.SQRT2, dg = (lum(cx + q, cy + q) + lum(cx - q, cy + q) + lum(cx + q, cy - q) + lum(cx - q, cy - q)) / 4; rows.push([d, +ax.toFixed(1), +dg.toFixed(1)]); }
+        return { rows, w, h, small: !!P.small };
+      } finally { if (L.tier !== tier0) L.setTier(tier0); }
+    })()`);
+    if (B && B.rows) for (const [d, ax, dg] of B.rows) if (Math.max(ax, dg) > 12 && (dg > ax * 1.6 + 4 || ax > dg * 1.6 + 4)) { E('P57', `the bloom halo of a bright point is not round at ${d} px (axis ${ax}, diagonal ${dg}; buffer ${B.w}x${B.h}${B.small ? ' lowres' : ''}): lights show as squares (js/render-presets.js Post)`); break; }
+  }
   // P43 (1.22.0): pickups clear of other things
   { const O = await G(pickOverlapSource()); for (const x of (Array.isArray(O) ? O : []).slice(0, 12)) E('P43', `pickup "${x[0]}": "${x[1]}" cuts into it by ${JSON.stringify(x[2])} m at ${JSON.stringify(x[3])}`); }
   // P47 / P48 (1.28.0, 夜勤明けの街): every placed thing rests on something; known kinds have a body-sized size (tools/rest-check.mjs).
@@ -677,6 +752,17 @@ try {
     } catch (e) { Wn('P31', `${w}x${h}: the phone layout pass could not run: ${e.message}`); }
     finally { await q.close(); }
   }
+  // P58 (1.37.0, 水無瀬病院 #6 「音が聞こえたの前にしっかり音を出してください」): every thought about a sound said during this run came after a sound
+  { const C = await G(cueOrderSource()); if (C && C.missing) Wn('P58', 'ctx.cueLog is missing (kit < 1.37.0): sound-before-line order unchecked'); else for (const x of (Array.isArray(C) ? C : []).slice(0, 8)) E('P58', `「${x.text}」: ${x.why}`); }
+  // P59 (1.37.8, 札の家 2.4.0 「玄関まで歩くのに、案内が『作業台で、考えをまとめる』のまま」): on the shortest route to each end task, the guide shows that task
+  // and no task of a branch the player decided against still starts (tools/stale-guide.mjs)
+  { const S = await G(staleGuideSource()); if (S && S.missing) Wn('P59', 'ctx.nextTask is missing: the guide after a branch is unchecked'); else for (const x of (Array.isArray(S) ? S : [])) if (x.noRunning) Wn('P59', 'ctx.runningTasks is missing: the card of a running task is unchecked (kit 1.39.2)'); else if (x.running) E('P59', `the step card of "${x.end}" stays while its run plays (the [E] was pressed: close it, kit 1.39.2 ctx.runningTasks)`); else (x.error ? E : Wn)('P59', x.error ? `on the way to "${x.end}" the guide shows "${x.guide}" (a stale step: close it with a canStart once the branch is decided, or order the end task first)${x.left.length ? `; still open: ${x.left.join(', ')}` : ''}` : `on the way to "${x.end}" these tasks still start: ${x.left.join(', ')} (a branch already decided: give them a canStart that closes them)`); }
+  // P60 / P61 / P62 (1.38.0, 水無瀬病院 #1 #6 #3): no water shows a cut face, no figure reaches through a shut door, no hiding place stands in a wall
+  { const Wt = await G(waterEdgeSource()); for (const x of (Array.isArray(Wt) ? Wt : []).slice(0, 8)) E('P60', `the side of ${x.water} (y ${x.y}) stands open at ${x.open} points, e.g. ${x.at.map((p) => p.join(',')).join(' / ')}: a sill higher than the water in the doorway, or one level for rooms an open door joins`); }
+  { const Dc = await G(doorClipSource()); for (const x of (Array.isArray(Dc) ? Dc : []).slice(0, 8)) E('P61', `${x.figure} reaches ${x.depth} m through the shut door ${x.door}: stop it 1 m before the door`); }
+  { const Hr = await G(hideRoomSource()); for (const x of (Array.isArray(Hr) ? Hr : []).slice(0, 8)) E('P62', `the hiding place ${x.id} stands ${x.over} m into a wall of ${x.room} (js/hide-looks.js clampInRoom; move its x / z)`); }
+  // P63 (1.39.0, 札の家 2.5.0 #2 「黒電話をクリックするのに取れない」): aimed at a station from 1.2 / 1.8 m, the station is what the pick gives (tools/station-aim.mjs)
+  { const S = await G(stationAimSource()); if (S && S.missing) Wn('P63', 'ctx.pickNow is missing: station aim unchecked'); else for (const x of (Array.isArray(S) ? S : [])) (x.lost / x.poses > 0.5 ? E : Wn)('P63', `station "${x.id}": aimed at its middle, another [E] wins in ${x.lost} of ${x.poses} poses (${Object.entries(x.by).map(([k, n]) => k + ' ' + n).join(', ')}): one [E] per thing`); }
   if (p.errors.length) for (const e of [...new Set(p.errors)].filter((x) => !/favicon/.test(x)).slice(0, 5)) Wn('P0', `page error: ${e.slice(0, 200)}`);
 } catch (e) { E('P0', `the check could not run: ${e.message}`); }
 finally { await p.close(); server.kill(); }

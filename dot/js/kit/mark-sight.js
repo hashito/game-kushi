@@ -1,4 +1,4 @@
-/* game-kit fb482e73 (branch main): js/mark-sight.js — edit in game-kit and run tools/kit-sync.js */
+/* game-kit 092b61ba (main 1.39.2): js/mark-sight.js — edit in game-kit and run tools/kit-sync.js */
 // Marks never show through walls (standard 1.22.0, 鏡屋 ドット版 play test 2026-11-21: 「壁を通り越してアイテムの矢印が見える」).
 // Every ▼ / arrow / glow over a thing is depth-tested (a wall in front hides it), and a mark that is drawn on top of everything on purpose
 // (a small sprite with depthTest off so it is not swallowed by its own prop) is hidden while a wall stands between it and the eye:

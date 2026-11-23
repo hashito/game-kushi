@@ -91,15 +91,18 @@ export function installHouse(ext, G) {
         g.fillStyle = '#0a0a0c'; g.fillRect(0, 40, w, 24);
         for (const [x, ww] of [[100, 110], [560, 130], [840, 90]]) { const q = g.createLinearGradient(0, 110, 0, 170); q.addColorStop(0, '#f0b86a'); q.addColorStop(1, '#a8682e'); g.fillStyle = q; g.fillRect(x, 96, ww, 84); g.fillStyle = '#3a2614'; for (let k = 1; k < 6; k++) g.fillRect(x + (ww * k) / 6, 96, 3, 84); g.fillRect(x, 136, ww, 3); }
       });
-      flat(16, 4.0, lit(front), dx + 1.5, y0 + 1.85, dz + 11.5, 0, Math.PI);
-      for (let i = 0; i < 6; i++) { const m = solid(2.6, 0.12, 0.7, 0x0c0c0e, dx - 5 + i * 2.7, y0 + 3.95, dz + 11.2); m.rotation.x = 0.35; }
+      // 2.5.2 (D-4, coordinator: 「軒で空が隠れる」): the houses across are one low storey (2.7 m) and their eaves sit low, so the dusk sky shows
+      // over their roofs through the doorway
+      flat(16, 2.7, lit(front), dx + 1.5, y0 + 1.25, dz + 11.5, 0, Math.PI);
+      for (let i = 0; i < 6; i++) { const m = solid(2.6, 0.1, 0.6, 0x0c0c0e, dx - 5 + i * 2.7, y0 + 2.68, dz + 11.25); m.rotation.x = 0.35; }
       // the sky: the last of the evening over the roofs (deep blue above, a thin band of dull orange low down), a few stars
       const sky = paint(512, 256, (g, w, h) => {
-        const q = g.createLinearGradient(0, 0, 0, h); q.addColorStop(0, '#0b1020'); q.addColorStop(0.55, '#1c2540'); q.addColorStop(0.85, '#5a4a52'); q.addColorStop(1, '#8a5a3a'); g.fillStyle = q; g.fillRect(0, 0, w, h);
+        const q = g.createLinearGradient(0, 0, 0, h); q.addColorStop(0, '#101a36'); q.addColorStop(0.45, '#2c3c6a'); q.addColorStop(0.72, '#6a6080'); q.addColorStop(0.88, '#c08060'); q.addColorStop(1, '#e09a5a'); g.fillStyle = q; g.fillRect(0, 0, w, h);
+        for (const [x, y, ww] of [[60, 150, 140], [260, 168, 180], [400, 140, 90]]) { g.fillStyle = 'rgba(40,40,70,0.35)'; g.fillRect(x, y, ww, 5); g.fillRect(x + 20, y + 7, ww - 40, 3); }   // thin evening clouds
         g.fillStyle = '#cfd6e8'; for (let i = 0; i < 40; i++) g.fillRect(Math.random() * w, Math.random() * h * 0.45, 1, 1);
         g.fillStyle = '#07080b'; g.beginPath(); g.moveTo(0, h); let x = 0; for (const [ww, hh] of [[70, 38], [54, 52], [90, 34], [60, 60], [80, 40], [48, 50], [110, 36]]) { g.lineTo(x, h - hh + 10); g.lineTo(x + 8, h - hh); g.lineTo(x + ww - 8, h - hh); g.lineTo(x + ww, h - hh + 10); x += ww; } g.lineTo(w, h); g.fill(); g.fillStyle = '#e8b870'; for (const [wx, wy] of [[130, 232], [300, 222], [420, 236]]) g.fillRect(wx, wy, 6, 5);
       });
-      flat(40, 16, lit(sky, { fog: false }), dx + 1.5, y0 + 9.5, dz + 16, 0, Math.PI);
+      flat(40, 14, lit(sky, { fog: false }), dx + 1.5, y0 + 8.4, dz + 16, 0, Math.PI);
       // a wooden street lamp with a lit bulb under its shade, and the telephone wire
       solid(0.14, 4.2, 0.14, 0x141210, dx + 3.2, y0 + 2.0, dz + 3.4);
       solid(0.36, 0.05, 0.05, 0x141210, dx + 3.02, y0 + 3.85, dz + 3.4);
@@ -108,15 +111,47 @@ export function installHouse(ext, G) {
       solid(16, 0.015, 0.015, 0x050505, dx + 1.5, y0 + 4.4, dz + 3.4);
       // 野口さん's little car on the lane, headlights on (the endings say she came)
       { const cx = dx - 1.6, cz = dz + 6.2;
+        // 2.5.2 (D-4, coordinator: 「車が平ら」): a small grey car, read at a glance - painted door seams, a chrome line and wheel arches on
+        // the side the doorway sees, side windows and a windscreen of dark glass with the street lamp in them, wipers, mirrors, bumpers,
+        // a yellow light-car number plate front and back, red rear lamps, hubcaps; all unlit with the light painted in (nothing compiles)
         solid(3.4, 0.75, 1.5, 0x4d5560, cx, y0 + 0.55, cz); solid(1.8, 0.6, 1.4, 0x3c434c, cx - 0.2, y0 + 1.2, cz);
-        for (const s of [-1, 1]) for (const e of [-1, 1]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.2, 14), new THREE.MeshBasicMaterial({ color: 0x050505 })); w.rotation.x = Math.PI / 2; w.position.set(cx + s * 1.05, y0 + 0.2, cz + e * 0.7); out.add(w); }
+        const side = paint(512, 128, (g, w, h) => {
+          const q = g.createLinearGradient(0, 0, 0, h); q.addColorStop(0, '#6a7482'); q.addColorStop(0.35, '#465060'); q.addColorStop(1, '#22272e'); g.fillStyle = q; g.fillRect(0, 0, w, h);
+          const r = g.createRadialGradient(150, 30, 4, 150, 30, 120); r.addColorStop(0, 'rgba(255,214,160,0.45)'); r.addColorStop(1, 'rgba(255,214,160,0)'); g.fillStyle = r; g.fillRect(0, 0, w, h);   // the street lamp on the paint
+          g.fillStyle = '#c8d0d8'; g.fillRect(0, 44, w, 3);                                                      // the chrome line
+          g.strokeStyle = '#1a1e24'; g.lineWidth = 2; for (const x of [150, 300]) { g.beginPath(); g.moveTo(x, 4); g.lineTo(x, h - 26); g.stroke(); }   // the door seams
+          g.fillStyle = '#20242a'; for (const x of [170, 320]) g.fillRect(x, 54, 26, 6);                          // door handles
+          g.fillStyle = '#0a0b0d'; for (const x of [90, 422]) { g.beginPath(); g.arc(x, h + 6, 46, Math.PI, 0); g.fill(); }   // wheel arches
+          g.fillStyle = '#9a1a14'; g.fillRect(w - 10, 18, 10, 26);                                                 // the rear lamp seen from the side
+        });
+        flat(3.4, 0.75, lit(side), cx, y0 + 0.55, cz - 0.752, 0, Math.PI);
+        const glass = (w, h, streak) => paint(256, 128, (g, W2, H2) => {
+          const q = g.createLinearGradient(0, 0, 0, H2); q.addColorStop(0, '#2a3240'); q.addColorStop(0.6, '#10141a'); q.addColorStop(1, '#07090c'); g.fillStyle = q; g.fillRect(0, 0, W2, H2);
+          g.fillStyle = 'rgba(255,220,170,0.5)'; g.beginPath(); g.moveTo(streak * W2, 0); g.lineTo(streak * W2 + 40, 0); g.lineTo(streak * W2 - 10, H2); g.lineTo(streak * W2 - 40, H2); g.fill();   // the street lamp's streak
+          g.fillStyle = 'rgba(200,220,255,0.12)'; g.fillRect(0, 0, W2, 10);
+          g.strokeStyle = '#1e2228'; g.lineWidth = 10; g.strokeRect(0, 0, W2, H2);
+        });
+        { const sw = paint(512, 128, (g, w, h) => { g.drawImage(glass(1, 1, 0.3).image, 0, 0, w / 2, h); g.drawImage(glass(1, 1, 0.7).image, w / 2, 0, w / 2, h); g.fillStyle = '#2a3038'; g.fillRect(w / 2 - 8, 0, 16, h); });
+          flat(1.66, 0.48, lit(sw), cx - 0.2, y0 + 1.22, cz - 0.702, 0, Math.PI); }                                    // the side windows, the pillar between
+        flat(1.3, 0.5, lit(glass(1, 1, 0.55)), cx + 0.702, y0 + 1.22, cz, 0, Math.PI / 2);                            // the windscreen
+        flat(1.2, 0.42, lit(glass(1, 1, 0.4)), cx - 1.102, y0 + 1.24, cz, 0, -Math.PI / 2);                           // the rear window
+        { const hood = paint(256, 128, (g, w, h) => { const q = g.createLinearGradient(0, 0, w, 0); q.addColorStop(0, '#2e353e'); q.addColorStop(0.5, '#525c68'); q.addColorStop(1, '#3a414a'); g.fillStyle = q; g.fillRect(0, 0, w, h); g.fillStyle = 'rgba(255,214,160,0.25)'; g.fillRect(w * 0.3, 0, 30, h); });
+          flat(1.0, 1.48, lit(hood), cx + 1.2, y0 + 0.927, cz, -Math.PI / 2, 0); }
+        for (const e of [-0.28, 0.25]) { const wp = solid(0.02, 0.02, 0.55, 0x0a0a0a, cx + 0.71, y0 + 1.0, cz + e); wp.rotation.x = 0.35; }   // the wipers at the foot of the windscreen
+        for (const e of [-1, 1]) solid(0.08, 0.1, 0.12, 0x2a2e34, cx + 0.62, y0 + 1.02, cz + e * 0.78);               // the door mirrors
+        for (const e of [-1, 1]) solid(0.12, 0.16, 1.54, 0x24282e, cx + e * 1.72, y0 + 0.3, cz);                      // the bumpers
+        const plate = paint(128, 64, (g, w, h) => { g.fillStyle = '#e8c840'; g.fillRect(0, 0, w, h); g.strokeStyle = '#3a3010'; g.lineWidth = 3; g.strokeRect(2, 2, w - 4, h - 4); g.fillStyle = '#1a1608'; g.font = 'bold 14px sans-serif'; g.textAlign = 'center'; g.fillText('580 あ', w / 2, 20); g.font = 'bold 26px sans-serif'; g.fillText('12-07', w / 2, 52); });
+        flat(0.34, 0.17, lit(plate), cx + 1.785, y0 + 0.34, cz, 0, Math.PI / 2); flat(0.34, 0.17, lit(plate), cx - 1.785, y0 + 0.5, cz, 0, -Math.PI / 2);
+        for (const e of [-1, 1]) { const tl = flat(0.12, 0.2, new THREE.MeshBasicMaterial({ color: 0xb02018 }), cx - 1.702, y0 + 0.72, cz + e * 0.56, 0, -Math.PI / 2); tl.name = 'kc-car-rear-lamp'; }
+        for (const s of [-1, 1]) for (const e of [-1, 1]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.2, 14), new THREE.MeshBasicMaterial({ color: 0x050505 })); w.rotation.x = Math.PI / 2; w.position.set(cx + s * 1.05, y0 + 0.2, cz + e * 0.7); out.add(w);
+          if (e < 0) { const hc = new THREE.Mesh(new THREE.CircleGeometry(0.11, 14), new THREE.MeshBasicMaterial({ color: 0x4a5058 })); hc.position.set(cx + s * 1.05, y0 + 0.2, cz - 0.801); hc.rotation.y = Math.PI; out.add(hc); } }
         for (const s of [-1, 1]) { const hl = new THREE.Mesh(new THREE.CircleGeometry(0.1, 14), new THREE.MeshBasicMaterial({ color: 0xfff1c8, fog: false })); hl.position.set(cx + 1.71, y0 + 0.62, cz + s * 0.5); hl.rotation.y = Math.PI / 2; hl.name = 'kc-headlight'; out.add(hl); }
         // the lights' glow (a soft halo round each lamp, no light cast)
         const halo = paint(64, 64, (g) => { const q = g.createRadialGradient(32, 32, 1, 32, 32, 31); q.addColorStop(0, 'rgba(255,240,200,0.9)'); q.addColorStop(1, 'rgba(255,240,200,0)'); g.fillStyle = q; g.fillRect(0, 0, 64, 64); });
         for (const s2 of [-1, 1]) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: halo, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false })); sp.position.set(cx + 1.8, y0 + 0.62, cz + s2 * 0.5); sp.scale.setScalar(0.7); out.add(sp); }
         { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: halo, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false })); sp.position.set(dx + 2.85, y0 + 3.6, dz + 3.4); sp.scale.setScalar(1.1); out.add(sp); } }
       // this house's eaves over the doorway
-      solid(2.8, 0.08, 1.2, 0x0e0c0a, dx, y0 + 2.95, dz + 0.75);
+      solid(2.8, 0.08, 0.55, 0x0e0c0a, dx, y0 + 3.3, dz + 0.4);   /* 2.5.2: up from 2.95 m and 1.2 m deep - they hid the sky (D-4) */
       // 2.5.1: the outside is never fogged - the house's thick night fog (exp2 0.055) turned the lane and the car into a grey sheet 6 m away
       out.traverse((o) => { const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : []; for (const m of ms) { m.fog = false; m.needsUpdate = true; } });
       G.outside = out;
@@ -411,19 +446,100 @@ export function installHouse(ext, G) {
     // pillow, the days counted on the wall (正 three times and one more), her writing low on the wall; the wide flue mouth with ハル's pair of charms
     {
       const scratchTex = (draw, w = 256, h = 256) => { const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d'); g.clearRect(0, 0, w, h); g.strokeStyle = 'rgba(226,212,186,0.82)'; g.fillStyle = 'rgba(226,212,186,0.82)'; g.lineCap = 'round'; draw(g); const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, fog: true }); };
-      // the futon (a thin mattress, a quilt pushed back, a buckwheat pillow with a dent)
-      box('NEMA', 8.75, -16.4, 1.0, 0.07, 2.0, std(0xd2c6a6, { roughness: 1 }), 0, false);   /* 2.5.1: a pale cotton futon reads in the andon's light */
-      { const q = box('NEMA', 8.8, -16.0, 1.04, 0.05, 1.2, std(0x34466e, { roughness: 1 }), 0.07, false); q.rotation.z = 0.03; }
-      box('NEMA', 8.75, -17.25, 0.45, 0.1, 0.24, std(0x9a8c6a, { roughness: 1 }), 0.06, false);
-      for (let i = 0; i < 6; i++) plane('NEMA', 8.6 + i * 0.025, -16.9 + i * 0.04, 0.012, 0.5, M.hair, 0.072 + i * 0.0005, 0.3, -Math.PI / 2);
-      // two wooden bowls by the head of the futon, one with a dry ring of water
-      cyl('NEMA', 7.95, -17.6, 0.075, 0.05, 0.05, M.wood, 0, false); cyl('NEMA', 7.95, -17.6, 0.065, 0.065, 0.004, M.black, 0.046, false);
-      { const b2 = cyl('NEMA', 8.15, -17.85, 0.07, 0.048, 0.048, M.wood, 0, false); b2.rotation.z = 0.25; }
+      // 2.5.2 (D-6 / D-4, coordinator: 「寝間はまだ大きな空の箱。布団は薄い白い板、行灯は小さい」): the bed is a real bed - a straw mat under a
+      // thick cotton shikibuton with seams, stains and a sag, a rumpled indigo kasuri quilt thrown back in folds, a buckwheat pillow with a
+      // dent; round it the things of a life: a meal tray with the bowls, a small chest of drawers with a sewing box and a hand mirror, a
+      // kimono rack with her kimono and a tenugui hanging, straw sandals by the door, a cold brazier, a long chest with folded bedding in
+      // the corner, and a low screen at the head of the bed (the room reads smaller and lived-in from the door)
+      const paintT = (w, h, f) => { const cv = document.createElement('canvas'); cv.width = w; cv.height = h; f(cv.getContext('2d'), w, h); const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t; };
+      // a box with its top pushed about (folds, a sag) - a rumpled cloth
+      const rumple = (room, x, z, w, h, d, mat, y0, amp, rotY = 0, sag = 0) => {
+        const g = new THREE.BoxGeometry(w, h, d, 18, 2, 24), P = g.attributes.position;
+        for (let i = 0; i < P.count; i++) { const px = P.getX(i), py = P.getY(i), pz = P.getZ(i); if (py <= -h / 2 + 1e-4) continue; const u = px / w, v = pz / d;
+          const fold = Math.sin(v * 19 + Math.sin(u * 7) * 1.4) * 0.5 + Math.sin(u * 13 + v * 5) * 0.35 + Math.sin(v * 41 + u * 3) * 0.15;
+          P.setY(i, py + amp * fold - sag * (1 - (2 * u) ** 2) * (1 - (2 * v) ** 2)); }
+        g.computeVertexNormals(); const m = new THREE.Mesh(g, mat); m.position.set(x, fy(room) + y0 + h / 2, z); m.rotation.y = rotY; m.castShadow = true; m.receiveShadow = true; grp.add(m); return m; };
+      const cotton = paintT(256, 512, (g, w, h) => { g.fillStyle = '#cdbf9c'; g.fillRect(0, 0, w, h);
+        for (let x = 0; x < w; x += 32) { g.fillStyle = 'rgba(120,96,70,0.28)'; g.fillRect(x, 0, 10, h); }                       // a faded stripe ticking
+        g.strokeStyle = 'rgba(70,52,36,0.55)'; g.lineWidth = 2; for (const y of [30, h - 30]) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }   // the seams
+        for (const [x, y, r, a] of [[90, 120, 50, 0.22], [170, 330, 70, 0.18], [60, 420, 36, 0.25]]) { const q = g.createRadialGradient(x, y, 4, x, y, r); q.addColorStop(0, `rgba(96,70,40,${a})`); q.addColorStop(1, 'rgba(96,70,40,0)'); g.fillStyle = q; g.fillRect(0, 0, w, h); } });
+      const kasuri = paintT(256, 256, (g, w, h) => { g.fillStyle = '#34487c'; g.fillRect(0, 0, w, h);
+        for (let y = 16; y < h; y += 42) for (let x = (y / 42) % 2 ? 30 : 8; x < w; x += 44) { g.fillStyle = 'rgba(214,220,232,0.75)'; g.fillRect(x, y, 14, 3); g.fillRect(x + 5.5, y - 5.5, 3, 14); }   // the 井桁 kasuri marks
+        for (let i = 0; i < 900; i++) { g.fillStyle = `rgba(10,14,30,${Math.random() * 0.25})`; g.fillRect(Math.random() * w, Math.random() * h, 2, 2); } });
+      kasuri.wrapS = kasuri.wrapT = THREE.RepeatWrapping; kasuri.repeat.set(2, 3);
+      const goza = paintT(256, 256, (g, w, h) => { g.fillStyle = '#6e6238'; g.fillRect(0, 0, w, h); for (let y = 0; y < h; y += 3) { g.fillStyle = y % 6 ? 'rgba(40,32,14,0.35)' : 'rgba(150,134,84,0.3)'; g.fillRect(0, y, w, 1.5); } g.fillStyle = '#2a2014'; g.fillRect(0, 0, 10, h); g.fillRect(w - 10, 0, 10, h); });
+      const cottonM = new THREE.MeshStandardMaterial({ map: cotton, roughness: 1 }), quiltM = new THREE.MeshStandardMaterial({ map: kasuri, roughness: 1, side: THREE.DoubleSide });
+      box('NEMA', 8.75, -16.4, 1.3, 0.015, 2.25, new THREE.MeshStandardMaterial({ map: goza, roughness: 1 }), 0, false);              // the straw mat under the bed
+      rumple('NEMA', 8.75, -16.4, 1.0, 0.12, 2.0, cottonM, 0.015, 0.006, 0, 0.025);                                                  // the shikibuton, thick, sagging where she lay
+      { const q = rumple('NEMA', 8.82, -15.95, 1.12, 0.07, 1.25, quiltM, 0.12, 0.035, 0.05); q.name = 'kc-nema-quilt'; }             // the quilt, thrown back in folds
+      { const q = rumple('NEMA', 9.0, -15.38, 1.05, 0.12, 0.3, quiltM, 0.11, 0.03, 0.08); q.name = 'kc-nema-quilt-roll'; }           // its end rolled up at the foot
+      { const pg = new THREE.CylinderGeometry(0.1, 0.1, 0.44, 16, 1), P = pg.attributes.position; for (let i = 0; i < P.count; i++) { const xx = P.getX(i), y = P.getY(i); if (xx > 0.04 && Math.abs(y) < 0.14) P.setX(i, xx - 0.035 * (1 - Math.abs(y) / 0.14)); } pg.computeVertexNormals();
+        const pl = new THREE.Mesh(pg, std(0xb8ab88, { roughness: 1 })); pl.rotation.z = Math.PI / 2; pl.scale.set(1, 1, 0.75); pl.position.set(8.75, fy('NEMA') + 0.235, -17.22); pl.name = 'kc-nema-pillow'; grp.add(pl);   // the buckwheat pillow, a dent on top
+        for (const e of [-1, 1]) { const c = new THREE.Mesh(new THREE.CircleGeometry(0.1, 16), std(0x7a2a22, { roughness: 1 })); c.scale.set(0.75, 1, 1); c.position.set(8.75 + e * 0.221, fy('NEMA') + 0.235, -17.22); c.rotation.y = e * Math.PI / 2; grp.add(c); } }
+      for (let i = 0; i < 6; i++) plane('NEMA', 8.6 + i * 0.025, -16.9 + i * 0.04, 0.012, 0.5, M.hair, 0.139 + i * 0.0005, 0.3, -Math.PI / 2);   // long black hairs on the sheet
+      // a meal tray (ozen) with the two wooden bowls by the head of the bed, one with a dry ring of water, chopsticks across
+      { const tx = 8.05, tz = -17.7; for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) box('NEMA', tx + sx * 0.17, tz + sz * 0.15, 0.04, 0.12, 0.04, M.lacquer, 0, false);
+        box('NEMA', tx, tz, 0.4, 0.025, 0.36, M.lacquer, 0.12, false); box('NEMA', tx, tz, 0.38, 0.006, 0.34, std(0x5a1410, { roughness: 0.4 }), 0.145, false);
+        cyl('NEMA', tx - 0.09, tz + 0.04, 0.075, 0.05, 0.05, M.wood, 0.151, false); cyl('NEMA', tx - 0.09, tz + 0.04, 0.065, 0.065, 0.004, M.black, 0.197, false);
+        { const b2 = cyl('NEMA', tx + 0.1, tz - 0.06, 0.07, 0.048, 0.048, M.wood, 0.151, false); b2.rotation.z = 0.2; }
+        for (const d of [-0.008, 0.008]) box('NEMA', tx + 0.02, tz + 0.12 + d, 0.3, 0.008, 0.008, M.wood, 0.151, false, 0.15); }
+      // a small chest of drawers (kotansu) against the east wall: dark wood, iron pulls; on it her sewing box and a hand mirror face down
+      { const cx = 9.33, cz = -14.75; box('NEMA', cx, cz, 0.42, 0.72, 0.62, M.wood, 0, true);
+        for (const [y, hh] of [[0.06, 0.2], [0.29, 0.2], [0.52, 0.16]]) { box('NEMA', cx - 0.212, cz, 0.01, hh - 0.02, 0.58, M.dark, y, false); box('NEMA', cx - 0.222, cz, 0.012, 0.03, 0.12, M.iron, y + hh / 2 - 0.015, false); }
+        box('NEMA', cx, cz + 0.05, 0.26, 0.09, 0.3, M.lacquer, 0.72, false); box('NEMA', cx, cz + 0.05, 0.27, 0.012, 0.31, std(0x6a1a14, { roughness: 0.5 }), 0.81, false);   // the sewing box
+        cyl('NEMA', cx - 0.06, cz + 0.06, 0.03, 0.03, 0.04, M.red, 0.822, false, 10);                                                            // its pincushion
+        cyl('NEMA', cx + 0.02, cz - 0.2, 0.07, 0.07, 0.012, M.lacquer, 0.72, false, 18); box('NEMA', cx + 0.02, cz - 0.3, 0.025, 0.012, 0.12, M.lacquer, 0.72, false); }   // the hand mirror, face down
+      // a kimono rack (ikō) along the north wall with her kimono hung on it and a tenugui over the end
+      { const rx = 7.75, rz = -13.32, kim = paintT(256, 256, (g, w, h) => { g.fillStyle = '#4a3a52'; g.fillRect(0, 0, w, h); for (let i = 0; i < 26; i++) { g.strokeStyle = 'rgba(200,180,200,0.35)'; g.lineWidth = 2; const x = Math.random() * w, y = Math.random() * h; g.beginPath(); for (let k = 0; k < 5; k++) g.lineTo(x + Math.cos(k * 1.26) * 9, y + Math.sin(k * 1.26) * 9); g.closePath(); g.stroke(); } g.fillStyle = 'rgba(0,0,0,0.3)'; for (let x = 0; x < w; x += 64) g.fillRect(x, 0, 3, h); });
+        for (const e of [-1, 1]) { box('NEMA', rx + e * 0.62, rz, 0.05, 1.5, 0.05, M.lacquer, 0, false); box('NEMA', rx + e * 0.62, rz + 0.02, 0.05, 0.03, 0.42, M.lacquer, 0, false); }
+        box('NEMA', rx, rz, 1.5, 0.045, 0.045, M.lacquer, 1.42, false); box('NEMA', rx, rz, 1.28, 0.035, 0.035, M.lacquer, 0.72, false);
+        const kg = new THREE.PlaneGeometry(1.36, 1.18, 16, 6), P = kg.attributes.position; for (let i = 0; i < P.count; i++) { const xx = P.getX(i), yy = P.getY(i); P.setZ(i, Math.sin(xx * 11) * 0.025 * (0.5 - yy / 1.18) + 0.03 * (yy < -0.3 ? 1 : 0) * Math.sin(xx * 4)); } kg.computeVertexNormals();
+        const ki = new THREE.Mesh(kg, new THREE.MeshStandardMaterial({ map: kim, roughness: 1, side: THREE.DoubleSide })); ki.position.set(rx, fy('NEMA') + 1.42 - 0.6, rz + 0.06); ki.name = 'kc-nema-kimono'; grp.add(ki);
+        const tn = plane('NEMA', rx + 0.66, rz + 0.04, 0.12, 0.62, std(0xd8d0bc, { roughness: 1, side: THREE.DoubleSide }), 1.15, Math.PI / 2); tn.name = 'kc-nema-tenugui';
+        W.colliders.push({ box: new THREE.Box3(new THREE.Vector3(rx - 0.68, fy('NEMA'), rz - 0.06), new THREE.Vector3(rx + 0.68, fy('NEMA') + 1.5, rz + 0.25)), off: false }); }
+      // straw sandals by the door, side by side, the toe cords red
+      for (const e of [-1, 1]) { const zx = 4.05, zz = -16.95 + e * 0.07; box('NEMA', zx, zz, 0.24, 0.015, 0.1, M.straw, 0, false); box('NEMA', zx + 0.07, zz, 0.012, 0.02, 0.012, M.red, 0.015, false); }
+      // a cold brazier (hibachi) of grey ash with its tongs, by the foot of the bed
+      { cyl('NEMA', 6.95, -14.55, 0.2, 0.17, 0.26, M.ceramic, 0, true, 18); cyl('NEMA', 6.95, -14.55, 0.17, 0.17, 0.01, M.ash, 0.24, false, 18);
+        for (const d of [-0.02, 0.02]) { const t = cyl('NEMA', 6.98 + d, -14.5, 0.005, 0.005, 0.34, M.iron, 0.22, false, 6); t.rotation.x = 0.5; } }
+      // a long chest (nagamochi) in the south-west corner with folded bedding on it
+      { box('NEMA', 4.25, -18.5, 1.0, 0.5, 0.55, M.wood, 0, true); box('NEMA', 4.25, -18.5, 1.03, 0.04, 0.58, M.dark, 0.5, false); for (const e of [-1, 1]) box('NEMA', 4.25 + e * 0.38, -18.215, 0.08, 0.06, 0.02, M.iron, 0.36, false);
+        rumple('NEMA', 4.25, -18.5, 0.8, 0.1, 0.48, std(0x8a7a5e, { roughness: 1 }), 0.54, 0.008); rumple('NEMA', 4.27, -18.52, 0.72, 0.08, 0.44, quiltM, 0.64, 0.01); }
+      // a low two-panel screen at the head of the bed, half round the corner where her apron lies
+      { const sc = paintT(256, 256, (g, w, h) => { g.fillStyle = '#b8a27a'; g.fillRect(0, 0, w, h); g.strokeStyle = 'rgba(60,44,30,0.6)'; g.lineWidth = 3; for (let i = 0; i < 7; i++) { g.beginPath(); g.moveTo(20 + i * 34, h); g.bezierCurveTo(30 + i * 34, 160, 10 + i * 34, 90, 40 + i * 34, 30 + (i % 3) * 20); g.stroke(); } g.fillStyle = 'rgba(70,40,20,0.25)'; g.fillRect(0, 0, w, 40); });
+        const sm = new THREE.MeshStandardMaterial({ map: sc, roughness: 1, side: THREE.DoubleSide });
+        for (const [x, z, ry] of [[7.62, -18.3, Math.PI / 2 + 0.25], [7.68, -17.66, Math.PI / 2 - 0.25]]) { const pn = plane('NEMA', x, z, 0.64, 0.9, sm, 0.47, ry); pn.name = 'kc-nema-screen'; box('NEMA', x, z, 0.66, 0.03, 0.03, M.lacquer, 0.92, false, ry); box('NEMA', x, z, 0.66, 0.03, 0.03, M.lacquer, 0.0, false, ry); }
+        W.colliders.push({ box: new THREE.Box3(new THREE.Vector3(7.5, fy('NEMA'), -18.62), new THREE.Vector3(7.82, fy('NEMA') + 0.95, -17.36)), off: false }); }
+      // the room closed in: a low board ceiling with three beams at 2.35 m (the basement walls go up 3.4 m - a tall empty box), timber posts
+      // and a tie rail round the walls at 1.85 m, so the walls read as a room's walls and not as a pit
+      { const y0 = 2.35, x0 = 3.6, x1 = 9.6, z0 = -19, z1 = -13, cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+        const ce = box('NEMA', cx, cz, x1 - x0, 0.03, z1 - z0, M.timber, y0, false); ce.name = 'kc-nema-ceiling'; ce.castShadow = false;
+        for (const z of [-17.6, -16.0, -14.4]) { const b = box('NEMA', cx, z, x1 - x0, 0.14, 0.14, M.dark, y0 - 0.14, false); b.castShadow = false; }
+        for (const [x, z] of [[x0 + 0.07, z0 + 0.07], [x1 - 0.07, z0 + 0.07], [x0 + 0.07, z1 - 0.07], [x1 - 0.07, z1 - 0.07], [6.6, z0 + 0.07], [x1 - 0.07, -16.0], [6.95, z1 - 0.07]]) box('NEMA', x, z, 0.14, y0, 0.14, M.dark, 0, false);
+        box('NEMA', cx, z0 + 0.05, x1 - x0, 0.1, 0.06, M.dark, 1.85, false); box('NEMA', cx, z1 - 0.05, x1 - x0, 0.1, 0.06, M.dark, 1.85, false); box('NEMA', x1 - 0.05, cz, 0.06, 0.1, z1 - z0, M.dark, 1.85, false);
+        box('NEMA', x0 + 0.05, -14.3, 0.06, 0.1, 2.4, M.dark, 1.85, false); box('NEMA', x0 + 0.05, -18.1, 0.06, 0.1, 1.8, M.dark, 1.85, false); }
+      // a hanging cloth line along the east wall over the bed: a tenugui, a washed under-kimono, a cloth with a mended patch, a sash
+      { const lx = 9.42, ly = 1.92; box('NEMA', lx, -15.9, 0.01, 0.01, 4.6, M.black, ly, false);
+        const cl = (z, w, h, color, patch) => { const t = paintT(64, 128, (g, W2, H2) => { g.fillStyle = color; g.fillRect(0, 0, W2, H2); for (let i = 0; i < 40; i++) { g.fillStyle = `rgba(0,0,0,${Math.random() * 0.12})`; g.fillRect(Math.random() * W2, Math.random() * H2, 3, 3); } g.fillStyle = 'rgba(0,0,0,0.25)'; g.fillRect(0, H2 - 6, W2, 6); if (patch) { g.fillStyle = patch; g.fillRect(16, 60, 26, 22); g.strokeStyle = 'rgba(30,20,10,0.6)'; g.setLineDash([2, 2]); g.strokeRect(16, 60, 26, 22); } });
+          const geo = new THREE.PlaneGeometry(w, h, 6, 6), P = geo.attributes.position; for (let i = 0; i < P.count; i++) P.setX(i, P.getX(i) + Math.sin(P.getY(i) * 9 + z) * 0.012); geo.computeVertexNormals();
+          const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: t, roughness: 1, side: THREE.DoubleSide })); m.position.set(lx - 0.01, fy('NEMA') + ly - h / 2, z); m.rotation.y = Math.PI / 2; m.name = 'kc-nema-cloth'; grp.add(m); };
+        cl(-17.9, 0.34, 0.8, '#d6ccb4'); cl(-17.1, 0.62, 0.95, '#c9bfa6', '#8a7a5a'); cl(-16.2, 0.3, 0.7, '#5a6a8a'); cl(-15.6, 0.16, 1.0, '#7a3a2a'); }
+      // a hanging shelf above the chest: a small jar, a lidded tin, a stack of letters tied with string, a candle box
+      { const sx = 9.43, sz = -14.75; box('NEMA', sx, sz, 0.3, 0.03, 0.9, M.wood, 1.45, false); for (const e of [-1, 1]) box('NEMA', sx + 0.08, sz + e * 0.4, 0.14, 0.12, 0.03, M.dark, 1.33, false);
+        cyl('NEMA', sx, sz - 0.3, 0.07, 0.06, 0.16, M.ceramic, 1.48, false, 14); cyl('NEMA', sx, sz - 0.05, 0.06, 0.06, 0.12, M.iron, 1.48, false, 14);
+        box('NEMA', sx, sz + 0.2, 0.16, 0.06, 0.22, M.paper, 1.48, false); box('NEMA', sx, sz + 0.2, 0.17, 0.008, 0.01, M.red, 1.54, false); box('NEMA', sx, sz + 0.37, 0.12, 0.08, 0.06, M.wood, 1.48, false); }
+      // boxwood blanks and the smoking-man's tools stacked in the north-west corner (the room was his before it was hers)
+      { for (let i = 0; i < 3; i++) box('NEMA', 4.1, -13.55, 0.7 - i * 0.08, 0.3, 0.5, M.timber, i * 0.3, i === 0, i * 0.08);
+        for (let i = 0; i < 6; i++) { const b = box('NEMA', 3.95 + (i % 3) * 0.12, -13.55 + ((i / 3) | 0) * 0.14, 0.09, 0.03, 0.3, M.boxwood, 0.9 + ((i / 3) | 0) * 0.03, false); b.rotation.y = (i % 2) * 0.2; }
+        const bk = cyl('NEMA', 4.5, -14.25, 0.16, 0.14, 0.32, M.straw, 0, false, 14); bk.name = 'kc-nema-basket'; }
+      // her place in the middle of the room: a flat cushion with the mending she left on it (a cloth, a spool, scissors) and a cold teacup
+      { zabuton('NEMA', 6.2, -16.6, 0.2); box('NEMA', 6.25, -16.55, 0.34, 0.012, 0.26, std(0x6a5a7a, { roughness: 1 }), 0.06, false, 0.5); cyl('NEMA', 6.0, -16.35, 0.025, 0.025, 0.04, std(0xc8b890), 0.06, false, 10); box('NEMA', 6.42, -16.8, 0.12, 0.008, 0.03, M.iron, 0.062, false, 0.9); cyl('NEMA', 5.8, -16.9, 0.04, 0.03, 0.06, M.ceramic, 0, false, 12); }
       // the candle stubs on a low board against the south wall: a dozen, each burnt down to a stub, wax run onto the board
       box('NEMA', 6.3, -18.72, 1.3, 0.04, 0.26, M.timber, 0, false);
       for (let i = 0; i < 13; i++) { const x = 5.75 + i * 0.09, h = 0.012 + ((i * 7) % 5) * 0.006; cyl('NEMA', x, -18.72 + ((i % 3) - 1) * 0.05, 0.016, 0.02, h, M.white, 0.04, false, 8); cyl('NEMA', x + 0.01, -18.7, 0.03, 0.03, 0.003, M.white, 0.04, false, 8); }
       // her apron and tabi, folded by the pillow
       box('NEMA', 9.25, -18.25, 0.36, 0.05, 0.3, M.indigo, 0, false); box('NEMA', 9.25, -18.25, 0.3, 0.02, 0.24, std(0x24304e, { roughness: 1 }), 0.05, false);
+      { const st = paintT(64, 64, (g) => { g.fillStyle = '#56648a'; g.fillRect(0, 0, 64, 64); g.strokeStyle = 'rgba(220,220,235,0.55)'; for (let y = 6; y < 64; y += 8) { g.beginPath(); g.setLineDash([3, 3]); g.moveTo(4, y); g.lineTo(60, y); g.stroke(); } }); plane('NEMA', 9.25, -18.25, 0.22, 0.16, new THREE.MeshStandardMaterial({ map: st, roughness: 1 }), 0.052, 0, -Math.PI / 2); }   // the apron's sashiko stitching
       for (const dz of [-0.06, 0.06]) box('NEMA', 9.25, -17.9 + dz, 0.22, 0.03, 0.09, M.white, 0, false);
       // the days counted: 正 正 正 and one more stroke, scratched into the clay at sitting height (on the south wall, flush)
       { const m = scratchTex((g) => { g.lineWidth = 5; const glyph = (x0, n) => { const S = [[[10, 8], [70, 8]], [[40, 8], [40, 90]], [[40, 48], [66, 48]], [[18, 40], [18, 90]], [[4, 90], [76, 90]]]; for (const [[a, b], [c, d]] of S.slice(0, n)) { g.beginPath(); g.moveTo(x0 + a + Math.random() * 3, b + 40 + Math.random() * 3); g.lineTo(x0 + c + Math.random() * 3, d + 40 + Math.random() * 3); g.stroke(); } }; glyph(6, 5); glyph(92, 5); glyph(178, 5); g.beginPath(); g.moveTo(16, 160); g.lineTo(70, 160); g.stroke(); }, 256, 192);
@@ -441,7 +557,7 @@ export function installHouse(ext, G) {
         box('NEMA', ax, az, 0.025, 0.025, 0.42, fr, 0.86, false); box('NEMA', ax, az - 0.2, 0.025, 0.14, 0.025, fr, 0.74, false); box('NEMA', ax, az + 0.2, 0.025, 0.14, 0.025, fr, 0.74, false);   // the carrying bar
         const side = (x, z, ry, mat) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(0.29, 0.52), mat); m.position.set(x, fy('NEMA') + 0.445, z); m.rotation.y = ry; m.name = 'kc-andon-paper'; grp.add(m); };
         side(ax, az + 0.148, 0, paper); side(ax + 0.148, az, Math.PI / 2, paper); side(ax - 0.148, az, -Math.PI / 2, paper); side(ax, az - 0.148, Math.PI, torn);
-        const lt = new THREE.PointLight(0xffa860, 1.7, 9, 1.2); lt.position.set(ax - 0.35, fy('NEMA') + 0.95, az - 0.45); lt.name = 'kc-nema-andon'; W.group.add(lt); G.nemaLight = lt; }
+        const lt = new THREE.PointLight(0xffa860, 2.2, 9, 1.2); lt.position.set(ax - 0.35, fy('NEMA') + 0.95, az - 0.45); lt.name = 'kc-nema-andon'; W.group.add(lt); G.nemaLight = lt; }
       // a water jar from 甕の間 with a ladle
       cyl('NEMA', 9.2, -13.6, 0.22, 0.17, 0.5, M.ceramic, 0, true, 18); cyl('NEMA', 9.2, -13.6, 0.17, 0.17, 0.01, M.black, 0.49, false, 18);
       { const l = cyl('NEMA', 9.15, -13.6, 0.008, 0.008, 0.5, M.wood, 0.5); l.rotation.z = 0.5; }

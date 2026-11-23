@@ -1,4 +1,4 @@
-/* game-kit 31bfcd8f: js/ending-scene.js — edit in game-kit and run tools/kit-sync.js */
+/* game-kit 795fc9be: js/ending-scene.js — edit in game-kit and run tools/kit-sync.js */
 // The ending as a scene (standard 1.8.1, feedback 2026-11-01 "最後にも写真を置いて手前に文字をつけるなど雰囲気を出して"): the picture fills the
 // screen and slowly comes closer, the kicker and the title stand in front of it, the epilogue appears a line at a time, and the stats and
 // the buttons come last. A click / Enter / Space shows the rest at once; reduced motion (ctx.calm or the OS setting) shows it all still.
@@ -14,6 +14,8 @@
 // Pure parts: endingTimeline(paragraphs, o) gives when each part appears (seconds); endingsList(all, found, current) the list with the unfound
 // ones masked; both tested in test/ending-scene.test.mjs.
 // Kit 1.16 (all-games rule A21): below the buttons, the share row (js/share-bar.js: X で共有 / 共有 / リンクをコピー / 他のゲームを遊ぶ).
+// 1.37.0 (水無瀬病院 2026-11-22 #19 「エンディングが短い」): a long epilogue changes its picture as it goes: scenes [{ at, photo }] (at = the
+// index of the line from which that picture shows; data/endings.json "scenes"), each fading in over the one before when its line appears.
 // share: false leaves it out (a game that puts its own row there); share: { ending: '名前', tags, line } overrides; game.json "share": false
 // or { "ending": false } turns it off for the game, { "endingName": true } puts the ending's title in the text (only when that gives nothing away).
 import { Store } from "./store.js";
@@ -52,8 +54,44 @@ export function endingShareOptions(manifest, o = {}) {
   return { place: "ending", tags: s.tags, line: s.line, ending: typeof ending === "string" ? ending : "", fallbackName: manifest && manifest.title };
 }
 
+/** which later pictures of a read-at-once epilogue show (1.37.4): the one whose line (index ats[i]) has its top above 60% of the view
+ *  height; pure (test/ending-scene.test.mjs) */
+export function laterOn(tops, ats, viewH) {
+  return ats.map((at) => tops[at] != null && tops[at] < viewH * 0.6);
+}
+
+// 1.38.0 (水無瀬病院 2026-11-23 #12 「最後のエンディングは２ページに分けていいと思います。長文を１度に出すと読みづらいです」): a line
+// "---" in the text is a page break. Each page shows its own lines; a page that is not the last ends with one button 「次へ」 (no timer
+// turns the page). The kicker and the title head every page, with 「1 / 2」 by the kicker; the stats, the endings found, the share row and
+// the buttons come on the last page only. scenes[].at counts the lines without the breaks (data written before 1.38.0 keeps its pictures);
+// each page starts on the picture its first line had. Pure: endingPages(text, scenes, photo) -> [{ text, scenes, photo }]
+export const PAGE_BREAK = /^\s*-{3,}\s*$/;
+export function endingPages(text, scenes = [], photo = null) {
+  const all = String(text || "").split("\n"), lines = all.filter((p) => p.trim() && !PAGE_BREAK.test(p)), pages = [[]];
+  let n = 0;
+  for (const p of all) { if (PAGE_BREAK.test(p)) { if (pages[pages.length - 1].length) pages.push([]); continue; } if (p.trim()) pages[pages.length - 1].push(n++); }
+  if (!pages[pages.length - 1].length) pages.pop();
+  return pages.map((idx) => {
+    const a = idx[0], b = idx[idx.length - 1];
+    const before = (scenes || []).filter((s) => s && s.photo && s.at <= a).sort((x, y) => y.at - x.at)[0];
+    return { text: idx.map((i) => lines[i]).join("\n"), scenes: (scenes || []).filter((s) => s && s.photo && s.at > a && s.at <= b).map((s) => ({ ...s, at: s.at - a })), photo: before ? before.photo : photo };
+  });
+}
+
 export function showEndingScene(ctx, o = {}) {
-  const paras = String(o.text || "").split("\n").filter((p) => p.trim());
+  if (!o.page) {
+    const P = endingPages(o.text, o.scenes, o.photo);
+    if (P.length > 1) {
+      const show = (i) => {
+        const last = i === P.length - 1;
+        return showEndingScene(ctx, { ...o, page: `${i + 1} / ${P.length}`, text: P[i].text, scenes: P[i].scenes, photo: P[i].photo,
+          roll: last ? o.roll : null, stats: last ? o.stats : null, endings: last ? o.endings : null, share: last ? o.share : false,
+          buttons: last ? o.buttons : [{ label: "次へ", primary: true, next: true, fn: () => show(i + 1) }] });
+      };
+      return show(0);
+    }
+  }
+  const paras = String(o.text || "").split("\n").filter((p) => p.trim() && !PAGE_BREAK.test(p));
   const still = !!(ctx && ctx.calm) || (typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches) || !!(ctx && ctx.qa);
   const roll = Array.isArray(o.roll) ? o.roll.filter((r) => r && (r.photo || r.text)) : [];
   const tl = endingTimeline(paras, o.timing, roll);
@@ -63,23 +101,29 @@ export function showEndingScene(ctx, o = {}) {
   const el = document.createElement("div");
   el.id = "gf-ending"; el.className = `gf-ending ${still ? "still" : ""}`; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", o.title || "エンディング");
   const d = (s) => `style="--d:${s.toFixed(2)}s"`;
-  el.innerHTML = `${o.photo ? `<div class="gf-ending-photo" style="background-image:url('${esc(o.photo)}')"></div>` : ""}<div class="gf-ending-shade"></div>
+  const later = (o.scenes || []).filter((s) => s && s.photo && tl.lines[s.at] != null).map((s) => `<div class="gf-ending-photo gf-ending-later" data-at="${s.at}" style="background-image:url('${esc(s.photo)}');--d:${tl.lines[s.at].toFixed(2)}s"></div>`).join("");
+  el.innerHTML = `${o.photo ? `<div class="gf-ending-photo" style="background-image:url('${esc(o.photo)}')"></div>` : ""}${later}<div class="gf-ending-shade"></div>
     <div class="gf-ending-text">
-      ${o.kicker ? `<p class="gf-ending-kicker" ${d(tl.kicker)}>${esc(o.kicker)}</p>` : ""}
+      ${o.kicker || o.page ? `<p class="gf-ending-kicker" ${d(tl.kicker)}>${esc(o.kicker || "")}${o.page ? `<span class="gf-ending-page">${esc(o.page)}</span>` : ""}</p>` : ""}
       ${o.title ? `<h2 class="gf-ending-title" ${d(tl.title)}>${esc(o.title)}</h2>` : ""}
       ${paras.map((p, i) => `<p class="gf-ending-line" ${d(tl.lines[i])}>${esc(p)}</p>`).join("")}
       ${roll.map((r, k) => `${r.photo ? `<figure class="gf-ending-roll" ${d(tl.roll[k].pic)}><img src="${esc(r.photo)}" alt="${esc(r.title || "")}" loading="eager"></figure>` : ""}${r.title ? `<p class="gf-ending-roll-title" ${d(tl.roll[k].pic + 0.4)}>${esc(r.title)}</p>` : ""}${rollLines(r).map((p, i) => `<p class="gf-ending-line" ${d(tl.roll[k].lines[i])}>${esc(p)}</p>`).join("")}`).join("")}
       ${o.stats ? `<p class="gf-ending-stats" ${d(tl.stats)}>${esc(o.stats)}</p>` : ""}
       ${en && en.length > 1 ? `<p class="gf-ending-found" ${d(tl.stats)}>見つけた結末 ${en.filter((x) => x.found).length} / ${en.length}：${en.map((x) => (x.current ? `<b>${esc(x.title)}</b>` : esc(x.title))).join("　／　")}</p>` : ""}
-      <div class="gf-ending-buttons" ${d(tl.buttons)}>${(o.buttons || []).map((b, i) => `<button type="button" class="btn ${b.primary ? "primary" : ""}" data-i="${i}">${esc(b.label)}</button>`).join("")}</div>
+      <div class="gf-ending-buttons" ${d(tl.buttons)}>${(o.buttons || []).map((b, i) => `<button type="button" class="btn ${b.primary ? "primary" : ""}${b.next ? " gf-ending-next" : ""}" data-i="${i}">${esc(b.label)}</button>`).join("")}</div>
     </div>`;
   const so = endingShareOptions(ctx && ctx.manifest, o);
   if (so) { const sh = document.createElement("div"); sh.className = "gf-ending-share"; sh.setAttribute("style", `--d:${tl.buttons.toFixed(2)}s`); el.querySelector(".gf-ending-text").appendChild(sh); mountShareBar(sh, so); }
   document.body.appendChild(el);
-  const all = () => el.classList.add("all");
+  // 1.37.4 (水無瀬病院 1.5.1): read at once (calm / reduced motion / a click shows all), the later pictures follow the reading: each shows
+  // once its line has come up into the upper part of the screen (before: all of them showed at once, so only the last one was ever seen)
+  const lines = [...el.querySelectorAll(".gf-ending-line")], laters = [...el.querySelectorAll(".gf-ending-later")];
+  const sync = () => { if (!laters.length || !(still || el.classList.contains("all"))) return; const tops = lines.map((p) => p.getBoundingClientRect().top); const on = laterOn(tops, laters.map((x) => +x.dataset.at), el.clientHeight || innerHeight); laters.forEach((x, i) => x.classList.toggle("on", on[i])); };
+  el.addEventListener("scroll", sync, { passive: true }); addEventListener("resize", sync);
+  const all = () => { el.classList.add("all"); sync(); };
   el.addEventListener("click", (e) => { const b = e.target.closest && e.target.closest("button[data-i]"); if (b) { const f = (o.buttons || [])[+b.dataset.i]; f && f.fn && f.fn(); } else all(); });
   el.addEventListener("keydown", (e) => { if ((e.code === "Space" || e.code === "Enter") && !(e.target.closest && e.target.closest("button"))) { e.preventDefault(); all(); } });
-  el.tabIndex = -1; el.focus({ preventScroll: true });
+  el.tabIndex = -1; el.focus({ preventScroll: true }); requestAnimationFrame(sync);
   // a long epilogue is taller than the screen: follow each part down as it appears, until the player scrolls or shows it all (1.10.10)
   if (!still) {
     let follow = true; const stop = () => { follow = false; };

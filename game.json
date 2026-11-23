@@ -2,10 +2,10 @@
   "id": "kushi",
   "title": "札の家 ― 奥の棚の櫛",
   "subtitle": "お札をはがして、奥の棚の櫛を持って来い",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "noPrewarm": true,
   "itemKinds": ["tsuge_comb"],
-  "standard": "1.36",
+  "standard": "1.39",
   "theme": "dark-industrial candle-room",
   "preset": {
     "base": "horror",

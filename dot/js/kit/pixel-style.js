@@ -1,4 +1,4 @@
-/* game-kit 8bda952: js/pixel-style.js — edit in game-kit and run tools/kit-sync.js */
+/* game-kit 092b61ba (main 1.39.2): js/pixel-style.js — edit in game-kit and run tools/kit-sync.js */
 // The pixel-art style of a standard 3D game (game.json "style": "pixel", docs/pixel-style.md). The 3D itself does not change: camera, movement, collision, picking
 // and all DOM text stay at full precision; only what the world looks like changes.
 //   "pixel": { "world": "texture" }              the default: low-resolution textures on normal meshes, magnified with the nearest texel (rules PX01, PX02)

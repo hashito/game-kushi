@@ -52,6 +52,9 @@ export function installTests(ext, G) {
       for (const [id, n] of Object.entries(sc.seals || {})) G.setSeal(id, n);
       G.ev.push('bell', 'comb');
       if (G.applyStory) G.applyStory();
+      // 2.5.2 (the off-route script walked into 奥の室 and met a shut lattice): once the waxed charm is melted off (T_KOSHI), the scene
+      // stands with the lattice door open, as the player left it on the way in
+      if (ctx.state.tasks.includes('T_KOSHI') && G.openKoshi) G.openKoshi(true);
       if (sc.light || ctx.state.tasks.includes('T_LIGHT')) G.light0(true);
       if (sc.ghost || sc.hunt) G.placeGhost();
     },
