@@ -65,6 +65,13 @@
       "side": "e",
       "stage": "L3",
       "label": "甕の間の板戸の札"
+    },
+    {
+      "id": "F_NEMA",
+      "door": "D_NEMA",
+      "side": "w",
+      "stage": "L3",
+      "label": "寝間の板戸の札"
     }
   ],
   "walls": [
@@ -108,6 +115,30 @@
       "label": "煙道の蓋の札（ハルさんの古い札）",
       "old": true,
       "lid": "K_KAMEM"
+    },
+    {
+      "id": "W_NEMAM1",
+      "room": "NEMA",
+      "x": 4.95,
+      "y": 0.42,
+      "z": -13.13,
+      "face": "n",
+      "label": "広い煙道の口の札（ハルさんの古い札、二枚一組）",
+      "old": true,
+      "lid": "K_NEMAM",
+      "pair": "W_NEMAM2"
+    },
+    {
+      "id": "W_NEMAM2",
+      "room": "NEMA",
+      "x": 5.45,
+      "y": 0.42,
+      "z": -13.13,
+      "face": "n",
+      "label": "広い煙道の口の札（ハルさんの古い札、二枚一組）",
+      "old": true,
+      "lid": "K_NEMAM",
+      "pair": "W_NEMAM1"
     }
   ],
   "think": {
@@ -140,7 +171,7 @@
           {
             "id": "lost",
             "label": "地下で道に迷った",
-            "why": "地下は廊下と四つの部屋だけだった。室の揚げ戸の裏には、何があった？"
+            "why": "地下は廊下と五つの部屋だけだった。室の揚げ戸の裏には、何があった？"
           },
           {
             "id": "shut",
@@ -226,7 +257,8 @@
       "label": "奥の室の煙道の口",
       "max": 3,
       "lid": true,
-      "lidOpen": true
+      "lidOpen": true,
+      "need": 2
     },
     {
       "id": "K_ITAM",
@@ -256,7 +288,19 @@
       "side": "s",
       "label": "奥の室の格子戸",
       "max": 2
+    },
+    {
+      "id": "K_NEMAM",
+      "room": "NEMA",
+      "x": 5.2,
+      "y": 0.42,
+      "z": -13.13,
+      "face": "n",
+      "label": "寝間の煙道の口",
+      "max": 3,
+      "need": 2,
+      "lid": true
     }
   ],
-  "doc": "seals: where a charm can go up. Door seals of every charmed door are made in js/ext/fuda.js (K_<door>, max 1, 'auto'): a peeled door charm can always be put back (2.4.0 #10). lid: a flue mouth with a wooden lid - closed first ([E] 蓋を閉める), then the charm goes on it (2.4.0 #9). leaf: the door's own [E] pastes too (the practice fusuma, 燻しの間's door). old: one of Haru's own charms (a lid already sealed): peeling it gives a charm and opens a road."
+  "doc": "seals: where a charm can go up. Door seals of every charmed door are made in js/ext/fuda.js (K_<door>, max 1, 'auto'): a peeled door charm can always be put back (2.4.0 #10). lid: a flue mouth with a wooden lid - closed first ([E] 蓋を閉める), then the charm goes on it (2.4.0 #9). leaf: the door's own [E] pastes too (the practice fusuma, 燻しの間's door). old: one of Haru's own charms (a lid already sealed): peeling it gives a charm and opens a road. need (2.5.0): a wide mouth holds only with that many charms on it side by side (one covers half of it and holds nothing); its old charms come as a pair (pair: peeling one takes the other with it)."
 }

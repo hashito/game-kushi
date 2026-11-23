@@ -32,6 +32,74 @@
         "title": "私",
         "text": "私は事業所に、訪問の記録を一枚だけ書いて出した。\n「十七時半、櫛田ハル様宅。ご家族お二人、ご一緒に出られました」"
       }
+    ],
+    "pages": [
+      {
+        "title": "その一",
+        "photo": "assets/photos/ks-01.webp",
+        "text": "十一月の夕方。ヘルパーの私は、休んだ人の代わりに、櫛田ハルさんの古い家を訪ねた。",
+        "voice": "assets/voice/ks-01.mp3"
+      },
+      {
+        "title": "その二",
+        "photo": "assets/photos/ks-02.webp",
+        "text": "表の戸が、開かなくなった。帳場の格子の奥から、ハルさんが言った。「奥の棚から櫛を持って来い。持って来るまで、戸は開けん」",
+        "voice": "assets/voice/ks-02.mp3"
+      },
+      {
+        "title": "その三",
+        "photo": "assets/photos/ks-03.webp",
+        "text": "戸の札をはがしながら、家の奥へ進んだ。黒電話が鳴った。ハルさんは先週、病院で亡くなっていた。",
+        "voice": "assets/voice/ks-03.mp3"
+      },
+      {
+        "title": "その四",
+        "photo": "assets/photos/ks-04.webp",
+        "text": "作業場の揚げ戸の下は、地下の室。揚げ戸の裏には、下から爪でかいた跡があった。",
+        "voice": "assets/voice/ks-04.mp3"
+      },
+      {
+        "title": "その五",
+        "photo": "assets/photos/ks-05.webp",
+        "text": "地下の寝間には、敷いたままの布団と、木の椀と、蝋燭の燃えさし。壁には、十六日をかぞえた線。",
+        "voice": "assets/voice/ks-05.mp3"
+      },
+      {
+        "title": "その六",
+        "photo": "assets/photos/ks-06.webp",
+        "text": "五十二年前。千草さんは「奥の棚から持って来い」と言われて地下へ降り、揚げ戸を上から札で封じられた。",
+        "voice": "assets/voice/ks-06.mp3"
+      },
+      {
+        "title": "その七",
+        "photo": "assets/photos/ks-07.webp",
+        "text": "奥の棚の櫛を取ると、千草さんが追ってきた。札は焦げて、燃え落ちた。私は、はしごまで走った。",
+        "voice": "assets/voice/ks-07.mp3"
+      },
+      {
+        "title": "その八",
+        "photo": "assets/photos/ks-e23a.webp",
+        "text": "私は、櫛を千草さんに返した。千草さんは櫛を髪に挿し、下で眠ると言った。揚げ戸は、静かに閉まった。",
+        "voice": "assets/voice/ks-e23a.mp3"
+      },
+      {
+        "title": "その九",
+        "photo": "assets/photos/ks-e3b.webp",
+        "text": "私は、帳場の格子の札をはがした。ハルさんは五十二年ぶりに格子を出て、千草さんのいる地下へ、謝りに降りていった。",
+        "voice": "assets/voice/ks-e3b.mp3"
+      },
+      {
+        "title": "その十",
+        "photo": "assets/photos/ks-e3c.webp",
+        "text": "翌朝、千草さんの遺骨のそばに、白い髪の束が、柘植の櫛でまとめて置いてあった。",
+        "voice": "assets/voice/ks-e3c.mp3"
+      },
+      {
+        "title": "おしまい",
+        "photo": "assets/photos/ks-e3d.webp",
+        "text": "千草さんは、清次さんと同じ墓に入った。ハルさんも、その隣に。墓前には、半月の柘植の櫛が供えてある。",
+        "voice": "assets/voice/ks-e3d.mp3"
+      }
     ]
   },
   {
@@ -67,6 +135,74 @@
         "title": "帳場の格子",
         "text": "家は、相続する人がいないまま閉じられた。\n近所の人は、夜になると、あの家から髪をすく音がすると言う。一人分だけ。"
       }
+    ],
+    "pages": [
+      {
+        "title": "その一",
+        "photo": "assets/photos/ks-01.webp",
+        "text": "十一月の夕方。ヘルパーの私は、休んだ人の代わりに、櫛田ハルさんの古い家を訪ねた。",
+        "voice": "assets/voice/ks-01.mp3"
+      },
+      {
+        "title": "その二",
+        "photo": "assets/photos/ks-02.webp",
+        "text": "表の戸が、開かなくなった。帳場の格子の奥から、ハルさんが言った。「奥の棚から櫛を持って来い。持って来るまで、戸は開けん」",
+        "voice": "assets/voice/ks-02.mp3"
+      },
+      {
+        "title": "その三",
+        "photo": "assets/photos/ks-03.webp",
+        "text": "戸の札をはがしながら、家の奥へ進んだ。黒電話が鳴った。ハルさんは先週、病院で亡くなっていた。",
+        "voice": "assets/voice/ks-03.mp3"
+      },
+      {
+        "title": "その四",
+        "photo": "assets/photos/ks-04.webp",
+        "text": "作業場の揚げ戸の下は、地下の室。揚げ戸の裏には、下から爪でかいた跡があった。",
+        "voice": "assets/voice/ks-04.mp3"
+      },
+      {
+        "title": "その五",
+        "photo": "assets/photos/ks-05.webp",
+        "text": "地下の寝間には、敷いたままの布団と、木の椀と、蝋燭の燃えさし。壁には、十六日をかぞえた線。",
+        "voice": "assets/voice/ks-05.mp3"
+      },
+      {
+        "title": "その六",
+        "photo": "assets/photos/ks-06.webp",
+        "text": "五十二年前。千草さんは「奥の棚から持って来い」と言われて地下へ降り、揚げ戸を上から札で封じられた。",
+        "voice": "assets/voice/ks-06.mp3"
+      },
+      {
+        "title": "その七",
+        "photo": "assets/photos/ks-07.webp",
+        "text": "奥の棚の櫛を取ると、千草さんが追ってきた。札は焦げて、燃え落ちた。私は、はしごまで走った。",
+        "voice": "assets/voice/ks-07.mp3"
+      },
+      {
+        "title": "その八",
+        "photo": "assets/photos/ks-e23a.webp",
+        "text": "私は、櫛を千草さんに返した。千草さんは櫛を髪に挿し、下で眠ると言った。揚げ戸は、静かに閉まった。",
+        "voice": "assets/voice/ks-e23a.mp3"
+      },
+      {
+        "title": "その九",
+        "photo": "assets/photos/ks-e2b.webp",
+        "text": "翌朝、警察が揚げ戸の下から、千草さんの遺骨を運び出した。髪には、柘植の櫛が挿してあった。",
+        "voice": "assets/voice/ks-e2b.mp3"
+      },
+      {
+        "title": "その十",
+        "photo": "assets/photos/ks-e2c.webp",
+        "text": "帳場の格子の札は、今も一枚もはがれていない。ハルさんは、今もあの格子の内で、背中を向けているのだろう。",
+        "voice": "assets/voice/ks-e2c.mp3"
+      },
+      {
+        "title": "おしまい",
+        "photo": "assets/photos/ks-e2d.webp",
+        "text": "家は閉じられた。近所の人は、夜になると、あの家から髪をすく音がすると言う。一人分だけ。",
+        "voice": "assets/voice/ks-e2d.mp3"
+      }
     ]
   },
   {
@@ -101,6 +237,74 @@
         "photo": "assets/photos/roll-empty-lot.webp",
         "title": "今",
         "text": "家のあった所は、空き地になっている。\n夜、前を通ると、土の下から、髪をすく音が聞こえる気がする。"
+      }
+    ],
+    "pages": [
+      {
+        "title": "その一",
+        "photo": "assets/photos/ks-01.webp",
+        "text": "十一月の夕方。ヘルパーの私は、休んだ人の代わりに、櫛田ハルさんの古い家を訪ねた。",
+        "voice": "assets/voice/ks-01.mp3"
+      },
+      {
+        "title": "その二",
+        "photo": "assets/photos/ks-02.webp",
+        "text": "表の戸が、開かなくなった。帳場の格子の奥から、ハルさんが言った。「奥の棚から櫛を持って来い。持って来るまで、戸は開けん」",
+        "voice": "assets/voice/ks-02.mp3"
+      },
+      {
+        "title": "その三",
+        "photo": "assets/photos/ks-03.webp",
+        "text": "戸の札をはがしながら、家の奥へ進んだ。黒電話が鳴った。ハルさんは先週、病院で亡くなっていた。",
+        "voice": "assets/voice/ks-03.mp3"
+      },
+      {
+        "title": "その四",
+        "photo": "assets/photos/ks-04.webp",
+        "text": "作業場の揚げ戸の下は、地下の室。揚げ戸の裏には、下から爪でかいた跡があった。",
+        "voice": "assets/voice/ks-04.mp3"
+      },
+      {
+        "title": "その五",
+        "photo": "assets/photos/ks-05.webp",
+        "text": "地下の寝間には、敷いたままの布団と、木の椀と、蝋燭の燃えさし。壁には、十六日をかぞえた線。",
+        "voice": "assets/voice/ks-05.mp3"
+      },
+      {
+        "title": "その六",
+        "photo": "assets/photos/ks-06.webp",
+        "text": "五十二年前。千草さんは「奥の棚から持って来い」と言われて地下へ降り、揚げ戸を上から札で封じられた。",
+        "voice": "assets/voice/ks-06.mp3"
+      },
+      {
+        "title": "その七",
+        "photo": "assets/photos/ks-07.webp",
+        "text": "奥の棚の櫛を取ると、千草さんが追ってきた。札は焦げて、燃え落ちた。私は、はしごまで走った。",
+        "voice": "assets/voice/ks-07.mp3"
+      },
+      {
+        "title": "その八",
+        "photo": "assets/photos/ks-e1a.webp",
+        "text": "私は、櫛をハルさんに渡した。櫛は火鉢の中で、ぱちぱちと燃えた。床の下の細い叫び声は、それきり聞こえなくなった。",
+        "voice": "assets/voice/ks-e1a.mp3"
+      },
+      {
+        "title": "その九",
+        "photo": "assets/photos/ks-e1b.webp",
+        "text": "表の戸が開いた。冷たい夜気の向こうに、野口さんの車の灯りが見えた。私は、何も話さなかった。",
+        "voice": "assets/voice/ks-e1b.mp3"
+      },
+      {
+        "title": "その十",
+        "photo": "assets/photos/ks-e1c.webp",
+        "text": "半年後、櫛田の家は取り壊された。地下の室は、中を確かめないまま、土で埋め戻された。",
+        "voice": "assets/voice/ks-e1c.mp3"
+      },
+      {
+        "title": "おしまい",
+        "photo": "assets/photos/ks-e1d.webp",
+        "text": "家のあった所は、空き地になっている。夜、前を通ると、土の下から、髪をすく音が聞こえる気がする。",
+        "voice": "assets/voice/ks-e1d.mp3"
       }
     ]
   }

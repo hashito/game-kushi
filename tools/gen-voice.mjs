@@ -21,6 +21,8 @@ for (const seq of Object.values(talk)) for (const L of seq) { add(L); for (const
 // the protagonist's thoughts and answers (js/ext/words.js): assets/voice/t-<key>.mp3, listed in assets/voice/thoughts.json (game.json "thoughtVoices")
 const { W } = await import(new URL('../js/ext/words.js', import.meta.url).href);
 for (const [k, text] of Object.entries(W)) if (text.length > 6) lines.set(`t-${k}`, { id: `t-${k}`, who: '私', text });
+// 2.5.0: the kamishibai cards of the endings (data/endings.json "pages"), read by the narrator (私): assets/voice/ks-*.mp3
+for (const e of JSON.parse(fs.readFileSync(path.join(ROOT, 'data/endings.json'), 'utf8'))) for (const pg of e.pages || []) { const m = /assets\/voice\/(.+)\.mp3$/.exec(pg.voice || ''); if (m && !lines.has(m[1])) lines.set(m[1], { id: m[1], who: '私', text: pg.text }); }
 const out = path.join(ROOT, 'assets/voice'); fs.mkdirSync(out, { recursive: true });
 const todo = [...lines.values()].filter((L) => (!only || only.has(L.id)) && (force || !fs.existsSync(path.join(out, `${L.id}.mp3`))));
 console.log(`${lines.size} spoken lines, ${todo.length} to make`);

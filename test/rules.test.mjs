@@ -31,11 +31,13 @@ test('#9 she takes the weakest road: with the oku lid open, 奥の室 is reachab
   const peeled = ['F_FLUE', 'F_IBU', 'F_DORO', 'F_ITA', 'F_KAME', 'F_KOSHI'];
   const n = (id) => ({ K_IBU: 1 }[id] || 0);
   assert.equal(weakest('IBUSHI', 'OKUMURO', n, peeled).strength, 0);
-  const n2 = (id) => ({ K_IBU: 1, K_FLUE: 1 }[id] || 0);
+  // 2.5.0 #3: the oku flue mouth is wide - one charm does not close it, two do
+  assert.equal(weakest('IBUSHI', 'OKUMURO', (id) => ({ K_IBU: 1, K_FLUE: 1 }[id] || 0), peeled).strength, 0);
+  const n2 = (id) => ({ K_IBU: 1, K_FLUE: 2 }[id] || 0);
   assert.equal(weakest('IBUSHI', 'OKUMURO', n2, peeled).strength, 1);
   // peel ハル's old lid charm in 板の間 and that road opens again
   assert.equal(weakest('IBUSHI', 'DORO', n2, [...peeled, 'W_ITAM']).strength, 0);
-  assert.equal(weakest('IBUSHI', 'DORO', (id) => ({ K_IBU: 1, K_FLUE: 1, K_ITAM: 1 }[id] || 0), [...peeled, 'W_ITAM']).strength, 1);
+  assert.equal(weakest('IBUSHI', 'DORO', (id) => ({ K_IBU: 1, K_FLUE: 2, K_ITAM: 1 }[id] || 0), [...peeled, 'W_ITAM']).strength, 1);
   assert.equal(edgeStrength(EDGES.find((e) => e.id === 'e_ibu'), sealN0, []), 1);
 });
 

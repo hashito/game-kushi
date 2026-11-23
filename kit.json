@@ -105,7 +105,8 @@
     "reads-tab",
     "dot-post",
     "phone-play",
-    "dot-world"
+    "dot-world",
+    "kamishibai"
   ],
   "css": "css/kit.css",
   "cssExtra": [
@@ -310,7 +311,8 @@
     "tools/wall-door.mjs": "41d4d10f99b5",
     "tools/mark-sight.mjs": "f4ce382563c7",
     "tools/pick-overlap.mjs": "ec5a8c514faf",
-    "tools/rest-check.mjs": "1ce04607e207"
+    "tools/rest-check.mjs": "1ce04607e207",
+    "js\\kit\\kamishibai.js": "a68917851cd1"
   },
   "textures": [
     "tatami_old",

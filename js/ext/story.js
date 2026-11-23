@@ -53,13 +53,18 @@ export function installStory(ext, G) {
     G.combBox.visible = !done('T_BOX'); G.boxCord.visible = !done('T_BOX'); G.boxCharm.visible = !done('T_BOX');
     if (G.lure) G.lure.visible = done('T_LURE');
     if (done('T_TRAP') && !G.peeled.includes('F_FLUE')) G.peelQuiet('F_FLUE');
-    if (G.setHatch) G.setHatch(done('T_HATCH') && !(done('T_SEAL') && !done('T_RETURN')), true);
+    // 2.5.0 #3 「くしを返した後は地下に行けないほうが良い」: after the return the lid falls shut by itself and stays shut
+    if (G.setHatch) G.setHatch(done('T_HATCH') && !done('T_SEAL'), true);
     if (G.frontDoor && done('T_OUT')) { G.frontTo = 1; G.frontK = 1; G.frontDoor.position.x = -1.5; }
     // 2.4.0 #11: after ハル's answer the front door is the player's to open (the look-only 表の戸 gives way to the S_OUT station)
     { const I = ctx.world.interactables; G.outHit = G.outHit || I.find((o) => o.name === 'station:S_OUT'); G.omoteLook = G.omoteLook || I.find((o) => { const it = o.userData && o.userData.interact; return it && it.id === 'OMOTE_DOOR'; });
       const swap = (o, want) => { if (!o) return; const i = I.indexOf(o); if (want && i < 0) I.push(o); if (!want && i >= 0) I.splice(i, 1); };
-      swap(G.outHit, done('T_END') && !done('T_OUT')); swap(G.omoteLook, !done('T_END')); }
+      swap(G.outHit, done('T_END') && !done('T_OUT')); swap(G.omoteLook, !done('T_END'));
+      // 2.5.0 #2 「黒電話をクリックするのに取れない場合があります」: the look-only 黒電話 sat on the phone too and took the click from the call;
+      // until the call is taken, the phone is the station alone
+      G.phoneLook = G.phoneLook || I.find((o) => { const it = o.userData && o.userData.interact; return it && it.id === 'NAKA_PHONE'; }); swap(G.phoneLook, done('T_PHONE')); }
     G.boxGlow.i = done('T_BOX') && !done('T_ESCAPE') ? 0.9 : 0;
+    if (G.koshiOld) for (const m of G.koshiOld) m.visible = !done('T_KOSHI_SEE');
     // the waxed charm on the lattice is worked from the lattice's own [E] spot (S_KOSHI: the wax needs the flame), not as a plain charm
     const K = G.charms.get('F_KOSHI'); if (K) { const i = ctx.world.interactables.indexOf(K.hit); if (i >= 0) ctx.world.interactables.splice(i, 1); }
     if (done('T_KOSHI') && G.koshiHit) { const i = ctx.world.interactables.indexOf(G.koshiHit); if (i >= 0) ctx.world.interactables.splice(i, 1); }
@@ -110,7 +115,7 @@ export function installStory(ext, G) {
   }
   /** the run back did not end: the seals as they were when the comb was taken, she back by the drying rack */
   function resetHunt() {
-    const s = huntSnap || { fuda: G.fuda, seals: { K_IBU: [Math.max(1, G.sealN('K_IBU')), 0], K_FLUE: [Math.max(1, G.sealN('K_FLUE')), 0, 1] } };
+    const s = huntSnap || { fuda: G.fuda, seals: { K_IBU: [Math.max(1, G.sealN('K_IBU')), 0], K_FLUE: [Math.max(2, G.sealN('K_FLUE')), 0, 1] } };
     G.fuda = s.fuda; for (const [id, v] of Object.entries(s.seals)) G.setSeal(id, v[0], v[1], v.length > 2 ? !!v[2] : null);
     // 2.4.0 #10: a charm she burnt off a door or a lid during the run is back on it after a catch
     if (s.peeled) for (const id of [...G.peeled]) if (!s.peeled.includes(id)) G.unpeel(id);
@@ -169,6 +174,8 @@ export function installStory(ext, G) {
       if (id === 'F_KAME' && !done('T_LIGHT')) return W.peel_dark;
       // ハル's old charms on the flue lids: the first [E] says what they are (peeling one gives a charm and opens a road for her)
       if ((id === 'W_ITAM' || id === 'W_KAMEM') && !flag(`warn_${id}`)) { setFlag(`warn_${id}`); return W.lid_warn; }
+      if (/^W_NEMAM/.test(id) && !flag('warn_W_NEMAM')) { setFlag('warn_W_NEMAM'); return W.lid_warn_pair; }
+      if (id === 'F_NEMA' && !done('T_LIGHT')) return W.peel_dark;
       if (id === 'F_DORO' && !done('T_LIGHT')) return W.peel_dark;
       if (id === 'F_DORO' && !done('T_HIKAE')) return W.peel_hikae;
       if (id === 'F_FLUE' && !done('T_LURE')) return W.flue_first;
@@ -185,6 +192,7 @@ export function installStory(ext, G) {
       if (id === 'K_KOSHI') return done('T_KOSHI');
       if (id === 'K_ITAM') return G.peeled.includes('W_ITAM');
       if (id === 'K_KAMEM') return G.peeled.includes('W_KAMEM');
+      if (id === 'K_NEMAM') return G.peeled.includes('W_NEMAM1') && G.peeled.includes('W_NEMAM2');
       const S = G.seals.get(id); if (S && S.def.auto) return G.peeled.includes(S.def.charm);
       return false;
     };
@@ -205,9 +213,11 @@ export function installStory(ext, G) {
     // the ladder: shut while 千草さん is under the hatch
     const st = G.stairDown && G.stairDown.userData.interact;
     if (st) {
-      const L0 = st.locked; st.locked = () => L0() || (done('T_ESCAPE') && !done('T_RETURN')) || (flag('chase2') && !done('T_ESCAPE'));
-      const h0 = st.hint; Object.defineProperty(st, 'hint', { configurable: true, get: () => (flag('chase2') && !done('T_ESCAPE') ? W.chase_stair : done('T_ESCAPE') && !done('T_RETURN') ? (done('T_SEAL') ? W.seal_shut : W.stair_shut) : h0) });
+      const L0 = st.locked; st.locked = () => L0() || done('T_ESCAPE') || (flag('chase2') && !done('T_ESCAPE'));
+      const h0 = st.hint; Object.defineProperty(st, 'hint', { configurable: true, get: () => (flag('chase2') && !done('T_ESCAPE') ? W.chase_stair : done('T_RETURN') ? W.return_shut : done('T_ESCAPE') ? (done('T_SEAL') ? W.seal_shut : W.stair_shut) : h0) });
     }
+    // 2.5.0 #5: two plain old charms on the lattice beside the waxed one (they burn away the first time she comes to it)
+    G.koshiOld = [[2.22, -0.05], [2.98, 0.06]].map(([x, rz]) => { const m = new THREE.Mesh(G.charmGeo, G.burnMaterial()); m.position.set(x, ctx.world.floorY(0) + 1.78, -18.95); m.rotation.set(0, 0, rz); m.name = 'kc-koshi-old'; ctx.world.group.add(m); return m; });
     ctx.systems.push({ id: 'kc-story', def: { update: (dt, c2, active) => update(dt, active) }, inst: null });
     // the seal bar (the hatch pushed up from below)
     sealEl = document.createElement('div'); sealEl.id = 'kc-seal'; sealEl.className = 'kc-seal'; sealEl.hidden = true; sealEl.innerHTML = '<p>揚げ戸が押し上げられている</p><div class="kc-seal-bar"><i></i></div>';
@@ -222,24 +232,30 @@ export function installStory(ext, G) {
     if (id === 'F_DORO') { if (tryDone('T_DORO')) later(() => say('doro_done', 6), 900); return; }
     if (id === 'F_FLUE') { flueStart(); return; }
     if (id === 'W_ITAM' || id === 'W_KAMEM') { say('lid_peeled', 6); return; }
+    // 2.5.0 #3: the wide mouth's two old charms are one pair (one overlaps the other's edge): the second comes off with the first
+    if (/^W_NEMAM/.test(id)) { const o = id === 'W_NEMAM1' ? 'W_NEMAM2' : 'W_NEMAM1'; if (!G.peeled.includes(o)) { G.peel(o, { force: true }); later(() => say('lid_pair_peeled', 7), 300); } return; }
     { const C = G.charms.get(id); if (C && C.def.crumble && !flag('crumble')) { setFlag('crumble'); later(() => say('crumble', 6), 300); return; } }
     if (!flag('peel_first')) { setFlag('peel_first'); say('peel_first', 5); }
   });
-  ext.on('kushi:paste', ({ id }) => {
+  ext.on('kushi:paste', ({ id, n }) => {
+    // 2.5.0 #3 「２枚とか３枚で塞いだり」: a wide mouth says what one charm does there, and when it holds
+    if (G.sealNeed && G.sealNeed(id) > 1) { const need = G.sealNeed(id); if (n < need && !flag('wide_half')) { setFlag('wide_half'); say('wide_half', 6); } else if (n === need && !flag('wide_full')) { setFlag('wide_full'); say('wide_full', 5); } }
     if (id === 'K_NAKA' && done('T_PEEL1') && !done('T_PASTE1') && !flag('naka_paste')) { setFlag('naka_paste'); later(() => talk('paste1', '帳場の声'), 300); return; }
     flueCheck();
   });
   ext.on('kushi:lid', ({ id }) => { if (!flag('lid_said')) { setFlag('lid_said'); say('lid_close', 5); } flueCheck(); });
   // 2.4.0 #9: T_FLUE2 is done when every road from 燻しの間 to 奥の室 holds at least one charm (ghost.js weakest)
   const routeHeld = () => G.weakest && G.weakest('IBUSHI', 'OKUMURO').strength >= 1 && G.weakest('IBUSHI', 'DORO').strength >= 1;
-  const OPEN_WORD = { e_f_oku: 'box_open_oku', e_f_ita: 'box_open_ita', e_f_kame: 'box_open_kame', e_koshi: 'box_open_koshi', e_ita: 'box_open_ita', e_kame: 'box_open_kame' };
+  const OPEN_WORD = { e_f_oku: 'box_open_oku', e_f_ita: 'box_open_ita', e_f_kame: 'box_open_kame', e_koshi: 'box_open_koshi', e_ita: 'box_open_ita', e_kame: 'box_open_kame', e_f_nema: 'box_open_nema', e_nema: 'box_open_nema' };
   function openRoad() {
     const w = G.weakest('IBUSHI', 'OKUMURO'); if (!w) return W.box_open_any;
     const leg = w.legs.find((l) => OPEN_WORD[l.e.id] && edgeStrength(l.e, G.sealN, G.peeled) === 0);
+    // 2.5.0: a wide mouth with one charm on it: half of it is open
+    if (leg && leg.e.need > 1 && leg.e.seal && G.sealN(leg.e.seal) > 0) return W[leg.e.id === 'e_f_oku' ? 'box_half_oku' : 'box_half_nema'];
     return W[leg ? OPEN_WORD[leg.e.id] : 'box_open_any'];
   }
   G.openRoad = openRoad;
-  function flueCheck() { if (done('T_OKUMURO') && !done('T_FLUE2') && routeHeld() && tryDone('T_FLUE2')) later(() => talk('flue2_done', '奥の室'), 300); }
+  function flueCheck() { if (done('T_OKUMURO') && !done('T_FLUE2') && G.peeled.includes('F_FLUE') && routeHeld() && tryDone('T_FLUE2')) later(() => talk('flue2_done', '奥の室'), 300); }
   ext.on('kushi:unpaste', ({ id }) => {
     if (id === 'K_NAKA' && flag('naka_paste') && !done('T_PASTE1')) { const d = ctx.world.doors.get('D_NAKA'); if (d && d.open) d.open(); ctx.completeTask('T_PASTE1'); later(() => talk('paste1_done', '帳場の声')); }
   });
@@ -256,7 +272,7 @@ export function installStory(ext, G) {
     await talk('phone', '黒電話');
     ctx.sound('hangup');
     return true;
-  }, onDone: () => later(() => say('phone_after', 6), 500) });
+  }, onDone: () => { apply(); later(() => say('phone_after', 6), 500); } });
   // 2.4.0 #5 「電話の後、婆さんのネタバラシは聞きに行く形に」: after the call the player walks back to the lattice and asks
   ext.registerTask('T_HARU2', { run: async () => { await talk('haru_dead', '帳場の格子'); return true; } });
   ext.registerTask('T_USU', { canStart: () => (has('KOTEKO') ? true : W.usu_need), onDone: () => { G.moveUsu(); ctx.sound('noise', 'thud'); later(() => say('usu_done', 5), 1300); hatchSpot(); } });
@@ -317,8 +333,12 @@ export function installStory(ext, G) {
   async function koshiScene() {
     if (koshiBusy) return; koshiBusy = true;
     ctx.sound('stinger'); ctx.fx && ctx.fx.spook && ctx.fx.spook(0.9);
-    const C = G.charms.get('F_KOSHI'); if (C) { const u = C.mesh.material.userData; u.burn.value = 0.12; u.glow.value = 1; later(() => { u.glow.value = 0.2; }, 1400); }
-    await new Promise((r) => later(r, 900));
+    // 2.5.0 #5 「札が燃えるところが見える場面」: the eyes go to the lattice; the two plain old charms at its sides catch fire, curl and fall to
+    // ash while she presses; the waxed one in the middle smokes and holds
+    G.turnTo = { x: 2.6, y: ctx.world.floorY(0) + 1.45, z: -19, t: 1.2 };
+    (G.koshiOld || []).forEach((m, i) => later(() => G.burnAway(m, 2.6), 350 + i * 650));
+    const C = G.charms.get('F_KOSHI'); if (C) { const u = C.mesh.material.userData; u.burn.value = 0.12; u.glow.value = 1; later(() => { u.glow.value = 0.2; }, 3400); }
+    await new Promise((r) => later(r, 4000));
     await talk('koshi', '格子戸');
     ctx.completeTask('T_KOSHI_SEE');
     koshiBusy = false;
@@ -357,8 +377,9 @@ export function installStory(ext, G) {
     ctx.sound('paper'); G.hatchCharm.visible = false; G.setHatch(true); ctx.sound('creak');
     await talk('return', '揚げ戸');
     removeItem('COMB'); setFlag('returned');
+    G.setHatch(false); ctx.sound('noise', 'thud');   // 2.5.0 #3: the lid falls shut by itself (the hole's collider back off, the ladder locked: return_shut)
     return true;
-  }, onDone: () => hatchSpot() });
+  }, onDone: () => { hatchSpot(); later(() => say('return_closed', 6), 600); } });
   ext.registerTask('T_END', {
     canStart: () => (has('COMB') || done('T_RETURN') ? true : W.haru_wait_comb),
     run: async () => {
@@ -400,6 +421,7 @@ export function installStory(ext, G) {
     if (to === 'ITA' && !G.ev.includes('ita')) { G.ev.push('ita'); flick = 1.2; voice('whisper1'); later(() => say('ev_ita', 4), 900); }
     if (to === 'OKUMURO' && tryDone('T_OKUMURO')) later(() => talk('okumuro', '奥の室'), 300);
     if (to === 'KAME' && !G.ev.includes('kame')) { G.ev.push('kame'); later(() => say('kame_in', 6), 700); }
+    if (to === 'NEMA' && !G.ev.includes('nema')) { G.ev.push('nema'); later(() => say('nema_in', 7), 700); }
   });
   // (T_HASHIRI is an L2 task; the kitchen is open from ハル's first words, so the candle and matches may be in hand before L2 begins)
   ext.on('task:done', ({ id }) => { if (has('TESHOKU') && has('MATCHES')) tryDone('T_HASHIRI'); if (id === 'T_SAGYO') ringT = 2.5; if (id === 'T_CHOBA' && !(ctx && ctx.testScene)) later(() => say('chip_first', 5), 800); });
@@ -413,11 +435,14 @@ export function installStory(ext, G) {
   let flick = 0, flueT = 0;
   const HALO = 4.5, HALO_D = 4.5;   // the candle's halo underground (2.4.1)
   function update(dt, active) {
-    if (!active || !ctx) return;
+    if (!ctx) return;
+    // a short look toward a scene (2.5.0 #5: the burning charms on the lattice), eased; the player's own look takes over after it
+    if (G.turnTo && ctx.fp) { const T0 = G.turnTo, p = ctx.camera.position; T0.t -= dt; const want = Math.atan2(-(T0.x - p.x), -(T0.z - p.z)); let d = want - ctx.fp.yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); const k = Math.min(1, dt * 4); ctx.fp.yaw += d * k; const wp = Math.atan2(T0.y - p.y, Math.hypot(T0.x - p.x, T0.z - p.z)); ctx.fp.pitch += (wp - ctx.fp.pitch) * k; if (T0.t <= 0) G.turnTo = null; }
+    if (!active) return;
     const c = cam(), room = ctx.state.room;
     // the phone rings until it is answered: the bell of a black phone, from the phone (2.0, #5)
     // 2.4.0 #4 「電話をもっと大きな音で（驚かせたい）」: the first ring is sudden and loud through the house, with a start (stinger, a jolt)
-    if (ringT >= 0 && !done('T_PHONE')) { ringT -= dt; if (ringT < 0) { const first = !flag('ring_said'); if (G.phoneRing) G.phoneRing(first); if (first) { setFlag('ring_said'); ctx.sound('stinger'); ctx.fx && ctx.fx.spook && ctx.fx.spook(0.8); later(() => say('phone_ring', 5), 900); } ringT = 3.0; } }
+    if (ringT >= 0 && !done('T_PHONE')) { ringT -= dt; if (ringT < 0) { const first = !flag('ring_said'); if (G.phoneRing) G.phoneRing(first); if (first) { setFlag('ring_said'); later(() => say('phone_ring', 5), 900); }   /* 2.5.0 #1 「演出が強すぎます。音が鳴るだけでいい」: the bell only, no stinger / jolt */ ringT = 3.0; } }
     if (done('T_OKUMURO') && !done('T_FLUE2')) { flueT -= dt; if (flueT <= 0) { flueT = 0.5; flueCheck(); } }
     // underground: no running before the comb (a small flame, a dirt floor)
     ctx.fp.o.run = ctx.floor === 0 && !done('T_BOX') ? ctx.fp.o.speed : RUN0;

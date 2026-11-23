@@ -169,6 +169,20 @@
       "wallTex": "stone_wall"
     },
     {
+      "id": "NEMA",
+      "name": "寝間",
+      "x": 3.6,
+      "z": -19,
+      "w": 6,
+      "d": 6,
+      "floor": 0,
+      "kind": "room",
+      "type": "storage",
+      "furnish": false,
+      "floorTex": "planks_dark",
+      "wallTex": "clay_wall"
+    },
+    {
       "id": "OKUMURO",
       "name": "奥の室",
       "x": -1.4,
@@ -336,6 +350,18 @@
       "closable": true,
       "hint": "甕の間の板戸。札が貼ってある。",
       "reason": "水を張った甕を並べた部屋（板を水に浸けてから燻した）。煙道の枝が来ている"
+    },
+    {
+      "id": "D_NEMA",
+      "a": "DORO",
+      "b": "NEMA",
+      "x": 3.6,
+      "z": -16.2,
+      "width": 1.1,
+      "look": "slide",
+      "closable": true,
+      "hint": "寝間の板戸。札が貼ってある。",
+      "reason": "燻しの番をする職人が寝た部屋（2.5.0：千草さんが最後の日々を過ごした所）"
     },
     {
       "id": "D_KOSHI",

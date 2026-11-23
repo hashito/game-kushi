@@ -7,7 +7,7 @@ const L3a = ['T_LIGHT', 'T_HIKAE', 'T_DORO'], L3b = [...L3a, 'T_KOSHI_SEE'], L3c
 const ITEMS2 = ['TESHOKU', 'MATCHES', 'KOTEKO'];
 const PEEL1 = ['F_NAKA'], PEEL2 = [...PEEL1, 'F_HASHIRI', 'F_OKU', 'F_ROKA', 'F_SAGYO'], PEEL3 = [...PEEL2, 'F_DORO', 'F_IBU'];
 const DONE = [...L1, ...L2, ...L3d, 'T_BOX', 'T_ESCAPE', 'T_SEAL'];
-const SEALED = { K_IBU: 1, K_FLUE: 1 };
+const SEALED = { K_IBU: 1, K_FLUE: 2 };   // 2.5.0: 奥の室's flue mouth is wide - two charms side by side
 export const SCENES = [
   { id: 'omote', group: '家', label: '表の土間（はじまり）', at: { x: 1.3, z: 24.6, yaw: -1.0, floor: 1 } },
   { id: 'choba', group: '家', label: '帳場の格子の前', at: { x: 4.9, z: 23.4, yaw: -0.9, floor: 1 } },
@@ -36,6 +36,10 @@ export const SCENES = [
   { id: 'out', group: '家', label: '表の戸（最後に開ける）', tasks: [...DONE, 'T_THINK', 'T_RETURN', 'T_END'], items: ITEMS2, peeled: [...PEEL3, 'F_FLUE', 'F_KOSHI'], flags: ['returned', 'chose_keep'], fuda: 3, at: { x: 1.3, z: 22.6, yaw: Math.PI, floor: 1 } },
   { id: 'out-give', group: '家', label: '表の戸（櫛を渡した後）', tasks: [...DONE, 'T_END'], items: ITEMS2, peeled: [...PEEL3, 'F_FLUE', 'F_KOSHI'], flags: ['chose_give'], fuda: 3, at: { x: 1.3, z: 23.6, yaw: Math.PI, floor: 1 } },
   { id: 'end', group: '家', label: '帳場（結末の前・手紙あり）', tasks: [...DONE, 'T_THINK', 'T_RETURN', 'T_SQ1'], items: ITEMS2, peeled: [...PEEL3, 'F_FLUE', 'F_KOSHI'], flags: ['letters', 'returned'], fuda: 3, at: { x: 4.9, z: 23.4, yaw: -0.9, floor: 1 } },
+  // 2.5.0 (play test 2026-11-23 #3 #4): 寝間 - the room she lived in; the wide flue mouth in 奥の室 to shut with two charms; the hatch after the return
+  { id: 'nema', group: '地下', label: '寝間（暮らしの跡・広い煙道の口）', tasks: [...L1, ...L2, ...L3b], items: [...ITEMS2, 'KAKE_KUSHI'], peeled: [...PEEL2, 'F_DORO', 'F_NEMA'], fuda: 6, light: true, ghost: true, at: { x: 4.4, z: -16.2, yaw: -Math.PI / 2, floor: 0 } },
+  { id: 'wide', group: '地下', label: '奥の室の広い煙道の口（札を二枚）', tasks: [...L1, ...L2, ...L3c, 'T_KOSHI', 'T_OKUMURO'], items: ITEMS2, peeled: [...PEEL3, 'F_FLUE', 'F_KOSHI'], seals: { K_IBU: 1 }, fuda: 4, light: true, ghost: true, at: { x: 5.5, z: -20.6, yaw: Math.PI, floor: 0 } },
+  { id: 'return-shut', group: '家', label: '揚げ戸（櫛を返した後）', tasks: [...DONE, 'T_THINK', 'T_RETURN'], items: ITEMS2, peeled: [...PEEL3, 'F_FLUE', 'F_KOSHI'], flags: ['returned'], fuda: 3, at: { x: 6.6, z: 1.4, yaw: 0, floor: 1 } },
 ];
 export function installTests(ext, G) {
   ext.registerTestScenes(SCENES, {

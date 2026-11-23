@@ -14,7 +14,7 @@ import { ringPlan } from './ring.js';
 
 // where each station's invisible [E] box goes (height above the floor; x / z moves; scale of the box)
 const HIT = {
-  S_CHOBA: { y: 1.0, dx: 0.35, dz: -0.2, s: [2.0, 1.4, 1.4] } /* 2.2: ハル is easy to speak to (「話しかけづらい」): a wide box along the lattice, talk reach in plan.json */, S_PHONE: { y: 0.7, s: [0.6, 0.6, 0.6] }, S_BUTSUDAN: { y: 0.9 }, S_BENCH: { y: 0.9 },
+  S_CHOBA: { y: 1.0, dx: 0.35, dz: -0.2, s: [2.0, 1.4, 1.4] } /* 2.2: ハル is easy to speak to (「話しかけづらい」): a wide box along the lattice, talk reach in plan.json */, S_PHONE: { y: 0.8, dx: -0.15, dz: -0.25, s: [0.8, 0.8, 0.8] } /* 2.5.0 #2: on the phone itself, generous */, S_BUTSUDAN: { y: 0.9, s: [1.1, 1.5, 0.9] } /* 2.5.0 P60: the altar is one [E]; the tablet's look is small on it */, S_BENCH: { y: 0.9 },
   S_LIGHT: { y: 0.42, s: [1.2, 0.3, 0.4] } /* 2.4.0 #6: on the kiln's front rim (it was a box on the bare floor a metre before the kiln) */, S_SHELF: { y: 1.0 }, S_RACK: { y: 1.0, s: [0.5, 1.2, 1.2] }, S_KOSHI: { y: 1.2, s: [1.0, 1.6, 0.3] },
   S_OUT: { y: 1.05, s: [1.6, 1.9, 0.3] },
 };
@@ -59,6 +59,63 @@ export function installHouse(ext, G) {
     const candle = (room, x, z, y0 = 0) => { cyl(room, x, z, 0.018, 0.018, 0.12, M.white, y0); const f = new THREE.Mesh(new THREE.ConeGeometry(0.012, 0.035, 6), M.flame); f.position.set(x, fy(room) + y0 + 0.14, z); grp.add(f); G.flames.push(f); return f; };
     const zabuton = (room, x, z, rot = 0) => box(room, x, z, 0.55, 0.06, 0.6, M.cushion, 0, false, rot);
 
+    function buildOutside(dx, dz) {
+      const y0 = fy('OMOTE'), wall = W.group.children.find((o) => o.name === 'wall:OMOTE:s');
+      // the doorway: the solid wall becomes three pieces round a 1.7 x 2.1 opening (the door slides into the wall to the west)
+      if (wall) {
+        wall.visible = false; const wm = wall.material, b = new THREE.Box3().setFromObject(wall), zc = (b.min.z + b.max.z) / 2, t = b.max.z - b.min.z, x0 = dx - 0.85, x1 = dx + 0.85, H0 = b.max.y - b.min.y;
+        for (const [w, h, x, y] of [[x0 - b.min.x, H0, (b.min.x + x0) / 2, H0 / 2], [b.max.x - x1, H0, (x1 + b.max.x) / 2, H0 / 2], [x1 - x0, H0 - 2.12, dx, 2.12 + (H0 - 2.12) / 2]]) { if (w <= 0.01) continue; const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, t), wm); m.position.set(x, b.min.y + y, zc); m.name = 'kc-front-wall'; m.receiveShadow = true; grp.add(m); }
+      }
+      const paint = (w, h, f) => { const cv = document.createElement('canvas'); cv.width = w; cv.height = h; f(cv.getContext('2d'), w, h); const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; return tx; };
+      const lit = (tx, o = {}) => new THREE.MeshBasicMaterial({ map: tx, ...o });
+      const out = new THREE.Group(); out.name = 'kc-outside'; grp.add(out);
+      const flat = (w, h, mat, x, y, zz, rx = 0, ry = 0) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); m.position.set(x, y, zz); m.rotation.set(rx, ry, 0); out.add(m); return m; };
+      const solid = (w, h, d, color, x, y, zz) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshBasicMaterial({ color })); m.position.set(x, y, zz); out.add(m); return m; };
+      // the lane: gravel, a warm pool under the street lamp, the car's beams on the ground
+      const lane = paint(512, 512, (g, w, h) => {
+        g.fillStyle = '#2b2a2c'; g.fillRect(0, 0, w, h);
+        for (let i = 0; i < 2600; i++) { const v = 30 + Math.random() * 40; g.fillStyle = `rgb(${v | 0},${(v - 2) | 0},${(v - 4) | 0})`; g.fillRect(Math.random() * w, Math.random() * h, 2, 2); }
+        const pool = (x, y, r, a) => { const q = g.createRadialGradient(x, y, 2, x, y, r); q.addColorStop(0, `rgba(255,205,140,${a})`); q.addColorStop(1, 'rgba(255,205,140,0)'); g.fillStyle = q; g.fillRect(0, 0, w, h); };
+        pool(150, 120, 150, 0.5); pool(330, 300, 120, 0.3); pool(256, 40, 140, 0.35);
+      });
+      flat(14, 12, lit(lane), dx + 1.5, y0 - 0.12, dz + 6.3, -Math.PI / 2);
+      solid(2.2, 0.12, 0.7, 0x2c2a28, dx, y0 - 0.06, dz + 0.5);   // the stone step down to the lane
+      // across the lane: low houses (dark timber fronts, tiled eaves), a few windows still lit
+      const front = paint(1024, 256, (g, w, h) => {
+        g.fillStyle = '#1e1a17'; g.fillRect(0, 0, w, h);
+        for (let x = 0; x < w; x += 14) { g.fillStyle = x % 28 ? '#2a241f' : '#332b25'; g.fillRect(x, 60, 10, h); }
+        g.fillStyle = '#0a0a0c'; g.fillRect(0, 40, w, 24);
+        for (const [x, ww] of [[100, 110], [560, 130], [840, 90]]) { const q = g.createLinearGradient(0, 110, 0, 170); q.addColorStop(0, '#f0b86a'); q.addColorStop(1, '#a8682e'); g.fillStyle = q; g.fillRect(x, 96, ww, 84); g.fillStyle = '#3a2614'; for (let k = 1; k < 6; k++) g.fillRect(x + (ww * k) / 6, 96, 3, 84); g.fillRect(x, 136, ww, 3); }
+      });
+      flat(16, 4.0, lit(front), dx + 1.5, y0 + 1.85, dz + 11.5, 0, Math.PI);
+      for (let i = 0; i < 6; i++) { const m = solid(2.6, 0.12, 0.7, 0x0c0c0e, dx - 5 + i * 2.7, y0 + 3.95, dz + 11.2); m.rotation.x = 0.35; }
+      // the sky: the last of the evening over the roofs (deep blue above, a thin band of dull orange low down), a few stars
+      const sky = paint(512, 256, (g, w, h) => {
+        const q = g.createLinearGradient(0, 0, 0, h); q.addColorStop(0, '#0b1020'); q.addColorStop(0.55, '#1c2540'); q.addColorStop(0.85, '#5a4a52'); q.addColorStop(1, '#8a5a3a'); g.fillStyle = q; g.fillRect(0, 0, w, h);
+        g.fillStyle = '#cfd6e8'; for (let i = 0; i < 40; i++) g.fillRect(Math.random() * w, Math.random() * h * 0.45, 1, 1);
+        g.fillStyle = '#07080b'; g.beginPath(); g.moveTo(0, h); let x = 0; for (const [ww, hh] of [[70, 38], [54, 52], [90, 34], [60, 60], [80, 40], [48, 50], [110, 36]]) { g.lineTo(x, h - hh + 10); g.lineTo(x + 8, h - hh); g.lineTo(x + ww - 8, h - hh); g.lineTo(x + ww, h - hh + 10); x += ww; } g.lineTo(w, h); g.fill(); g.fillStyle = '#e8b870'; for (const [wx, wy] of [[130, 232], [300, 222], [420, 236]]) g.fillRect(wx, wy, 6, 5);
+      });
+      flat(40, 16, lit(sky, { fog: false }), dx + 1.5, y0 + 9.5, dz + 16, 0, Math.PI);
+      // a wooden street lamp with a lit bulb under its shade, and the telephone wire
+      solid(0.14, 4.2, 0.14, 0x141210, dx + 3.2, y0 + 2.0, dz + 3.4);
+      solid(0.36, 0.05, 0.05, 0x141210, dx + 3.02, y0 + 3.85, dz + 3.4);
+      { const sh = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.28, 0.22, 12), new THREE.MeshBasicMaterial({ color: 0x1a1612 })); sh.position.set(dx + 2.85, y0 + 3.75, dz + 3.4); out.add(sh);
+        const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffe2a8, fog: false })); bulb.position.set(dx + 2.85, y0 + 3.6, dz + 3.4); out.add(bulb); }
+      solid(16, 0.015, 0.015, 0x050505, dx + 1.5, y0 + 4.4, dz + 3.4);
+      // 野口さん's little car on the lane, headlights on (the endings say she came)
+      { const cx = dx - 1.6, cz = dz + 6.2;
+        solid(3.4, 0.75, 1.5, 0x4d5560, cx, y0 + 0.55, cz); solid(1.8, 0.6, 1.4, 0x3c434c, cx - 0.2, y0 + 1.2, cz);
+        for (const s of [-1, 1]) for (const e of [-1, 1]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.2, 14), new THREE.MeshBasicMaterial({ color: 0x050505 })); w.rotation.x = Math.PI / 2; w.position.set(cx + s * 1.05, y0 + 0.2, cz + e * 0.7); out.add(w); }
+        for (const s of [-1, 1]) { const hl = new THREE.Mesh(new THREE.CircleGeometry(0.1, 14), new THREE.MeshBasicMaterial({ color: 0xfff1c8, fog: false })); hl.position.set(cx + 1.71, y0 + 0.62, cz + s * 0.5); hl.rotation.y = Math.PI / 2; hl.name = 'kc-headlight'; out.add(hl); }
+        // the lights' glow (a soft halo round each lamp, no light cast)
+        const halo = paint(64, 64, (g) => { const q = g.createRadialGradient(32, 32, 1, 32, 32, 31); q.addColorStop(0, 'rgba(255,240,200,0.9)'); q.addColorStop(1, 'rgba(255,240,200,0)'); g.fillStyle = q; g.fillRect(0, 0, 64, 64); });
+        for (const s2 of [-1, 1]) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: halo, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false })); sp.position.set(cx + 1.8, y0 + 0.62, cz + s2 * 0.5); sp.scale.setScalar(0.7); out.add(sp); }
+        { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: halo, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false })); sp.position.set(dx + 2.85, y0 + 3.6, dz + 3.4); sp.scale.setScalar(1.1); out.add(sp); } }
+      // this house's eaves over the doorway
+      solid(2.8, 0.08, 1.2, 0x0e0c0a, dx, y0 + 2.95, dz + 0.75);
+      G.outside = out;
+    }
+
     // ---------------- the frame of the house (posts, the kamoi band, a board ceiling with battens): one merged mesh ----------------
     {
       const geos = [], plan = ctx.data.plan, T = 0.08, part = (w, h, d, x, y, z) => { const g = new THREE.BoxGeometry(w, h, d); g.translate(x, y, z); geos.push(g); };
@@ -96,8 +153,10 @@ export function installHouse(ext, G) {
       // 2.4.0 (#11 「最後に玄関を開ける…まで歩いて」): the front door is one group that slides open at the very end, when the player opens it.
       // Behind it, the night street: the headlights of 野口さん's car (a lit plane, no new light)
       G.frontDoor = new THREE.Group(); for (const o of grp.children.slice(k0)) G.frontDoor.add(o); grp.add(G.frontDoor); G.frontK = 0;
-      const night = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 2.1), new THREE.MeshBasicMaterial({ color: 0x2a3036 })); night.position.set(x, fy('OMOTE') + 1.05, z + 0.12); night.rotation.y = Math.PI; night.name = 'kc-night'; grp.add(night);
-      for (const dx of [-0.42, 0.42]) { const hl = new THREE.Mesh(new THREE.CircleGeometry(0.09, 16), new THREE.MeshBasicMaterial({ color: 0xfff1c8 })); hl.position.set(x + dx, fy('OMOTE') + 0.62, z + 0.11); hl.rotation.y = Math.PI; hl.name = 'kc-headlight'; grp.add(hl); }
+      // 2.5.0 (#6 「玄関があいたら外が見えるように」): the wall behind the front door has a real doorway; outside, the town at dusk - a stone step,
+      // the gravel lane in a street lamp's pool, 野口さん's car with its lights on, the low houses across the lane with a lit window or two,
+      // and the last of the evening sky. Unlit materials with the light painted in (no new light, nothing compiles when the door opens)
+      buildOutside(x, z);
       box('OMOTE', 0.35, 22.4, 0.5, 0.06, 0.32, M.dark, 0, false); box('OMOTE', 2.2, 22.4, 0.2, 0.05, 0.3, M.straw, 0, false); }
     box('OMOTE', 2.5, 23.4, 0.16, 0.3, 3.0, M.dark, 0, false);   // the 框 board along the step
     // 2.0: a water jar, an oiled-paper umbrella in the corner, a shoe cupboard along the west wall
@@ -256,11 +315,11 @@ export function installHouse(ext, G) {
     {
       const y = fy('DORO') + 2.75, cord = [];
       const run = (pts) => { for (let i = 0; i < pts.length - 1; i++) cord.push([pts[i], pts[i + 1]]); };
-      run([[3.6, 3.9], [3.3, 0.2], [3.3, -18.6]]); run([[3.3, -6], [-2.0, -6]]); run([[3.3, -9], [8.5, -9]]); run([[3.3, -19.4], [3.3, -24.0]]); run([[3.3, -14.6], [-2.4, -14.6]]);
+      run([[3.6, 3.9], [3.3, 0.2], [3.3, -18.6]]); run([[3.3, -6], [-2.0, -6]]); run([[3.3, -9], [8.5, -9]]); run([[3.3, -19.4], [3.3, -24.0]]); run([[3.3, -14.6], [-2.4, -14.6]]); run([[3.3, -16.2], [7.6, -16.2]]);
       const geos = [];
       for (const [[ax, az], [bx, bz]] of cord) { const L = Math.hypot(bx - ax, bz - az), g = new THREE.CylinderGeometry(0.006, 0.006, L, 4); g.rotateZ(Math.PI / 2); g.rotateY(-Math.atan2(bz - az, bx - ax)); g.translate((ax + bx) / 2, y, (az + bz) / 2); geos.push(g); }
       const cm = new THREE.Mesh(mergeGeometries(geos), M.straw); cm.name = 'kc-bellcord'; grp.add(cm);
-      for (const [x, z] of [[3.3, -2.5], [3.3, -7.5], [3.3, -12.5], [3.3, -17.0], [-1.0, -6], [6.5, -9], [8.3, -9], [3.3, -21.5], [3.3, -24.0], [-1.0, -14.6]]) {
+      for (const [x, z] of [[3.3, -2.5], [3.3, -7.5], [3.3, -12.5], [3.3, -17.0], [-1.0, -6], [6.5, -9], [8.3, -9], [3.3, -21.5], [3.3, -24.0], [-1.0, -14.6], [6.4, -16.2]]) {
         const b = makeItemModel('bell', { scale: 2.2 }); if (!b) continue; const hold = new THREE.Group(); hold.position.set(x, y, z); b.position.y = -0.11; hold.add(b);
         const str = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.06, 3), M.straw); str.position.y = -0.03; hold.add(str); grp.add(hold);
         G.bells.push({ x, z, y: y - 0.05, hold, swing: 0 });
@@ -316,12 +375,13 @@ export function installHouse(ext, G) {
       G.lure = makeItemModel('tsuge_comb', { scale: 2.6 }); if (G.lure) { G.lure.position.set(9.3, y0 + 0.94, -9.0); G.lure.rotation.y = Math.PI / 2; G.lure.visible = false; grp.add(G.lure); }
     }
     // the two flue mouths: a stone frame, black inside (only the dead go through)
-    const flueMouth = (room, x, z, facing) => {
+    // 2.5.0 (#3): a wide mouth (wd 1.3: 奥の室, 寝間) is shut by two charms side by side (fuda.json need 2)
+    const flueMouth = (room, x, z, facing, wd = 0.9) => {
       const s = facing === 'n' ? -1 : 1;
-      box(room, x, z + s * 0.12, 0.9, 0.12, 0.08, M.stone, 0.72, false); for (const d of [-1, 1]) box(room, x + d * 0.4, z + s * 0.12, 0.12, 0.72, 0.08, M.stone, 0, false);
-      const v = plane(room, x, z + s * 0.0855, 0.68, 0.7, M.void, 0.36, facing === 'n' ? Math.PI : 0); v.name = 'kc-flue-dark';   // 2.1.0: 5.5 mm off the wall (at 1 mm the two flickered: P21), still behind the flue charm (1 cm)
+      box(room, x, z + s * 0.12, wd, 0.12, 0.08, M.stone, 0.72, false); for (const d of [-1, 1]) box(room, x + d * (wd / 2 - 0.05), z + s * 0.12, 0.12, 0.72, 0.08, M.stone, 0, false);
+      const v = plane(room, x, z + s * 0.0855, wd - 0.22, 0.7, M.void, 0.36, facing === 'n' ? Math.PI : 0); v.name = 'kc-flue-dark';   // 2.1.0: 5.5 mm off the wall (at 1 mm the two flickered: P21), still behind the flue charm (1 cm)
     };
-    flueMouth('IBUSHI', 7.5, -13, 's'); flueMouth('OKUMURO', 5.5, -19, 'n');
+    flueMouth('IBUSHI', 7.5, -13, 's'); flueMouth('OKUMURO', 5.5, -19, 'n', 1.3); flueMouth('NEMA', 5.2, -13, 'n', 1.3);   /* 2.5.0: away from the 燻しの間 flue on the other face of the wall (select-range) */
     // 2.4.0 (#9): the flue's other two branches: 板の間 and the new 甕の間, each mouth shut with a wooden lid and one of ハル's old charms
     flueMouth('ITA', -3.0, -9, 's'); flueMouth('KAME', -1.5, -18, 's');
     // (their wooden lids are fuda.js seals K_ITAM / K_KAMEM: closed, with ハル's old charm on them)
@@ -338,6 +398,37 @@ export function installHouse(ext, G) {
       for (let i = 0; i < 6; i++) { const rg = cyl('KAME', 0.9, -12.1, 0.2 - i * 0.012, 0.2 - i * 0.012, 0.03, M.straw, i * 0.03, false, 18); rg.name = 'kc-rope'; }
       box('KAME', -4.3, -16.6, 0.2, 0.3, 0.4, M.stone, 1.3, false); item('candlestick', 'KAME', -4.25, -16.6, 1.6, 0, 1.0);
       W.colliders.push({ box: new THREE.Box3(new THREE.Vector3(-2.3, y0, -12.35), new THREE.Vector3(-0.3, y0 + 0.3, -11.65)), off: false });
+    }
+
+    // ---------------- 寝間 (NEMA, 2.5.0 #3 #4 「地下に生活していた痕跡を」): the night-watch room where 千草さん lived her last days ----------------
+    // a thin futon still laid out, its pillow, two wooden bowls, a board of candle stubs burnt to nothing, her apron and tabi folded by the
+    // pillow, the days counted on the wall (正 three times and one more), her writing low on the wall; the wide flue mouth with ハル's pair of charms
+    {
+      const scratchTex = (draw, w = 256, h = 256) => { const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d'); g.clearRect(0, 0, w, h); g.strokeStyle = 'rgba(226,212,186,0.82)'; g.fillStyle = 'rgba(226,212,186,0.82)'; g.lineCap = 'round'; draw(g); const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, fog: true }); };
+      // the futon (a thin mattress, a quilt pushed back, a buckwheat pillow with a dent)
+      box('NEMA', 8.75, -16.4, 1.0, 0.06, 2.0, std(0x8a8270, { roughness: 1 }), 0, false);
+      { const q = box('NEMA', 8.8, -16.0, 1.04, 0.05, 1.2, std(0x4a3a44, { roughness: 1 }), 0.06, false); q.rotation.z = 0.03; }
+      box('NEMA', 8.75, -17.25, 0.45, 0.1, 0.24, std(0x9a8c6a, { roughness: 1 }), 0.06, false);
+      for (let i = 0; i < 6; i++) plane('NEMA', 8.6 + i * 0.025, -16.9 + i * 0.04, 0.012, 0.5, M.hair, 0.072 + i * 0.0005, 0.3, -Math.PI / 2);
+      // two wooden bowls by the head of the futon, one with a dry ring of water
+      cyl('NEMA', 7.95, -17.6, 0.075, 0.05, 0.05, M.wood, 0, false); cyl('NEMA', 7.95, -17.6, 0.065, 0.065, 0.004, M.black, 0.046, false);
+      { const b2 = cyl('NEMA', 8.15, -17.85, 0.07, 0.048, 0.048, M.wood, 0, false); b2.rotation.z = 0.25; }
+      // the candle stubs on a low board against the south wall: a dozen, each burnt down to a stub, wax run onto the board
+      box('NEMA', 6.3, -18.72, 1.3, 0.04, 0.26, M.timber, 0, false);
+      for (let i = 0; i < 13; i++) { const x = 5.75 + i * 0.09, h = 0.012 + ((i * 7) % 5) * 0.006; cyl('NEMA', x, -18.72 + ((i % 3) - 1) * 0.05, 0.016, 0.02, h, M.white, 0.04, false, 8); cyl('NEMA', x + 0.01, -18.7, 0.03, 0.03, 0.003, M.white, 0.04, false, 8); }
+      // her apron and tabi, folded by the pillow
+      box('NEMA', 9.25, -18.25, 0.36, 0.05, 0.3, M.indigo, 0, false); box('NEMA', 9.25, -18.25, 0.3, 0.02, 0.24, std(0x24304e, { roughness: 1 }), 0.05, false);
+      for (const dz of [-0.06, 0.06]) box('NEMA', 9.25, -17.9 + dz, 0.22, 0.03, 0.09, M.white, 0, false);
+      // the days counted: 正 正 正 and one more stroke, scratched into the clay at sitting height (on the south wall, flush)
+      { const m = scratchTex((g) => { g.lineWidth = 5; const glyph = (x0, n) => { const S = [[[10, 8], [70, 8]], [[40, 8], [40, 90]], [[40, 48], [66, 48]], [[18, 40], [18, 90]], [[4, 90], [76, 90]]]; for (const [[a, b], [c, d]] of S.slice(0, n)) { g.beginPath(); g.moveTo(x0 + a + Math.random() * 3, b + 40 + Math.random() * 3); g.lineTo(x0 + c + Math.random() * 3, d + 40 + Math.random() * 3); g.stroke(); } }; glyph(6, 5); glyph(92, 5); glyph(178, 5); g.beginPath(); g.moveTo(16, 160); g.lineTo(70, 160); g.stroke(); }, 256, 192);
+        const t = plane('NEMA', 7.3, -18.905, 0.62, 0.46, m, 0.95, 0); t.name = 'kc-nema-tally'; }
+      // her writing, low on the wall, in a shaking hand (vertical lines, right to left); the last line breaks off
+      { const m = scratchTex((g) => { g.font = '30px serif'; const cols = ['あけてください', 'せいじさん', 'なにが　いけなかったのですか', 'くしは　おくの']; cols.forEach((t, c) => { [...t].forEach((ch, k) => { g.save(); g.translate(228 - c * 56 + Math.random() * 3, 34 + k * 30); g.rotate((Math.random() - 0.5) * 0.12); g.fillText(ch, -15, 10); g.restore(); }); }); }, 256, 512);
+        const t = plane('NEMA', 5.1, -18.905, 0.42, 0.84, m, 0.62, 0); t.name = 'kc-nema-writing'; }
+      // a broken lantern and a water jar from 甕の間 with a ladle
+      item('andon', 'NEMA', 4.3, -18.4, 0, 0.4, 2.2);
+      cyl('NEMA', 9.2, -13.6, 0.22, 0.17, 0.5, M.ceramic, 0, true, 18); cyl('NEMA', 9.2, -13.6, 0.17, 0.17, 0.01, M.black, 0.49, false, 18);
+      { const l = cyl('NEMA', 9.15, -13.6, 0.008, 0.008, 0.5, M.wood, 0.5); l.rotation.z = 0.5; }
     }
 
     // ---------------- 奥の室 (OKUMURO): the shelf, the box with its cord and charm, the remains, the burnt-out candlestick ----------------
@@ -384,7 +475,7 @@ export function installHouse(ext, G) {
     const DIM = { OMOTE: 0.32, MISE: 0.42, NAKA: 0.4, HASHIRI: 0.32, OKU: 0.36, ROKA: 0.28, SAGYO: 0.42 };
     for (const l of lamps) { l.i *= DIM[l.room] ?? 0.4; l.d *= 0.85; }
     const mise = lamps.find((l) => l.room === 'MISE'); if (mise) { mise.x = 6.5; mise.z = 21.0; mise.y = fy('MISE') + 0.9; mise.i = 3.2; mise.d = 7; }
-    for (const o of [...W.group.children]) if (/^lamp(shade|bulb|cord):(MURO|DORO|ITA|IBUSHI|KAME|OKUMURO|MISE)/.test(o.name)) o.visible = false;
+    for (const o of [...W.group.children]) if (/^lamp(shade|bulb|cord):(MURO|DORO|ITA|IBUSHI|KAME|NEMA|OKUMURO|MISE)/.test(o.name)) o.visible = false;
     G.muroGlow = { room: 'MURO', floor: 0, x: 6.6, y: 2.6, z: 0.0, i: 0, d: 7.5 }; lamps.push(G.muroGlow);
     // 2.4.0 #6: the workshop's lamp through the open hatch falls on the kiln's rim - the one place you can make out before the candle is lit
     G.kilnGlow = { room: 'MURO', floor: 0, x: 5.4, y: 1.5, z: 1.7, i: 0, d: 2.6 }; lamps.push(G.kilnGlow);

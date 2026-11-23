@@ -326,12 +326,166 @@
       "key": "roll-empty-lot",
       "size": "1344x768",
       "prompt": "night, a small empty lot of bare earth between two old wooden houses in a narrow Japanese village street, a single street lamp, a young man in a dark jacket stands at the edge seen from behind, cold mist, no signs, no writing"
+    },
+    {
+      "key": "ks-01",
+      "size": "1152x896",
+      "prompt": "an old wooden Japanese machiya townhouse on a narrow village street at dusk in November, a young man in a dark jacket with a shoulder bag standing before the closed wooden lattice front, bare persimmon tree, one window faintly lit",
+      "tail": "kamishibai picture card, Japanese paper theater storytelling illustration, gouache painting on thick paper, bold simple shapes, flat colors, muted indigo ochre and soot black palette, soft paper grain, dim lantern light, quiet eerie mood, Showa era",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-02",
+      "size": "1152x896",
+      "prompt": "inside a dark old shop room, a wooden lattice booth covered with many plain white paper charm strips, behind the lattice the back of a small old woman with white hair in a dark kimono sitting by a brazier, a young man standing outside the lattice holding a candle",
+      "tail": "kamishibai picture card, Japanese paper theater storytelling illustration, gouache painting on thick paper, bold simple shapes, flat colors, muted indigo ochre and soot black palette, soft paper grain, dim lantern light, quiet eerie mood, Showa era",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-03",
+      "size": "1152x896",
+      "prompt": "a dark tatami room of an old Japanese house, an old black rotary telephone on a low wooden stand ringing, small motion lines around the bell, a young man in a dark jacket turning toward it in surprise, paper sliding doors",
+      "tail": "kamishibai picture card, Japanese paper theater storytelling illustration, gouache painting on thick paper, bold simple shapes, flat colors, muted indigo ochre and soot black palette, soft paper grain, dim lantern light, quiet eerie mood, Showa era",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-04",
+      "size": "1152x896",
+      "prompt": "a wooden trapdoor in the plank floor of a dark workshop lifted open, a ladder going down into blackness, the plain wooden underside of the lid covered in long thin pale scratch lines, a heavy round stone hand mill pushed aside, one candle",
+      "tail": "flat gouache illustration on thick paper, simple bold shapes, muted indigo ochre and soot black palette, soft paper grain, dim, quiet eerie mood, Showa era Japan, no writing anywhere",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-05",
+      "size": "1152x896",
+      "prompt": "a small underground earthen room lit by a single candle stub, a thin worn futon on the floor, two wooden bowls, a row of short melted candle stubs on a low plank, an indigo apron folded by the pillow, bare plaster walls",
+      "tail": "kamishibai picture card, Japanese paper theater storytelling illustration, gouache painting on thick paper, bold simple shapes, flat colors, muted indigo ochre and soot black palette, soft paper grain, dim lantern light, quiet eerie mood, Showa era",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-06",
+      "size": "1152x896",
+      "prompt": "seen from below in a dark cellar, a young woman in an indigo kimono with long black hair at the bottom of a ladder looking up, above her the trapdoor being shut, a white paper charm strip pasted across the seam, a thin line of light",
+      "tail": "kamishibai picture card, Japanese paper theater storytelling illustration, gouache painting on thick paper, bold simple shapes, flat colors, muted indigo ochre and soot black palette, soft paper grain, dim lantern light, quiet eerie mood, Showa era",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-07",
+      "size": "1152x896",
+      "prompt": "a white paper charm strip pasted across a dark wooden door in an underground corridor, the charm burning from the bottom edge, orange flames, the paper curling and turning black, ash flakes drifting, a pale hand with long black hair faint behind the door gap",
+      "tail": "kamishibai picture card, Japanese paper theater storytelling illustration, gouache painting on thick paper, bold simple shapes, flat colors, muted indigo ochre and soot black palette, soft paper grain, dim lantern light, quiet eerie mood, Showa era",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-e1a",
+      "size": "1152x896",
+      "prompt": "a small iron brazier with glowing charcoal in a dark room, a half moon shaped boxwood comb burning in the coals with crackling sparks, the wrinkled hands of an old woman above it, faint white smoke",
+      "tail": "kamishibai picture card, Japanese paper theater storytelling illustration, gouache painting on thick paper, bold simple shapes, flat colors, muted indigo ochre and soot black palette, soft paper grain, dim lantern light, quiet eerie mood, Showa era",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-e1b",
+      "size": "1152x896",
+      "prompt": "the wooden front door of an old Japanese townhouse slid open at night, a young man in a dark jacket standing in the doorway seen from behind, an empty night lane outside with plain dark wooden house fronts, the two headlights of a small car waiting, no signs",
+      "tail": "flat gouache illustration on thick paper, simple bold shapes, muted indigo ochre and soot black palette, soft paper grain, dim, quiet eerie mood, Showa era Japan, no writing anywhere",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-e1c",
+      "size": "1152x896",
+      "prompt": "an old wooden Japanese townhouse being demolished, broken beams and roof tiles, a small yellow excavator, grey overcast sky, a pile of dirt filling a dark hole in the ground",
+      "tail": "kamishibai picture card, Japanese paper theater storytelling illustration, gouache painting on thick paper, bold simple shapes, flat colors, muted indigo ochre and soot black palette, soft paper grain, dim lantern light, quiet eerie mood, Showa era",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-e1d",
+      "size": "1152x896",
+      "prompt": "an empty vacant lot at night in a quiet village street where a house used to stand, weeds and bare earth, a single street lamp, long shadows, a tiny boxwood comb half buried in the soil",
+      "tail": "kamishibai picture card, Japanese paper theater storytelling illustration, gouache painting on thick paper, bold simple shapes, flat colors, muted indigo ochre and soot black palette, soft paper grain, dim lantern light, quiet eerie mood, Showa era",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-e23a",
+      "size": "1152x896",
+      "prompt": "in a dark underground room lit by one candle, a young man with short black hair in a dark jacket kneeling and gently laying a half moon shaped boxwood comb on a folded indigo kimono, long black hair spread on the floor, a ladder behind him",
+      "tail": "kamishibai picture card, Japanese paper theater storytelling illustration, gouache painting on thick paper, bold simple shapes, flat colors, muted indigo ochre and soot black palette, soft paper grain, dim lantern light, quiet eerie mood, Showa era",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-e2b",
+      "size": "1152x896",
+      "prompt": "early morning outside an old Japanese townhouse, police officers in dark uniforms carrying a covered white bundle out through the front door, pale winter morning light, a middle aged woman in a coat watching with her hand on her mouth",
+      "tail": "kamishibai picture card, Japanese paper theater storytelling illustration, gouache painting on thick paper, bold simple shapes, flat colors, muted indigo ochre and soot black palette, soft paper grain, dim lantern light, quiet eerie mood, Showa era",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-e2c",
+      "size": "1152x896",
+      "prompt": "a wooden lattice booth covered with many white paper charm strips in a dark empty room, behind the lattice the back of a small old woman with white hair sitting alone, motionless, a cold brazier, dust in moonlight",
+      "tail": "kamishibai picture card, Japanese paper theater storytelling illustration, gouache painting on thick paper, bold simple shapes, flat colors, muted indigo ochre and soot black palette, soft paper grain, dim lantern light, quiet eerie mood, Showa era",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-e2d",
+      "size": "1152x896",
+      "prompt": "an old closed-up Japanese townhouse at night with shutters closed, a narrow village street, two neighbors in coats whispering under a street lamp and looking at the house, one dim window",
+      "tail": "kamishibai picture card, Japanese paper theater storytelling illustration, gouache painting on thick paper, bold simple shapes, flat colors, muted indigo ochre and soot black palette, soft paper grain, dim lantern light, quiet eerie mood, Showa era",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-e3b",
+      "size": "1152x896",
+      "prompt": "many white paper charm strips falling and fluttering down from a wooden lattice, a small old woman with white hair in a dark kimono stepping out of the lattice booth for the first time, soft warm candle light, her back to the viewer",
+      "tail": "kamishibai picture card, Japanese paper theater storytelling illustration, gouache painting on thick paper, bold simple shapes, flat colors, muted indigo ochre and soot black palette, soft paper grain, dim lantern light, quiet eerie mood, Showa era",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-e3c",
+      "size": "1152x896",
+      "prompt": "in an underground room lit by soft dawn light from above, a bundle of white hair tied with a half moon boxwood comb resting beside a folded indigo kimono, peaceful, dust motes",
+      "tail": "kamishibai picture card, Japanese paper theater storytelling illustration, gouache painting on thick paper, bold simple shapes, flat colors, muted indigo ochre and soot black palette, soft paper grain, dim lantern light, quiet eerie mood, Showa era",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "ks-e3d",
+      "size": "1152x896",
+      "prompt": "a small plain stone family grave with a smooth blank face in a hillside cemetery on a clear cold morning, a half moon shaped boxwood comb and a cup of tea offered in front, white chrysanthemums, thin incense smoke, distant mountains",
+      "tail": "flat gouache illustration on thick paper, simple bold shapes, muted indigo ochre and soot black palette, soft paper grain, dim, quiet eerie mood, Showa era Japan, no writing anywhere",
+      "negative": "text, letters, words, numbers, kanji, writing, calligraphy, caption, watermark, logo, signature, frame, border, photograph, photo, 3d render, blood, gore, wound, deformed, extra fingers, bad hands, disfigured face, bright cheerful colors, stamp, seal mark, hanko, red seal, sign board, signboard, poster, gibberish characters, symbols"
+    },
+    {
+      "key": "th-nema-futon",
+      "size": "768x768",
+      "prompt": "a thin worn futon laid out on old dark floorboards in a small underground room, a buckwheat pillow with a dent, a few long black hairs on the quilt, lit by one candle"
+    },
+    {
+      "key": "th-nema-bowls",
+      "size": "768x768",
+      "prompt": "two small old wooden bowls on dark floorboards, one with a dry ring stain of water inside, close up, candle light, underground room"
+    },
+    {
+      "key": "th-nema-candles",
+      "size": "768x768",
+      "prompt": "a low wooden plank on an earthen floor with a row of a dozen tiny burnt-down candle stubs, each only a finger joint tall, unlit, melted wax pooled around them, close up, dim light from one small candle at the side"
+    },
+    {
+      "key": "th-nema-clothes",
+      "size": "768x768",
+      "prompt": "a folded indigo cotton apron and a pair of white tabi socks neatly placed by a pillow on dark floorboards, close up, candle light"
     }
   ],
   "seeds": {
     "th-naka-ihai": 171,
     "th-mise-case": 158,
     "th-mise-lattice": 101,
-    "th-sagyo-comb": 158
+    "th-sagyo-comb": 158,
+    "ks-02": 101,
+    "ks-04": 312,
+    "ks-05": 101,
+    "ks-e1a": 101,
+    "ks-e1b": 312,
+    "ks-e23a": 101,
+    "ks-e3d": 211,
+    "th-nema-candles": 211
   }
 }

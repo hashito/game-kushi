@@ -10,7 +10,7 @@
 // She never lunges or teleports; she is slower than a walking player. Touching you is a catch (story.js decides what that resets).
 import * as THREE from 'three';
 import { buildChigusa } from './people.js';
-import { EDGES, edgeStrength, weakest } from './roads.js';
+import { EDGES, edgeStrength, edgeCharms, weakest } from './roads.js';
 export { EDGES, edgeStrength, weakest };
 
 export const SPEED = { pace: 0.7, flue: 0.9, room: 1.1, hunt: 1.65, follow: 1.8, calm: 0.8 };
@@ -20,10 +20,12 @@ export function installGhost(ext, G) {
   let ctx = null, fig = null, glow = null;
   const H = G.gh = { floor: 0, mode: 'off', room: 'OKUMURO', x: 2.6, z: -25.8, path: [], wait: 0, fade: 0, rise: 0, onCatch: null, hidden: false, pressing: null, repath: 0, paceI: 0 };
   const roomAt = (x, z) => ctx.world.roomAt(x, z, ctx.world.floorY(H.floor || 0) + 1);
+  // 2.5.0: an edge holds while its strength is above 0 (a wide mouth needs two charms before it holds at all); she presses the pasted
+  // charms first, then the house's own
   const blocked = (e) => {
+    if (edgeStrength(e, G.sealN, G.peeled) <= 0) return null;
     if (e.seal && G.sealN(e.seal) > 0) return { seal: e.seal };
-    if (e.charm && !G.peeled.includes(e.charm)) return { charm: e.charm };
-    return null;
+    const c = edgeCharms(e).find((x) => !G.peeled.includes(x)); return c ? { charm: c } : null;
   };
   // the roads she may take: in her cage (奥の室, before the trap) only the lattice; otherwise every road
   const edgesFor = () => (H.mode === 'cage' ? EDGES.filter((e) => e.id === 'e_koshi') : EDGES);
@@ -48,6 +50,13 @@ export function installGhost(ext, G) {
     return { pts, stop: null };
   }
   G.ghostRoute = (troom, tx, tz) => plan(troom, tx, tz);
+  /** the block she pressed no longer holds: the edge is through (2.5.0: half a wide mouth is no block), or the next charm on it is the one to press */
+  function pressGone(pr) {
+    const e = EDGES.find((x) => x.id === pr.edge); if (e && edgeStrength(e, G.sealN, G.peeled) <= 0) return true;
+    const gone = pr.seal ? G.sealN(pr.seal) <= 0 : G.peeled.includes(pr.charm);
+    if (gone && e) { const b = blocked(e); if (b) { delete pr.seal; delete pr.charm; Object.assign(pr, b); return false; } }
+    return gone;
+  }
 
   G.ghostStart = (mode, o = {}) => {
     H.floor = o.floor || 0; H.trailI = 0;
@@ -113,7 +122,7 @@ export function installGhost(ext, G) {
         const p = H.path[0], d = Math.hypot(p.x - H.x, p.z - H.z);
         H.hidden = !!p.hidden;
         // the charm she pressed is gone (burnt off, or peeled): go on through
-        if (p.press && (p.press.seal ? G.sealN(p.press.seal) <= 0 : G.peeled.includes(p.press.charm))) { delete p.press; H.path = []; H.inEdge = p.edge && !p.end ? p.edge : null; if (H.inEdge) { const e = EDGES.find((x) => x.id === H.inEdge); const towardB = Math.hypot(e.pts[0][0] - H.x, e.pts[0][1] - H.z) > Math.hypot(e.pts[e.pts.length - 1][0] - H.x, e.pts[e.pts.length - 1][1] - H.z); const rest = towardB ? e.pts : [...e.pts].reverse(); const k = rest.findIndex(([x, z]) => Math.hypot(x - H.x, z - H.z) < 0.05); rest.slice(k + 1).forEach(([x, z], i, arr) => H.path.push({ x, z, hidden: !!e.hidden && i < arr.length - 1, edge: e.id, end: i === arr.length - 1 })); } break; }
+        if (p.press && pressGone(p.press)) { delete p.press; H.path = []; H.inEdge = p.edge && !p.end ? p.edge : null; if (H.inEdge) { const e = EDGES.find((x) => x.id === H.inEdge); const towardB = Math.hypot(e.pts[0][0] - H.x, e.pts[0][1] - H.z) > Math.hypot(e.pts[e.pts.length - 1][0] - H.x, e.pts[e.pts.length - 1][1] - H.z); const rest = towardB ? e.pts : [...e.pts].reverse(); const k = rest.findIndex(([x, z]) => Math.hypot(x - H.x, z - H.z) < 0.05); rest.slice(k + 1).forEach(([x, z], i, arr) => H.path.push({ x, z, hidden: !!e.hidden && i < arr.length - 1, edge: e.id, end: i === arr.length - 1 })); } break; }
         if (p.press && d < 0.45) { pressing = p.press; break; }
         if (d <= step) { H.x = p.x; H.z = p.z; step -= d; if (p.press) { pressing = p.press; break; } H.inEdge = p.edge && !p.end ? p.edge : null; if (p.node) H.room = p.node; H.path.shift(); }
         else { H.x += ((p.x - H.x) / d) * step; H.z += ((p.z - H.z) / d) * step; step = 0; }

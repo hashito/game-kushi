@@ -84,6 +84,25 @@ export function installFuda(ext, G) {
     const r = g.createRadialGradient(32, 32, 2, 32, 32, 30); r.addColorStop(0, 'rgba(70,64,58,0.55)'); r.addColorStop(1, 'rgba(70,64,58,0)');
     g.fillStyle = r; g.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c);
   }
+  // 2.5.0 (#5 「札が燃えるところが見える場面」): flames - small additive sprites that lick up from the burning edge - and ash flakes that
+  // drift down. One pool each, made at game:ready (no program is compiled when a charm catches)
+  let flames = [], ashes = [], burning = [];
+  function flameTex() {
+    const c = document.createElement('canvas'); c.width = 32; c.height = 64; const g = c.getContext('2d');
+    const r = g.createRadialGradient(16, 44, 1, 16, 40, 22); r.addColorStop(0, 'rgba(255,214,110,1)'); r.addColorStop(0.3, 'rgba(255,112,20,1)'); r.addColorStop(0.75, 'rgba(210,60,10,0.6)'); r.addColorStop(1, 'rgba(160,30,0,0)');
+    g.fillStyle = r; g.beginPath(); g.moveTo(16, 2); g.quadraticCurveTo(30, 36, 16, 62); g.quadraticCurveTo(2, 36, 16, 2); g.fill(); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  }
+  function flame(pos, k = 1) {
+    const f = flames.find((p) => p.t <= 0); if (!f) return;
+    f.t = f.life = 0.35 + Math.random() * 0.3; f.k = k; f.spr.position.copy(pos).add(new THREE.Vector3((Math.random() - 0.5) * 0.08 * k, 0, (Math.random() - 0.5) * 0.02)); f.spr.visible = true;
+  }
+  function ash(pos) {
+    const a = ashes.find((p) => p.t <= 0); if (!a) return;
+    a.t = 1.6 + Math.random(); a.m.position.copy(pos).add(new THREE.Vector3((Math.random() - 0.5) * 0.1, 0, (Math.random() - 0.5) * 0.04)); a.v = new THREE.Vector3((Math.random() - 0.5) * 0.1, -0.25 - Math.random() * 0.2, (Math.random() - 0.5) * 0.05); a.m.visible = true; a.m.rotation.set(Math.random() * 3, Math.random() * 3, 0);
+  }
+  /** a charm burns away where it hangs, in sec seconds: the char climbs, flames lick the edge, the paper curls, ash falls, then it is gone */
+  G.burnAway = (mesh, sec = 2.8, onEnd = null) => { if (!mesh || !mesh.material || !mesh.material.userData.burn) { if (onEnd) onEnd(); return; } burning.push({ m: mesh, t: 0, sec, onEnd, rx: mesh.rotation.x, y: mesh.position.y }); ctx.sound('lighter'); };
+  G.flameAt = flame;
   function puff(pos) {
     const s = smoke.find((p) => p.t <= 0); if (!s) return;
     s.t = 1.8; s.spr.position.copy(pos).add(new THREE.Vector3((Math.random() - 0.5) * 0.06, 0, (Math.random() - 0.5) * 0.06)); s.spr.visible = true; s.spr.scale.setScalar(0.08);
@@ -132,7 +151,7 @@ export function installFuda(ext, G) {
     const L = S.lidMesh; if (!L) return;
     const n = NORMAL[S.face], alongX = n[0] === 0, fy = floorOf(S.room), p = S.p;
     if (S.lid) { L.position.set(p.x - n[0] * 0.02, fy + 0.36, p.z - n[1] * 0.02); L.rotation.set(0, YAW[S.face], 0); }
-    else { const off = -0.78; L.position.set(p.x + (alongX ? off : 0) + n[0] * 0.08, fy + 0.34, p.z + (alongX ? 0 : off) + n[1] * 0.08); L.rotation.set(-0.22, YAW[S.face], 0); }
+    else { const off = S.def.need > 1 ? -1.0 : -0.78; L.position.set(p.x + (alongX ? off : 0) + n[0] * 0.08, fy + 0.34, p.z + (alongX ? 0 : off) + n[1] * 0.08); L.rotation.set(-0.22, YAW[S.face], 0); }
   }
   function buildSeal(def) {
     const d = def.door ? ctx.data.plan.doors.find((x) => x.id === def.door) : null;
@@ -143,17 +162,19 @@ export function installFuda(ext, G) {
     for (let i = 0; i < max; i++) {
       const mat = makeMat(), m = new THREE.Mesh(geo, mat);
       // down the post (a door) or side by side over the mouth (the flue): never on top of each other
-      const off = d ? 0 : (i - (max - 1) / 2) * 0.14, dy = d ? -i * 0.34 : 0;
-      m.position.set(p.x + (alongX ? off : 0), fy + p.y + dy + 0.15, p.z + (alongX ? 0 : off)); m.rotation.y = YAW[face]; m.visible = false; m.name = `seal:${def.id}:${i}`;
+      // 2.5.0: a wide mouth (need 2) takes its first two charms on its left and right halves, a third in the middle
+      const off = d ? 0 : (def.need || 1) > 1 ? [-0.25, 0.25, 0, -0.12, 0.12][i] ?? 0 : (i - (max - 1) / 2) * 0.14, dy = d ? -i * 0.34 : 0;
+      m.position.set(p.x + (alongX ? off : 0), fy + p.y + dy + 0.15, p.z + (alongX ? 0 : off)); m.rotation.y = YAW[face]; m.visible = false; m.name = `seal:${def.id}:${i}`; if (!d && (def.need || 1) > 1 && i < 2) m.scale.x = 1.7;   /* 2.5.0: on a wide mouth the two charms are broad, each covering its half */
       ctx.world.group.add(m); slots.push({ mesh: m, mat, home: m.position.clone() });
     }
-    const hit = new THREE.Mesh(new THREE.BoxGeometry(d ? 0.5 : 0.8, d ? 1.1 : 0.6, 0.25), hidden);
+    const wide = !d && (def.need || 1) > 1;
+    const hit = new THREE.Mesh(new THREE.BoxGeometry(d ? 0.5 : wide ? 1.2 : 0.8, d ? 1.1 : 0.6, 0.25), hidden);
     hit.position.set(p.x, fy + (d ? 1.25 : p.y + 0.05), p.z); hit.rotation.y = YAW[face]; hit.name = `sealhit:${def.id}`; hit.userData.interact = { kind: 'seal', id: def.id };
     ctx.world.group.add(hit);
     const S = { def, slots, n: 0, burn: 0, press: false, hit, room: p.room, door: d ? d.id : null, pos: new THREE.Vector3(p.x, fy + p.y, p.z), face, p, lid: !def.lid || !def.lidOpen };
     if (def.lid) {
       lidM = lidM || (ctx.textures ? (() => { try { return ctx.textures.material('planks_dark', { triplanar: true, color: 0x8a7866 }); } catch { return null; } })() : null) || new THREE.MeshStandardMaterial({ color: 0x3a2a1c, roughness: 0.95 });
-      S.lidMesh = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.68, 0.02), lidM); S.lidMesh.name = `lid:${def.id}`; S.lidMesh.castShadow = true; ctx.world.group.add(S.lidMesh); lidPose(S);
+      S.lidMesh = new THREE.Mesh(new THREE.BoxGeometry(wide ? 1.06 : 0.66, 0.68, 0.02), lidM); S.lidMesh.name = `lid:${def.id}`; S.lidMesh.castShadow = true; ctx.world.group.add(S.lidMesh); lidPose(S);
     }
     seals.set(def.id, S);
     if (d) ctx.lockDoor(d.id, () => S.n > 0, () => (S.press ? W2.pressed : `${def.label}に、札を貼った。はがせば開く。`));
@@ -187,6 +208,7 @@ export function installFuda(ext, G) {
     G.sealRefresh();
   };
   G.sealN = (id) => (seals.get(id) || { n: 0 }).n;
+  G.sealNeed = (id) => ((seals.get(id) || { def: {} }).def.need || 1);
   G.lidShut = (id) => { const S = seals.get(id); return !S || !S.def.lid || !!S.lid; };
 
   // ---------------- peel / paste ----------------
@@ -250,9 +272,11 @@ export function installFuda(ext, G) {
   const asDoor = (o) => G.sealN(o.seal) === 0 && G.canPaste(o.seal) !== true && !!ctx.world.doors.get(o.id);
   function sealPrompt(id) {
       const S = seals.get(id); if (!S) return '';
-      const name = S.def.label, max = S.def.max || 1;
+      const name = S.def.label, max = S.def.max || 1, need = S.def.need || 1;
       if (S.press) return `${name}（札が焦げている）`;
       if (S.def.lid && !S.lid) return `[E] 蓋を閉める：${name}`;
+      // 2.5.0 #3: a wide mouth says how many it needs before it holds
+      if (need > 1 && S.n < need) return G.fuda > 0 ? `[E] 札を貼る：${name}（広い口：${S.n}／${need}枚でふさがる・札 ×${G.fuda}）` : `${name}（広い口：${S.n}／${need}枚。札が足りない）`;
       if (S.n > 0 && G.fuda > 0 && S.n < max) return `[E] 札をもう一枚貼る：${name}（${S.n}枚／札 ×${G.fuda}）`;
       if (S.n > 0) return `[E] 札をはがす：${name}（${S.n}枚）`;
       return G.fuda > 0 ? `[E] 札を貼る：${name}（札 ×${G.fuda}）` : `${name}（貼る札がない）`;
@@ -272,6 +296,18 @@ export function installFuda(ext, G) {
       const f = falling[i]; f.t += dt; f.m.position.y -= dt * 0.9; f.m.rotation.x += dt * 3;
       if (f.t > 0.9) { ctx.world.group.remove(f.m); falling.splice(i, 1); }
     }
+    for (const f of flames) if (f.t > 0) { f.t -= dt; const k = 1 - f.t / f.life; f.spr.position.y += dt * 0.32; f.spr.scale.set(0.12 * f.k * (1 - k * 0.5), 0.24 * f.k * (1 - k * 0.3), 1); f.spr.material.opacity = Math.sin(Math.PI * Math.min(1, k * 1.2)) * 0.95; if (f.t <= 0) f.spr.visible = false; }
+    for (const a of ashes) if (a.t > 0) { a.t -= dt; a.m.position.addScaledVector(a.v, dt); a.v.x += (Math.random() - 0.5) * dt * 0.4; a.m.rotation.x += dt * 2.2; a.m.rotation.y += dt * 1.6; if (a.t <= 0) a.m.visible = false; }
+    for (let i = burning.length - 1; i >= 0; i--) {
+      const b = burning[i]; b.t += dt; const k = Math.min(1, b.t / b.sec), u = b.m.material.userData;
+      u.burn.value = Math.min(1, k * 1.05); u.glow.value = 0.8 + 0.2 * Math.sin(performance.now() / 60);
+      b.m.rotation.x = b.rx - k * k * 0.9; b.m.scale.y = 1 - k * 0.45; b.m.position.y = b.y + k * 0.06;   // the paper curls up and shrinks as it goes
+      const edge = b.m.position.clone().add(new THREE.Vector3(0, -0.14 + k * 0.28, 0));
+      if (Math.random() < dt * 34) flame(edge, 1.2 - k * 0.5);
+      if (k > 0.25 && Math.random() < dt * 10) ash(edge);
+      if (k > 0.5 && Math.random() < dt * 3) puff(edge.clone().add(new THREE.Vector3(0, 0.12, 0)));   // the smoke rises above the flame, not over it
+      if (k >= 1) { for (let j = 0; j < 6; j++) ash(edge); b.m.visible = false; burning.splice(i, 1); ctx.sound('ashFall'); if (b.onEnd) b.onEnd(); }
+    }
     for (const s of smoke) if (s.t > 0) { s.t -= dt; s.spr.position.y += dt * 0.35; s.spr.scale.setScalar(0.08 + (1.8 - s.t) * 0.22); s.spr.material.opacity = Math.max(0, s.t / 1.8) * 0.9; if (s.t <= 0) s.spr.visible = false; }
     if (!active) return;
     puffT -= dt;
@@ -282,6 +318,7 @@ export function installFuda(ext, G) {
       const sl = S.slots[S.n - 1];
       sl.mat.userData.burn.value = S.burn; sl.mat.userData.glow.value = 0.75 + 0.25 * Math.sin(performance.now() / 90);
       if (puffT <= 0) puff(sl.mesh.position.clone().add(new THREE.Vector3(0, -0.12 + S.burn * 0.2, 0)));
+      if (S.burn > 0.35 && Math.random() < dt * (6 + S.burn * 20)) flame(sl.mesh.position.clone().add(new THREE.Vector3(0, -0.14 + S.burn * 0.26, 0)), 0.6 + S.burn * 0.6);   /* 2.5.0 #5: the last third burns with flame */
       if (S.burn >= 1) {
         S.n -= 1; S.burn = 0;
         const m = new THREE.Mesh(geo, fallM); m.position.copy(sl.mesh.position); m.rotation.copy(sl.mesh.rotation); ctx.world.group.add(m);
@@ -297,6 +334,7 @@ export function installFuda(ext, G) {
       if (C) {
         C.burn = Math.min(1, (C.burn || 0) + dt / life); const u = C.mesh.material.userData; u.burn.value = C.burn; u.glow.value = 0.75 + 0.25 * Math.sin(performance.now() / 90);
         if (puffT <= 0) puff(C.mesh.position.clone().add(new THREE.Vector3(0, -0.12 + C.burn * 0.2, 0)));
+        if (C.burn > 0.35 && Math.random() < dt * (6 + C.burn * 20)) flame(C.mesh.position.clone().add(new THREE.Vector3(0, -0.14 + C.burn * 0.26, 0)), 0.6 + C.burn * 0.6);
         if (C.burn >= 1) {
           const m = new THREE.Mesh(geo, fallM); m.position.copy(C.mesh.position); m.rotation.copy(C.mesh.rotation); ctx.world.group.add(m); falling.push({ m, t: 0 });
           G.peelQuiet(cid); C.burn = 0; u.burn.value = 0; ctx.sound('ashFall');
@@ -324,10 +362,13 @@ export function installFuda(ext, G) {
       buildSeal({ id: `K_${d.door.replace(/^D_/, '')}`, door: d.door, side: d.side, label: String(d.label || '').replace(/の札$/, ''), max: 1, auto: true, charm: d.id, house: (room.floor || 0) === 1 });
     }
     const st = smokeTex();
+    { const ft = flameTex(); flames = Array.from({ length: 24 }, () => { const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: ft, color: 0xffffff, transparent: true, depthWrite: false, opacity: 0, fog: false, toneMapped: false }));   /* normal blending: an orange flame stays orange on a lit wall */ spr.visible = false; spr.name = 'kc-flame'; ctx.world.group.add(spr); return { spr, t: 0, life: 1, k: 1 }; });
+      const ag = new THREE.PlaneGeometry(0.018, 0.012), am = new THREE.MeshBasicMaterial({ color: 0x2a2624, side: THREE.DoubleSide });
+      ashes = Array.from({ length: 40 }, () => { const m = new THREE.Mesh(ag, am); m.visible = false; m.name = 'kc-ash'; ctx.world.group.add(m); return { m, t: 0, v: new THREE.Vector3() }; }); }
     smoke = Array.from({ length: 14 }, () => { const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: st, transparent: true, depthWrite: false, opacity: 0 })); spr.visible = false; ctx.world.group.add(spr); return { spr, t: 0 }; });
     // the warm-up compiles the charm program once with the burn on (a burning charm never builds a program in play)
     const warm = new THREE.Mesh(geo, makeMat()); warm.material.userData.burn.value = 0.5;
-    const wg = new THREE.Group(); wg.visible = false; wg.add(warm, new THREE.Sprite(smoke[0].spr.material)); ctx.scene.add(wg); ctx.warmObjects = [...(ctx.warmObjects || []), wg];
+    const wg = new THREE.Group(); wg.visible = false; wg.add(warm, new THREE.Sprite(smoke[0].spr.material), new THREE.Sprite(flames[0].spr.material), new THREE.Mesh(ashes[0].m.geometry, ashes[0].m.material)); ctx.scene.add(wg); ctx.warmObjects = [...(ctx.warmObjects || []), wg];
     chip = document.createElement('div'); chip.id = 'kc-fuda'; chip.className = 'kc-fuda'; chip.hidden = true;
     (document.getElementById('hud') || document.body).appendChild(chip);
     ctx.registerHudPart && ctx.registerHudPart('kc-fuda', { slot: 'tr', order: 30 });

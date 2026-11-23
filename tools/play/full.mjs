@@ -114,7 +114,9 @@ export default async (api) => {
   await H.walkTo(2.6, -25.5); await use(2.6, -26.3, 1.1, 'T_BOX (refused)'); await H.idle(); if (await G('g.state.tasks.includes("T_BOX")')) throw new Error('ERROR T_BOX with an open road');
   await H.walkTo(5.5, -20.0); await H.face(5.5, -19.13, 0.42); await sleep(300); await shot('flue-lid-open');
   await use(5.5, -19.13, 0.42, 'close K_FLUE lid'); await H.idle(); await shot('flue-lid-closed');
-  await use(5.5, -19.13, 0.42, 'paste K_FLUE'); await H.idle(); await shot('flue-lid-sealed'); await must('T_FLUE2');
+  // 2.5.0 #3: the mouth is wide - one charm covers half and holds nothing (no T_FLUE2 yet), the second shuts it
+  await use(5.5, -19.13, 0.42, 'paste K_FLUE 1/2'); await H.idle(); await sleep(800); if (await G('g.state.tasks.includes("T_FLUE2")')) throw new Error('ERROR one charm shut the wide mouth'); await shot('flue-lid-half');
+  await use(5.5, -19.13, 0.42, 'paste K_FLUE 2/2'); await H.idle(); await shot('flue-lid-sealed'); await must('T_FLUE2');
   log('basement (s):', ((Date.now() - t0) / 1000).toFixed(0));
   await H.walkTo(2.6, -25.5); await H.face(2.6, -26.3, 1.1); await sleep(300); await shot('okumuro-shelf');
   await st('L3 done'); if (UPTO === 'L3') return;
@@ -143,6 +145,8 @@ export default async (api) => {
     await H.idle(1500); log('  think answers left', await G('window.__gfQ.length'));
     await H.idle(); await must('T_THINK'); await shot('think-done');
     await H.walkTo(6.6, 1.0); await pre(['yes']); await use(6.6, -0.5, 0.1, 'T_RETURN'); await sleep(800); await H.idle(); await must('T_RETURN'); await shot('returned');
+    // 2.5.0 #3 「くしを返した後は地下に行けない」: the lid is shut and the ladder says why
+    { await sleep(1500); const pr = await H.use(6.6, -0.5, 0.1); log('  ladder after the return |', pr); const down = await G('g.floor'); if (down === 0) throw new Error('ERROR went down after the return'); await H.idle(); }
     await H.route([[5.3, 4.0], [5.3, 5.75], [5.3, 7.4], [5.3, 12.0], [5.3, 14.0], [3.9, 19.0], [3.9, 21.0], [4.9, 23.2]]);
     await pre([END]); await use(5.7, 22.5, 1.0, 'T_END ' + END); await sleep(800); await H.idle(3000); await H.idle();
   }
