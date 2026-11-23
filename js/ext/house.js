@@ -60,12 +60,16 @@ export function installHouse(ext, G) {
     const zabuton = (room, x, z, rot = 0) => box(room, x, z, 0.55, 0.06, 0.6, M.cushion, 0, false, rot);
 
     function buildOutside(dx, dz) {
-      const y0 = fy('OMOTE'), wall = W.group.children.find((o) => o.name === 'wall:OMOTE:s');
-      // the doorway: the solid wall becomes three pieces round a 1.7 x 2.1 opening (the door slides into the wall to the west)
-      if (wall) {
+      const y0 = fy('OMOTE');
+      // the doorway: the solid wall becomes three pieces round a 1.7 x 2.1 opening (the door slides into the wall to the west).
+      // 2.5.1 (coordinator: 「開いた玄関の先が灰色の壁」): the wall is looked up anywhere in the world (W.group.getObjectByName - it is not a
+      // direct child) and, if the world adds it later, again at game:ready (G.cutFrontDoorway)
+      G.cutFrontDoorway = () => { if (G.frontCut) return true; const walls = []; W.group.traverse((o) => { if (o.isMesh && o.name === 'wall:OMOTE:s') { const b = new THREE.Box3().setFromObject(o); if (b.min.x < dx && b.max.x > dx) walls.push(o); } }); if (!walls.length) return false; G.frontCut = true; walls.forEach(cut); return true; };
+      const cut = (wall) => {
         wall.visible = false; const wm = wall.material, b = new THREE.Box3().setFromObject(wall), zc = (b.min.z + b.max.z) / 2, t = b.max.z - b.min.z, x0 = dx - 0.85, x1 = dx + 0.85, H0 = b.max.y - b.min.y;
         for (const [w, h, x, y] of [[x0 - b.min.x, H0, (b.min.x + x0) / 2, H0 / 2], [b.max.x - x1, H0, (x1 + b.max.x) / 2, H0 / 2], [x1 - x0, H0 - 2.12, dx, 2.12 + (H0 - 2.12) / 2]]) { if (w <= 0.01) continue; const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, t), wm); m.position.set(x, b.min.y + y, zc); m.name = 'kc-front-wall'; m.receiveShadow = true; grp.add(m); }
-      }
+      };
+      G.cutFrontDoorway();
       const paint = (w, h, f) => { const cv = document.createElement('canvas'); cv.width = w; cv.height = h; f(cv.getContext('2d'), w, h); const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; return tx; };
       const lit = (tx, o = {}) => new THREE.MeshBasicMaterial({ map: tx, ...o });
       const out = new THREE.Group(); out.name = 'kc-outside'; grp.add(out);
@@ -113,6 +117,8 @@ export function installHouse(ext, G) {
         { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: halo, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false })); sp.position.set(dx + 2.85, y0 + 3.6, dz + 3.4); sp.scale.setScalar(1.1); out.add(sp); } }
       // this house's eaves over the doorway
       solid(2.8, 0.08, 1.2, 0x0e0c0a, dx, y0 + 2.95, dz + 0.75);
+      // 2.5.1: the outside is never fogged - the house's thick night fog (exp2 0.055) turned the lane and the car into a grey sheet 6 m away
+      out.traverse((o) => { const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : []; for (const m of ms) { m.fog = false; m.needsUpdate = true; } });
       G.outside = out;
     }
 
@@ -406,8 +412,8 @@ export function installHouse(ext, G) {
     {
       const scratchTex = (draw, w = 256, h = 256) => { const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d'); g.clearRect(0, 0, w, h); g.strokeStyle = 'rgba(226,212,186,0.82)'; g.fillStyle = 'rgba(226,212,186,0.82)'; g.lineCap = 'round'; draw(g); const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, fog: true }); };
       // the futon (a thin mattress, a quilt pushed back, a buckwheat pillow with a dent)
-      box('NEMA', 8.75, -16.4, 1.0, 0.06, 2.0, std(0x8a8270, { roughness: 1 }), 0, false);
-      { const q = box('NEMA', 8.8, -16.0, 1.04, 0.05, 1.2, std(0x4a3a44, { roughness: 1 }), 0.06, false); q.rotation.z = 0.03; }
+      box('NEMA', 8.75, -16.4, 1.0, 0.07, 2.0, std(0xd2c6a6, { roughness: 1 }), 0, false);   /* 2.5.1: a pale cotton futon reads in the andon's light */
+      { const q = box('NEMA', 8.8, -16.0, 1.04, 0.05, 1.2, std(0x34466e, { roughness: 1 }), 0.07, false); q.rotation.z = 0.03; }
       box('NEMA', 8.75, -17.25, 0.45, 0.1, 0.24, std(0x9a8c6a, { roughness: 1 }), 0.06, false);
       for (let i = 0; i < 6; i++) plane('NEMA', 8.6 + i * 0.025, -16.9 + i * 0.04, 0.012, 0.5, M.hair, 0.072 + i * 0.0005, 0.3, -Math.PI / 2);
       // two wooden bowls by the head of the futon, one with a dry ring of water
@@ -425,8 +431,18 @@ export function installHouse(ext, G) {
       // her writing, low on the wall, in a shaking hand (vertical lines, right to left); the last line breaks off
       { const m = scratchTex((g) => { g.font = '30px serif'; const cols = ['あけてください', 'せいじさん', 'なにが　いけなかったのですか', 'くしは　おくの']; cols.forEach((t, c) => { [...t].forEach((ch, k) => { g.save(); g.translate(228 - c * 56 + Math.random() * 3, 34 + k * 30); g.rotate((Math.random() - 0.5) * 0.12); g.fillText(ch, -15, 10); g.restore(); }); }); }, 256, 512);
         const t = plane('NEMA', 5.1, -18.905, 0.42, 0.84, m, 0.62, 0); t.name = 'kc-nema-writing'; }
-      // a broken lantern and a water jar from 甕の間 with a ladle
-      item('andon', 'NEMA', 4.3, -18.4, 0, 0.4, 2.2);
+      // 2.5.1 (D-4 「行灯が灰色の箱」, D-51 「寝間が真っ暗」): a real andon by the head of the bed - a square wooden frame on a low base, four legs, a carrying bar
+      // on top, paper sides lit from inside (one side torn) - with a stub still burning in it: a dim warm light that shows the futon, the
+      // bowls, the candle stubs and the tally on entering (a light made with the house, so nothing compiles when you come down)
+      { const ax = 7.7, az = -15.55, fr = M.timber, paper = new THREE.MeshBasicMaterial({ color: 0xf0b874, transparent: true, opacity: 0.92 }), torn = new THREE.MeshBasicMaterial({ color: 0x8a5a30, transparent: true, opacity: 0.55, side: THREE.DoubleSide });
+        box('NEMA', ax, az, 0.36, 0.04, 0.36, fr, 0, false);                                     // the base board
+        for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) box('NEMA', ax + sx * 0.15, az + sz * 0.15, 0.025, 0.74, 0.025, fr, 0.0, false);   // legs and posts
+        for (const y of [0.16, 0.7]) { box('NEMA', ax, az - 0.15, 0.33, 0.025, 0.025, fr, y, false); box('NEMA', ax, az + 0.15, 0.33, 0.025, 0.025, fr, y, false); box('NEMA', ax - 0.15, az, 0.025, 0.025, 0.33, fr, y, false); box('NEMA', ax + 0.15, az, 0.025, 0.025, 0.33, fr, y, false); }
+        box('NEMA', ax, az, 0.025, 0.025, 0.42, fr, 0.86, false); box('NEMA', ax, az - 0.2, 0.025, 0.14, 0.025, fr, 0.74, false); box('NEMA', ax, az + 0.2, 0.025, 0.14, 0.025, fr, 0.74, false);   // the carrying bar
+        const side = (x, z, ry, mat) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(0.29, 0.52), mat); m.position.set(x, fy('NEMA') + 0.445, z); m.rotation.y = ry; m.name = 'kc-andon-paper'; grp.add(m); };
+        side(ax, az + 0.148, 0, paper); side(ax + 0.148, az, Math.PI / 2, paper); side(ax - 0.148, az, -Math.PI / 2, paper); side(ax, az - 0.148, Math.PI, torn);
+        const lt = new THREE.PointLight(0xffa860, 1.7, 9, 1.2); lt.position.set(ax - 0.35, fy('NEMA') + 0.95, az - 0.45); lt.name = 'kc-nema-andon'; W.group.add(lt); G.nemaLight = lt; }
+      // a water jar from 甕の間 with a ladle
       cyl('NEMA', 9.2, -13.6, 0.22, 0.17, 0.5, M.ceramic, 0, true, 18); cyl('NEMA', 9.2, -13.6, 0.17, 0.17, 0.01, M.black, 0.49, false, 18);
       { const l = cyl('NEMA', 9.15, -13.6, 0.008, 0.008, 0.5, M.wood, 0.5); l.rotation.z = 0.5; }
     }

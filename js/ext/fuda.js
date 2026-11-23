@@ -303,7 +303,7 @@ export function installFuda(ext, G) {
       u.burn.value = Math.min(1, k * 1.05); u.glow.value = 0.8 + 0.2 * Math.sin(performance.now() / 60);
       b.m.rotation.x = b.rx - k * k * 0.9; b.m.scale.y = 1 - k * 0.45; b.m.position.y = b.y + k * 0.06;   // the paper curls up and shrinks as it goes
       const edge = b.m.position.clone().add(new THREE.Vector3(0, -0.14 + k * 0.28, 0));
-      if (Math.random() < dt * 34) flame(edge, 1.2 - k * 0.5);
+      if (Math.random() < dt * 40) flame(edge, 1.5 - k * 0.6);
       if (k > 0.25 && Math.random() < dt * 10) ash(edge);
       if (k > 0.5 && Math.random() < dt * 3) puff(edge.clone().add(new THREE.Vector3(0, 0.12, 0)));   // the smoke rises above the flame, not over it
       if (k >= 1) { for (let j = 0; j < 6; j++) ash(edge); b.m.visible = false; burning.splice(i, 1); ctx.sound('ashFall'); if (b.onEnd) b.onEnd(); }

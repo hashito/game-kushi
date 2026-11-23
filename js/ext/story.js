@@ -217,6 +217,13 @@ export function installStory(ext, G) {
       const h0 = st.hint; Object.defineProperty(st, 'hint', { configurable: true, get: () => (flag('chase2') && !done('T_ESCAPE') ? W.chase_stair : done('T_RETURN') ? W.return_shut : done('T_ESCAPE') ? (done('T_SEAL') ? W.seal_shut : W.stair_shut) : h0) });
     }
     // 2.5.0 #5: two plain old charms on the lattice beside the waxed one (they burn away the first time she comes to it)
+    if (G.cutFrontDoorway) G.cutFrontDoorway();   // 2.5.1: the front doorway, if the world built its wall after the house
+    // 2.5.1 (coordinator: 「燃える札の火がほとんど見えない」, D-51): the grade stays muted (fx saturation), but a vivid orange - flame and
+    // ember, nothing else in the house is that red and that bright - keeps its colour: the burn reads as the key picture
+    { const F = ctx.fx && ctx.fx.mat; if (F && !F.userData.kcHot) { const src = F.fragmentShader, re = /c = mix\(c, vec3\(dot\(c, vec3\(0\.3, 0\.59, 0\.11\)\)\), ([^;]+)\);/;
+      if (re.test(src)) { F.fragmentShader = src.replace(re, (m, amt) => `float kcHot = smoothstep(0.42, 0.62, c.r - c.b) * smoothstep(0.72, 0.92, c.r) * smoothstep(0.5, 0.75, (c.r - c.b) / max(c.r, 0.001));
+  c = mix(c, vec3(dot(c, vec3(0.3, 0.59, 0.11))), (${amt}) * (1.0 - kcHot));
+  c = mix(c, c * vec3(1.12, 0.98, 0.85), kcHot);`); F.userData.kcHot = true; F.needsUpdate = true; } } }
     G.koshiOld = [[2.22, -0.05], [2.98, 0.06]].map(([x, rz]) => { const m = new THREE.Mesh(G.charmGeo, G.burnMaterial()); m.position.set(x, ctx.world.floorY(0) + 1.78, -18.95); m.rotation.set(0, 0, rz); m.name = 'kc-koshi-old'; ctx.world.group.add(m); return m; });
     ctx.systems.push({ id: 'kc-story', def: { update: (dt, c2, active) => update(dt, active) }, inst: null });
     // the seal bar (the hatch pushed up from below)
@@ -403,8 +410,13 @@ export function installStory(ext, G) {
   // 2.4.0 #11 「最後に玄関まで歩いて開ける」: the player walks to the front door and opens it; the ending comes after the door, by the player's hand
   ext.registerTask('T_OUT', { run: async () => {
     ctx.sound('creak'); G.frontTo = 1; if (G.frontCharm) G.frontCharm.visible = false;
-    await new Promise((r) => later(r, 1700));
-    await talk(flag('chose_give') ? 'out_give' : flag('chose_free') ? 'out_free' : 'out_keep', '表の戸');
+    // 2.5.1 (coordinator: D-32 見せてから語る): the eyes go out through the doorway to the lane and 野口さん's car while the door slides; the
+    // player looks for a while; then the words, in a window at the bottom with no dimming, so the doorway stays in view
+    G.turnTo = { x: 0.6, y: ctx.world.floorY(1) + 1.0, z: 31.5, t: 1.6 };
+    await new Promise((r) => later(r, 3400));
+    const cls = /\/dot\//.test(location.pathname) ? 'kc-out-top' : 'kc-out';   // the top view (/dot) sees the doorway at the bottom of the screen: the window stays at the top there
+    document.body.classList.add(cls);
+    try { await talk(flag('chose_give') ? 'out_give' : flag('chose_free') ? 'out_free' : 'out_keep', '表の戸'); } finally { document.body.classList.remove(cls); }
     return true;
   }, onDone: () => setFlag(flag('chose_give') ? 'end_give' : flag('chose_free') ? 'end_free' : 'end_keep') });
   ext.registerTask('T_SQ1', {

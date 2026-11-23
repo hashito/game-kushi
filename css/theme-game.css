@@ -14,3 +14,9 @@
 .kc-seal-bar i { display: block; height: 100%; width: 0; background: #e0533a; /* pair-ok */ }
 .kc-bootbar { width: min(320px, 70vw); height: 4px; margin: 8px auto 0; background: rgba(255, 255, 255, 0.12); border-radius: 2px; overflow: hidden; /* pair-ok */ }
 .kc-bootbar i { display: block; height: 100%; width: 0; background: var(--accent, #c8892e); /* pair-ok */ }
+/* 2.5.1 (D-32): the front door's words come in a window at the bottom, with no dimming, so the open doorway and the street stay in view */
+body.kc-out .wm-layer.wm-talk { align-items: flex-end; background: transparent; /* pair-ok */ }
+body.kc-out .wm-layer.wm-talk .wm-win, body.kc-out-top .wm-layer.wm-talk .wm-win { min-height: 0; }
+body.kc-out-top .wm-layer.wm-talk { background: transparent; /* pair-ok */ }
+/* a low landscape phone: the window goes to the right half, the doorway (the middle of the view) stays clear */
+@media (min-aspect-ratio: 3/2) and (max-height: 520px) { body.kc-out .wm-layer.wm-talk { justify-content: flex-end; } body.kc-out .wm-layer.wm-talk .wm-win { width: min(46%, 420px); } }
