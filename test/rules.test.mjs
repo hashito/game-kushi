@@ -84,3 +84,18 @@ test('#12 every ending has an end roll with pictures and words', () => {
     for (const r of e.roll) { assert.match(r.photo, /^assets\/photos\/.+\.webp$/); assert.ok(r.text && r.text.length > 20); }
   }
 });
+
+// 2.5.3 (re-check 2026-11-24): what the re-check found, kept from coming back
+test('2.5.3: the normal version marks what can be picked up (the dot versions draw their own)', () => {
+  const idx = readFileSync(new URL('../js/ext/index.js', import.meta.url), 'utf8'), mk = readFileSync(new URL('../js/ext/marks.js', import.meta.url), 'utf8');
+  assert.match(idx, /installMarks\(ext\)/, 'marks.js is installed');
+  assert.match(mk, /dataset\.dot/, 'skips the dot layers (no double ▼)');
+  assert.match(mk, /markSight/, 'never through walls (P42)');
+});
+test('2.5.3: 寝間 has things in its middle, not only along the walls', () => {
+  const h = readFileSync(new URL('../js/ext/house.js', import.meta.url), 'utf8');
+  // the room is x 3.6-9.6, z -19..-13: its middle third must hold the rug and the table
+  for (const n of ['kc-nema-rug', 'kc-nema-table', 'kc-nema-teapot', 'kc-nema-letter', 'kc-nema-kori']) assert.ok(h.includes(`'${n}'`), n);
+  const t = h.match(/const tx = ([\d.]+), tz = (-[\d.]+);\s*\{ const top/);
+  assert.ok(t && +t[1] > 5.6 && +t[1] < 7.6 && +t[2] < -15 && +t[2] > -17, 'the table stands in the middle third');
+});

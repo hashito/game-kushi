@@ -247,7 +247,7 @@ export default async function dotLayer(ext, { manifest, data }) {
     // ハル behind the lattice: kneeling
     let haruFig = null;
     if (G.haru && G.haru.root) {
-      haruFig = createFigure(THREE, haru, { height: 1.5, material: figMat(0.3, 'dot-haru'), state: 'kneel', ...(haruFar ? { lod: { set: haruFar, far: 6, camera: ctx.camera } } : {}) });
+      haruFig = createFigure(THREE, haru, { height: 1.5, material: figMat(0.3, 'dot-haru'), state: 'kneel', holdOk: ['kneel'], ...(haruFar ? { lod: { set: haruFar, far: 6, camera: ctx.camera } } : {}) });
       if (mode === 'top') addOutline(haruFig, outlineMat(0x8a7a62, 0.016, 'dot-outline-haru'));
       const keep = new Set(); haruFig.root.traverse((x) => keep.add(x));
       hideOwn(G.haru.root, keep);

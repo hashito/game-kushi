@@ -516,8 +516,8 @@ export function installHouse(ext, G) {
         const ce = box('NEMA', cx, cz, x1 - x0, 0.03, z1 - z0, M.timber, y0, false); ce.name = 'kc-nema-ceiling'; ce.castShadow = false;
         for (const z of [-17.6, -16.0, -14.4]) { const b = box('NEMA', cx, z, x1 - x0, 0.14, 0.14, M.dark, y0 - 0.14, false); b.castShadow = false; }
         for (const [x, z] of [[x0 + 0.07, z0 + 0.07], [x1 - 0.07, z0 + 0.07], [x0 + 0.07, z1 - 0.07], [x1 - 0.07, z1 - 0.07], [6.6, z0 + 0.07], [x1 - 0.07, -16.0], [6.95, z1 - 0.07]]) box('NEMA', x, z, 0.14, y0, 0.14, M.dark, 0, false);
-        box('NEMA', cx, z0 + 0.05, x1 - x0, 0.1, 0.06, M.dark, 1.85, false); box('NEMA', cx, z1 - 0.05, x1 - x0, 0.1, 0.06, M.dark, 1.85, false); box('NEMA', x1 - 0.05, cz, 0.06, 0.1, z1 - z0, M.dark, 1.85, false);
-        box('NEMA', x0 + 0.05, -14.3, 0.06, 0.1, 2.4, M.dark, 1.85, false); box('NEMA', x0 + 0.05, -18.1, 0.06, 0.1, 1.8, M.dark, 1.85, false); }
+        box('NEMA', cx, z0 + 0.115, x1 - x0, 0.1, 0.06, M.dark, 1.85, false); box('NEMA', cx, z1 - 0.115, x1 - x0, 0.1, 0.06, M.dark, 1.85, false); box('NEMA', x1 - 0.115, cz, 0.06, 0.1, z1 - z0, M.dark, 1.85, false);
+        box('NEMA', x0 + 0.115, -14.3, 0.06, 0.1, 2.4, M.dark, 1.85, false); box('NEMA', x0 + 0.115, -18.1, 0.06, 0.1, 1.8, M.dark, 1.85, false); }   /* 2.5.3: the rails stand 6 cm off the wall face (at 0.05 their face lay in the wall's plane: P21 flicker on 寝間's walls) */
       // a hanging cloth line along the east wall over the bed: a tenugui, a washed under-kimono, a cloth with a mended patch, a sash
       { const lx = 9.42, ly = 1.92; box('NEMA', lx, -15.9, 0.01, 0.01, 4.6, M.black, ly, false);
         const cl = (z, w, h, color, patch) => { const t = paintT(64, 128, (g, W2, H2) => { g.fillStyle = color; g.fillRect(0, 0, W2, H2); for (let i = 0; i < 40; i++) { g.fillStyle = `rgba(0,0,0,${Math.random() * 0.12})`; g.fillRect(Math.random() * W2, Math.random() * H2, 3, 3); } g.fillStyle = 'rgba(0,0,0,0.25)'; g.fillRect(0, H2 - 6, W2, 6); if (patch) { g.fillStyle = patch; g.fillRect(16, 60, 26, 22); g.strokeStyle = 'rgba(30,20,10,0.6)'; g.setLineDash([2, 2]); g.strokeRect(16, 60, 26, 22); } });
@@ -534,6 +534,35 @@ export function installHouse(ext, G) {
         const bk = cyl('NEMA', 4.5, -14.25, 0.16, 0.14, 0.32, M.straw, 0, false, 14); bk.name = 'kc-nema-basket'; }
       // her place in the middle of the room: a flat cushion with the mending she left on it (a cloth, a spool, scissors) and a cold teacup
       { zabuton('NEMA', 6.2, -16.6, 0.2); box('NEMA', 6.25, -16.55, 0.34, 0.012, 0.26, std(0x6a5a7a, { roughness: 1 }), 0.06, false, 0.5); cyl('NEMA', 6.0, -16.35, 0.025, 0.025, 0.04, std(0xc8b890), 0.06, false, 10); box('NEMA', 6.42, -16.8, 0.12, 0.008, 0.03, M.iron, 0.062, false, 0.9); cyl('NEMA', 5.8, -16.9, 0.04, 0.03, 0.06, M.ceramic, 0, false, 12); }
+      // 2.5.3 (re-check 2026-11-24: the middle of 寝間 was still a bare floor - from the door and from above the room read as a big empty box
+      // with things along the walls): her sitting place in the middle - a worn rag-woven rug, a low round table with a teapot, two cups (one
+      // for a guest who never came), a half-written letter with its brush and inkstone, a second cushion, an iron kettle on the brazier, and
+      // a wicker trunk with its lid off by the long chest. The table keeps the way from the door to the bed and the walls open (z -16.2 line).
+      { const rug = paintT(256, 256, (g, w, h) => { const cols = ['#9a6248', '#5e7090', '#a8925e', '#86443a', '#8e8e74', '#64506c'];
+          for (let y = 0, i = 0; y < h; y += 7, i++) { g.fillStyle = cols[(i * 5) % cols.length]; g.fillRect(0, y, w, 7); for (let k = 0; k < 40; k++) { g.fillStyle = `rgba(0,0,0,${Math.random() * 0.25})`; g.fillRect(Math.random() * w, y, 3, 7); } }
+          g.fillStyle = '#2a1e16'; g.fillRect(0, 0, w, 6); g.fillRect(0, h - 6, w, 6); });
+        const rg = plane('NEMA', 6.3, -15.75, 1.9, 1.6, new THREE.MeshStandardMaterial({ map: rug, roughness: 1 }), 0.006, 0.04, -Math.PI / 2); rg.name = 'kc-nema-rug';
+        const tx = 6.35, tz = -15.5;
+        { const top = cyl('NEMA', tx, tz, 0.4, 0.4, 0.03, std(0x7a5634, { roughness: 0.55 }), 0.27, true, 28); top.name = 'kc-nema-table'; cyl('NEMA', tx, tz, 0.37, 0.37, 0.05, M.dark, 0.22, false, 28);
+          for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) box('NEMA', tx + sx * 0.22, tz + sz * 0.22, 0.04, 0.22, 0.04, M.wood, 0, false); }
+        const ty = 0.30;
+        { const pot = cyl('NEMA', tx - 0.12, tz + 0.05, 0.075, 0.085, 0.09, M.ceramic, ty, false, 16); pot.name = 'kc-nema-teapot'; cyl('NEMA', tx - 0.12, tz + 0.05, 0.04, 0.06, 0.02, M.ceramic, ty + 0.09, false, 14);
+          const h = cyl('NEMA', tx - 0.22, tz + 0.05, 0.015, 0.015, 0.12, M.wood, ty + 0.03, false, 8); h.rotation.z = Math.PI / 2;
+          const sp = cyl('NEMA', tx - 0.03, tz + 0.05, 0.01, 0.014, 0.07, M.ceramic, ty + 0.04, false, 8); sp.rotation.z = -1.0; }
+        for (const [dx, dz, tip] of [[0.1, -0.12, 0], [0.18, 0.12, 1.4]]) { const c = cyl('NEMA', tx + dx, tz + dz, 0.035, 0.03, 0.07, std(0x8a7a62, { roughness: 0.5 }), ty, false, 12); if (tip) { c.rotation.z = tip; c.position.y -= 0.025; } }
+        { const lt = paintT(128, 160, (g, w, h) => { g.fillStyle = '#d8cfb6'; g.fillRect(0, 0, w, h); g.fillStyle = 'rgba(30,24,20,0.85)'; for (let x = w - 14, i = 0; x > 30; x -= 13, i++) { let y = 10; const n = 6 + ((i * 7) % 9); for (let k = 0; k < n; k++) { g.fillRect(x, y, 6, 6 + (k % 3) * 2); y += 11; } } });
+          const lp = plane('NEMA', tx + 0.08, tz - 0.0, 0.2, 0.26, new THREE.MeshStandardMaterial({ map: lt, roughness: 1 }), ty + 0.003, 0.35, -Math.PI / 2); lp.name = 'kc-nema-letter';
+          box('NEMA', tx + 0.26, tz - 0.16, 0.1, 0.02, 0.15, M.black, ty, false, 0.35);                         // the inkstone
+          const br = cyl('NEMA', tx + 0.22, tz + 0.02, 0.006, 0.006, 0.2, M.wood, ty + 0.01, false, 6); br.rotation.x = Math.PI / 2; br.rotation.z = 0.5; }
+        zabuton('NEMA', tx + 0.05, tz + 0.62, Math.PI + 0.15);                                                  // the guest's cushion, on the far side
+        cyl('NEMA', 6.95, -14.55, 0.12, 0.14, 0.13, M.iron, 0.27, false, 16); cyl('NEMA', 6.95, -14.55, 0.03, 0.03, 0.03, M.iron, 0.4, false, 8);   // the iron kettle on the brazier
+        { const tb = box('NEMA', 6.95, -14.55, 0.2, 0.01, 0.012, M.iron, 0.44, false); tb.name = 'kc-nema-kettle-handle'; }
+        { const wk = paintT(128, 128, (g, w, h) => { g.fillStyle = '#7a6438'; g.fillRect(0, 0, w, h); g.strokeStyle = 'rgba(40,28,12,0.6)'; g.lineWidth = 2; for (let i = -h; i < w; i += 8) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i + h, h); g.stroke(); g.beginPath(); g.moveTo(i + h, 0); g.lineTo(i, h); g.stroke(); } });
+          const km = new THREE.MeshStandardMaterial({ map: wk, roughness: 1 }), kx = 4.45, kz = -17.62;
+          const kb = box('NEMA', kx, kz, 0.62, 0.3, 0.4, km, 0, true); kb.name = 'kc-nema-kori';
+          rumple('NEMA', kx, kz, 0.5, 0.06, 0.3, std(0x6a5a4a, { roughness: 1 }), 0.3, 0.01);                    // a folded cloth on top, the lid off
+          const lid = box('NEMA', kx + 0.12, kz + 0.42, 0.64, 0.08, 0.42, km, 0, false, 0.3); lid.rotation.x = -0.35; lid.position.y += 0.1; }
+      }
       // the candle stubs on a low board against the south wall: a dozen, each burnt down to a stub, wax run onto the board
       box('NEMA', 6.3, -18.72, 1.3, 0.04, 0.26, M.timber, 0, false);
       for (let i = 0; i < 13; i++) { const x = 5.75 + i * 0.09, h = 0.012 + ((i * 7) % 5) * 0.006; cyl('NEMA', x, -18.72 + ((i % 3) - 1) * 0.05, 0.016, 0.02, h, M.white, 0.04, false, 8); cyl('NEMA', x + 0.01, -18.7, 0.03, 0.03, 0.003, M.white, 0.04, false, 8); }
