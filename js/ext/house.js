@@ -336,8 +336,31 @@ export function installHouse(ext, G) {
       gr.addColorStop(0, '#fff'); gr.addColorStop(1, '#000'); x.fillStyle = gr; x.fillRect(0, 0, 64, 64);
       const am = new THREE.CanvasTexture(cv);
       const mk = (w, d, y, z, op) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ color: 0xffe0b0, alphaMap: am, transparent: true, opacity: op, depthWrite: false, blending: THREE.AdditiveBlending, fog: false })); m.rotation.x = -Math.PI / 2; m.position.set(5.2, fy('MURO') + y, z); m.name = 'kc-kiln-light'; m.userData.dot = 'light'; m.renderOrder = 3; grp.add(m); return m; };
-      G.kilnPatch = [mk(1.3, 0.2, 0.425, 2.17, 0.6), mk(2.4, 1.4, 0.012, 1.6, 0.22)]; for (const m of G.kilnPatch) m.visible = false; }
+      G.kilnPatch = [mk(1.3, 0.2, 0.425, 2.17, 0.2), mk(2.4, 1.4, 0.012, 1.6, 0.13)];   /* 2.6.0 (#2): fainter (0.6 / 0.22): the rim's strip of light hid the stone it was pointing at */ for (const m of G.kilnPatch) m.visible = false; }
     for (let i = 0; i < 4; i++) { const st = box('MURO', 5.0 + i * 0.14, 2.55 + (i % 2) * 0.12, 0.34, 0.04, 0.04, M.black, 0.36, false, 0.4 + i * 0.5); st.name = 'kc-kiln-stick'; }
+    // 2.6.0 (play 2026-11-26 #2 「地下のいぶしろの横に火をつけますが、火を付ける箇所が見づらい」): the place to light the candle reads from the
+    // ladder - a flat pale stone set on the middle of the front rim, ringed with old wax drips and a burnt match (others lit their candles
+    // here), the kiln lit enough by the hatch's light to show its shape (G.kilnGlow, story.js), and while the candle waits a pale chevron and
+    // a faint warm glow over the stone (the pickups' mark, kit P53; hidden through walls). In every version (the dot kiln: dot/js/dot/index.js
+    // seats the stone on its own rim). Named, so the dot fixture swap leaves them
+    {
+      const pale = std(0xc9bda4, { roughness: 0.85, emissive: 0x2a2014 }), wax = std(0xe8dcc0, { roughness: 0.5, emissive: 0x3a2c18 });
+      const stoneG = new THREE.Group(); stoneG.name = 'kc-light-stone'; stoneG.position.set(5.2, fy('MURO') + 0.42, 2.17); grp.add(stoneG);
+      const slab = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.17, 0.035, 20), pale); slab.scale.z = 0.62; slab.position.y = 0.0175; slab.castShadow = slab.receiveShadow = true; stoneG.add(slab);
+      for (const [x, z, r, h] of [[-0.09, 0.03, 0.022, 0.018], [0.08, -0.03, 0.016, 0.026], [0.02, 0.05, 0.012, 0.012], [-0.03, -0.04, 0.018, 0.02], [0.11, 0.04, 0.01, 0.01]]) { const d = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.8, r, h, 10), wax); d.position.set(x, 0.035 + h / 2, z); stoneG.add(d); }
+      const mt = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.004, 0.004), M.black); mt.position.set(-0.02, 0.037, 0.0); mt.rotation.y = 0.6; stoneG.add(mt);
+      const mh = new THREE.Mesh(new THREE.SphereGeometry(0.004, 6, 4), M.black); mh.position.set(-0.04, 0.038, 0.012); stoneG.add(mh);
+      G.lightStone = stoneG;
+      const icv = document.createElement('canvas'); icv.width = icv.height = 32;
+      { const x = icv.getContext('2d'); x.strokeStyle = '#d8cdb4'; x.lineWidth = 3; x.lineJoin = 'round'; x.lineCap = 'round'; x.beginPath(); x.moveTo(9, 12); x.lineTo(16, 20); x.lineTo(23, 12); x.stroke(); }
+      const gcv = document.createElement('canvas'); gcv.width = gcv.height = 64;
+      { const c = gcv.getContext('2d'), gr = c.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,226,160,1)'); gr.addColorStop(0.3, 'rgba(255,190,110,0.6)'); gr.addColorStop(1, 'rgba(255,150,60,0)'); c.fillStyle = gr; c.fillRect(0, 0, 64, 64); }
+      const tx = (cv) => { const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t; };
+      const mark = new THREE.Group(); mark.name = 'kc-light-mark'; mark.userData.hangs = true; mark.visible = false;
+      const ic = new THREE.Sprite(new THREE.SpriteMaterial({ map: tx(icv), transparent: true, opacity: 0.6, depthWrite: false, fog: false })); ic.scale.set(0.13, 0.13, 1); ic.position.y = 0.36; ic.userData.guideMark = true; ic.renderOrder = 6; mark.add(ic);
+      const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: tx(gcv), color: 0xffe2a8, transparent: true, opacity: 0.3, depthWrite: false, blending: THREE.AdditiveBlending, fog: false })); gl.scale.set(0.5, 0.3, 1); gl.position.y = 0.07; gl.renderOrder = 5; mark.add(gl);
+      stoneG.add(mark); G.lightMark = { mark, ic, gl };
+    }
     for (let i = 0; i < 5; i++) box('MURO', 8.7, -0.35 + i * 0.5, 0.42, 1.3 + (i % 2) * 0.4, 0.45, M.boxwood, 0, true);
     // the ledger shelf on the west wall (the 札の控え lies on it: data/docs.json DOC_HIKAE)
     box('MURO', 1.24, 3.6, 0.32, 0.03, 0.9, M.wood, 1.0, false); for (const s of [-1, 1]) box('MURO', 1.24, 3.6 + s * 0.4, 0.3, 0.2, 0.03, M.dark, 0.8, false);
@@ -639,7 +662,9 @@ export function installHouse(ext, G) {
     for (const o of [...W.group.children]) if (/^lamp(shade|bulb|cord):(MURO|DORO|ITA|IBUSHI|KAME|NEMA|OKUMURO|MISE)/.test(o.name)) o.visible = false;
     G.muroGlow = { room: 'MURO', floor: 0, x: 6.6, y: 2.6, z: 0.0, i: 0, d: 7.5 }; lamps.push(G.muroGlow);
     // 2.4.0 #6: the workshop's lamp through the open hatch falls on the kiln's rim - the one place you can make out before the candle is lit
-    G.kilnGlow = { room: 'MURO', floor: 0, x: 5.4, y: 1.5, z: 1.7, i: 0, d: 2.6 }; lamps.push(G.kilnGlow);
+    // 2.6.0 (#2): lower, in front of the rim and stronger (0.55 -> G.KILN_I): the clay body and the stone on the rim show their shape from the ladder
+    G.KILN_I = 1.5;
+    G.kilnGlow = { room: 'MURO', floor: 0, x: 5.2, y: 0.95, z: 1.25, i: 0, d: 2.8 }; lamps.push(G.kilnGlow);
     G.boxGlow = { room: 'OKUMURO', floor: 0, x: 2.6, y: 0.8, z: -25.6, i: 0, d: 5 }; lamps.push(G.boxGlow);
     W.setLampFloor && W.setLampFloor(ctx.floor || 1, true);
 
@@ -672,6 +697,10 @@ export function installHouse(ext, G) {
       if (G.frontTo != null && G.frontK !== G.frontTo) { G.frontK = Math.min(1, (G.frontK || 0) + dt / 1.6); G.frontDoor.position.x = -1.5 * (G.frontK * G.frontK * (3 - 2 * G.frontK)); }
       for (const b of G.bells) if (b.swing > 0) { b.swing = Math.max(0, b.swing - dt * 0.8); b.hold.rotation.z = Math.sin(t * 14) * 0.35 * b.swing; }
       if (G.ember) G.ember.material.color.setRGB(0.35 + Math.sin(t * 2) * 0.05, 0.1, 0.03);
+      if (G.lightMark) {   // 2.6.0 (#2): the mark over the stone while the candle waits for its flame (the hatch open, T_LIGHT not done)
+        const T = ctx.state.tasks, on = T.includes('T_HATCH') && !T.includes('T_LIGHT'), L = G.lightMark;
+        L.mark.visible = on; if (on) { const k = 0.5 + 0.5 * Math.sin(t * 3.1); L.ic.position.y = 0.36 + 0.015 * k; L.gl.material.opacity = 0.24 + 0.12 * k; }
+      }
     } }, inst: null });
   });
 }

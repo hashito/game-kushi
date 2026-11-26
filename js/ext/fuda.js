@@ -111,12 +111,17 @@ export function installFuda(ext, G) {
   // ---------------- building ----------------
   const floorOf = (room) => { const R = ctx.world.rooms.get(room); return (R && R.y) || 0; };
   const makeMat = (old = false) => burnMaterial(old ? oldTex : tex);
+  // 2.6.0 (play 2026-11-26 #4 「煙道の口の札が選択しづらい」): a charm low on a flue mouth (42 cm up) had a 0.42 x 0.7 box flat on the wall: from
+  // where one stands (1.5-2 m away, eyes at 1.6 m) the aim crossed over it unless one looked well down. A low charm's box is now the width
+  // of the mouth and reaches from the floor to 1.15 m (over the mouth's own 調べる), and stands a little out into the room (kit W18 select-range: no residual)
   function charmAt(room, x, y, z, face, mat, id, label) {
     const fy = floorOf(room);
     const m = new THREE.Mesh(geo, mat); m.position.set(x, fy + y + 0.15, z); m.rotation.y = YAW[face]; m.name = `fuda:${id}`; m.userData.doorItem = true;   /* a seal is meant to sit on its door (kit tools/wall-door.mjs leaves it alone) */
     ctx.world.group.add(m);
-    const hit = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.7, 0.16), hidden);
-    hit.position.set(x, fy + y, z); hit.rotation.y = YAW[face]; hit.name = `fudahit:${id}`; hit.userData.interact = { kind: 'fuda', id, label };
+    const low = y < 0.8, n = NORMAL[face];
+    const hit = new THREE.Mesh(low ? new THREE.BoxGeometry(0.72, 1.15, 0.36) : new THREE.BoxGeometry(0.42, 0.7, 0.16), hidden);
+    if (low) hit.position.set(x + n[0] * 0.12, fy + 0.575, z + n[1] * 0.12); else hit.position.set(x, fy + y, z);
+    hit.rotation.y = YAW[face]; hit.name = `fudahit:${id}`; hit.userData.interact = { kind: 'fuda', id, label };
     ctx.world.group.add(hit); ctx.world.interactables.push(hit);
     return { mesh: m, hit, home: m.position.clone() };
   }
@@ -168,10 +173,28 @@ export function installFuda(ext, G) {
       ctx.world.group.add(m); slots.push({ mesh: m, mat, home: m.position.clone() });
     }
     const wide = !d && (def.need || 1) > 1;
-    const hit = new THREE.Mesh(new THREE.BoxGeometry(d ? 0.5 : wide ? 1.2 : 0.8, d ? 1.1 : 0.6, 0.25), hidden);
-    hit.position.set(p.x, fy + (d ? 1.25 : p.y + 0.05), p.z); hit.rotation.y = YAW[face]; hit.name = `sealhit:${def.id}`; hit.userData.interact = { kind: 'seal', id: def.id };
+    // 2.6.0 (#4): a flue mouth's spot, like its charm, from the floor to about a metre and a little out into the room
+    const nf = NORMAL[face];
+    const hit = new THREE.Mesh(new THREE.BoxGeometry(d ? 0.5 : wide ? 1.2 : 0.8, d ? 1.1 : 1.0, d ? 0.25 : 0.36), hidden);
+    if (d) hit.position.set(p.x, fy + 1.25, p.z); else hit.position.set(p.x + nf[0] * 0.12, fy + 0.5, p.z + nf[1] * 0.12);
+    hit.rotation.y = YAW[face]; hit.name = `sealhit:${def.id}`; hit.userData.interact = { kind: 'seal', id: def.id };
     ctx.world.group.add(hit);
-    const S = { def, slots, n: 0, burn: 0, press: false, hit, room: p.room, door: d ? d.id : null, pos: new THREE.Vector3(p.x, fy + p.y, p.z), face, p, lid: !def.lid || !def.lidOpen };
+    const S = { def, slots, n: 0, burn: 0, press: false, hit, room: p.room, door: d ? d.id : null, pos: new THREE.Vector3(p.x, fy + p.y, p.z), face, p, lid: !def.lid || !def.lidOpen, sides: [] };
+    // 2.6.0 (play 2026-11-26 #5 「戸の裏からも札を貼れるようにしてください」): a door's spot takes a charm from either side. The far side has its
+    // own post spot (the same FRAME_FACE off the other face, so it never sinks into the frame or the leaf) and its own charms; each charm
+    // goes on the side the player stands on (S.sides[i] 'f' | 'b'), and burns, falls and comes off there
+    if (d) {
+      const back = { n: 's', s: 'n', e: 'w', w: 'e' }[def.side], q = seam(d, back, 1.62), fyb = floorOf(q.room);
+      S.back = back; S.slotsB = [];
+      for (let i = 0; i < max; i++) {
+        const mat = makeMat(), m = new THREE.Mesh(geo, mat);
+        m.position.set(q.x, fyb + q.y - i * 0.34 + 0.15, q.z); m.rotation.y = YAW[back]; m.visible = false; m.name = `seal:${def.id}:b${i}`; m.userData.doorItem = true;
+        ctx.world.group.add(m); S.slotsB.push({ mesh: m, mat, home: m.position.clone() });
+      }
+      S.hitB = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.1, 0.25), hidden);
+      S.hitB.position.set(q.x, fyb + 1.25, q.z); S.hitB.rotation.y = YAW[back]; S.hitB.name = `sealhit:${def.id}:b`; S.hitB.userData.interact = { kind: 'seal', id: def.id, back: true };
+      ctx.world.group.add(S.hitB);
+    }
     if (def.lid) {
       lidM = lidM || (ctx.textures ? (() => { try { return ctx.textures.material('planks_dark', { triplanar: true, color: 0x8a7866 }); } catch { return null; } })() : null) || new THREE.MeshStandardMaterial({ color: 0x3a2a1c, roughness: 0.95 });
       S.lidMesh = new THREE.Mesh(new THREE.BoxGeometry(wide ? 1.06 : 0.66, 0.68, 0.02), lidM); S.lidMesh.name = `lid:${def.id}`; S.lidMesh.castShadow = true; ctx.world.group.add(S.lidMesh); lidPose(S);
@@ -186,8 +209,8 @@ export function installFuda(ext, G) {
     if (!ctx) return;
     for (const S of seals.values()) {
       const want = G.sealOpen(S.def.id) || S.n > 0;
-      const I = ctx.world.interactables, i = I.indexOf(S.hit);
-      if (want && i < 0) I.push(S.hit); if (!want && i >= 0) I.splice(i, 1);
+      const I = ctx.world.interactables;
+      for (const h of [S.hit, S.hitB]) { if (!h) continue; const i = I.indexOf(h); if (want && i < 0) I.push(h); if (!want && i >= 0) I.splice(i, 1); }
       // a door with a seal spot: while the seal is offered, the door's own [E] is the seal (aiming at the leaf or at the post both paste)
       // 2.4.0: only a seal with "leaf" takes the door's [E] (the practice fusuma, 燻しの間's door); the seals put back on every other door are
       // pasted on the post, so the door itself still opens and shuts with [E] (#10 「各部屋でも札を再度貼れるように」)
@@ -196,11 +219,25 @@ export function installFuda(ext, G) {
       if (S.door && S.def.leaf) { const leaf = want && (G.sealLeaf ? G.sealLeaf(S.def.id) !== false : true), held = [...charms.values()].some((C) => C.door === S.door && !G.peeled.includes(C.def.id)); for (const o of I) { const it = o.userData && o.userData.interact; if (!it || it.id !== S.door || !(it.kind === 'door' || it.kind === 'sealdoor' || it.kind === 'charmdoor')) continue; it.kind = held ? 'charmdoor' : leaf ? 'sealdoor' : 'door'; it.seal = S.def.id; } }
     }
   };
+  /** the charm drawn for slot i (its side: S.sides[i]) */
+  const slotOf = (S, i) => (S.slotsB && S.sides[i] === 'b' ? S.slotsB[i] : S.slots[i]);
+  /** the side of a door's spot the player stands on: 'f' (the charm's own side, def.side) or 'b' */
+  const standSide = (S) => {
+    if (!S.door || !S.slotsB) return 'f';
+    const d = ctx.data.plan.doors.find((x) => x.id === S.door), n = NORMAL[S.face], c = ctx.camera.position;
+    return (c.x - d.x) * n[0] + (c.z - d.z) * n[1] >= 0 ? 'f' : 'b';
+  };
+  G.sealSides = (id) => { const S = seals.get(id); return S ? S.sides.slice(0, S.n).join('') : ''; };
   function showSeal(S) {
-    S.slots.forEach((sl, i) => { sl.mesh.visible = i < S.n; sl.mesh.position.copy(sl.home); sl.mesh.rotation.set(0, sl.mesh.rotation.y, 0); sl.mat.userData.burn.value = i === S.n - 1 ? S.burn : 0; });
+    S.slots.forEach((sl, i) => {
+      for (const x of S.slotsB ? [sl, S.slotsB[i]] : [sl]) { x.mesh.visible = false; x.mesh.position.copy(x.home); x.mesh.rotation.set(0, x.mesh.rotation.y, 0); x.mat.userData.burn.value = 0; }
+      if (i >= S.n) return;
+      const cur = slotOf(S, i); cur.mesh.visible = true; cur.mat.userData.burn.value = i === S.n - 1 ? S.burn : 0;
+    });
   }
-  G.setSeal = (id, n, burn = 0, lid = null) => {
+  G.setSeal = (id, n, burn = 0, lid = null, sides = null) => {
     const S = seals.get(id); if (!S) return;
+    if (sides != null) S.sides = String(sides).split('');
     if (lid != null && S.def.lid) { S.lid = !!lid; lidPose(S); }
     if (n > 0 && S.def.lid) { S.lid = true; lidPose(S); }
     S.n = Math.max(0, Math.min(S.def.max || 1, n)); S.burn = S.n ? burn : 0; S.press = false; showSeal(S);
@@ -254,6 +291,7 @@ export function installFuda(ext, G) {
     }
     if (G.fuda <= 0) { ctx.answer(ctx.state.tasks.includes('T_CHOBA') ? '貼る札を持っていない。戸の札をはがすと、札が手に入る。' : `${S.def.label}だ。`); return; }
     const ok = G.canPaste(id); if (ok !== true) { ctx.answer(ok); return; }
+    S.sides[S.n] = standSide(S);
     G.addFuda(-1); S.n += 1; if (S.n === 1) S.burn = 0; showSeal(S); ctx.sound('stamp');
     if (S.door) { const dd = ctx.world.doors.get(S.door); if (dd && dd.isOpen && dd.close) dd.close(); }
     ext.emit('kushi:paste', { id, n: S.n }); ctx.save(); G.sealRefresh();
@@ -315,7 +353,7 @@ export function installFuda(ext, G) {
     for (const S of seals.values()) {
       if (!S.press || S.n <= 0) continue;
       S.burn = Math.min(1, S.burn + dt / (S.def.house ? (ctx.calm ? BURN.houseCalm : BURN.house) : life));
-      const sl = S.slots[S.n - 1];
+      const sl = slotOf(S, S.n - 1);
       sl.mat.userData.burn.value = S.burn; sl.mat.userData.glow.value = 0.75 + 0.25 * Math.sin(performance.now() / 90);
       if (puffT <= 0) puff(sl.mesh.position.clone().add(new THREE.Vector3(0, -0.12 + S.burn * 0.2, 0)));
       if (S.burn > 0.35 && Math.random() < dt * (6 + S.burn * 20)) flame(sl.mesh.position.clone().add(new THREE.Vector3(0, -0.14 + S.burn * 0.26, 0)), 0.6 + S.burn * 0.6);   /* 2.5.0 #5: the last third burns with flame */
@@ -377,13 +415,13 @@ export function installFuda(ext, G) {
   });
   ext.on('task:done', () => { if (G.showFuda) G.showFuda(); if (G.sealRefresh) G.sealRefresh(); });
   ext.registerPersist('fuda', {
-    serialize: () => ({ fuda: G.fuda, peeled: G.peeled, seals: Object.fromEntries([...seals.values()].map((S) => [S.def.id, [S.n, Math.round(S.burn * 100) / 100, S.lid ? 1 : 0]])) }),
+    serialize: () => ({ fuda: G.fuda, peeled: G.peeled, seals: Object.fromEntries([...seals.values()].map((S) => [S.def.id, [S.n, Math.round(S.burn * 100) / 100, S.lid ? 1 : 0, S.sides.slice(0, S.n).join('')]])) }),
     restore: (s) => {
       if (!s) return;
       G.fuda = s.fuda || 0;
       for (const id of s.peeled || []) G.peelQuiet(id);
       for (const id of s.peeled || []) { const C = charms.get(id); if (C && C.door) { const d = ctx.world.doors.get(C.door); if (d && d.open) d.open(); } }
-      for (const [id, v] of Object.entries(s.seals || {})) G.setSeal(id, v[0], v[1], v.length > 2 ? !!v[2] : null);
+      for (const [id, v] of Object.entries(s.seals || {})) G.setSeal(id, v[0], v[1], v.length > 2 ? !!v[2] : null, v.length > 3 ? v[3] : null);
       G.showFuda();
     },
   });

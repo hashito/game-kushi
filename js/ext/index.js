@@ -10,6 +10,7 @@ import { installAnswers } from './answers.js';
 import { installBoot } from './boot.js';
 import { installEnding } from './ending.js';
 import { installMarks } from './marks.js';
+import { installSettle } from './settle.js';
 
 export default function (ext) {
   const G = {};
@@ -22,6 +23,7 @@ export default function (ext) {
   installBoot(ext, G);
   installEnding(ext);
   installMarks(ext);
+  installSettle(ext, G);
   ext.on('bus:error', ({ name, error }) => console.error('[kushi]', name, error && error.stack ? error.stack.split(String.fromCharCode(10)).slice(0, 3).join(' ') : String(error)));
   ext.on('game:ready', () => { if (typeof window !== 'undefined') window.__kc = G; });
 }

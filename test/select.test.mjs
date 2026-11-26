@@ -15,7 +15,10 @@ import { spawnSync } from 'node:child_process';
 // 2.5.0: 寝間 shares its north wall with 燻しの間 - the two flue mouths sit back to back on it (F_FLUE on the 燻しの間 face, the pair
 // W_NEMAM1/2 on the 寝間 face). The checker skips a wall the thing touches (what it hangs on), so half the poses stand in the room behind
 // the wall and see nothing there ("(nothing)" = 1 - cover); from the thing's own room they select it. Listed, with that reason.
-const RESIDUALS = 'station:S_HATCH,door:D_KOSHI,fuda:F_FLUE,fuda:W_NEMAM1,fuda:W_NEMAM2,look:NEMA_CANDLES';   // the candle board stands at 寝間's south wall, 奥の室 behind it (cover 71 %; from 寝間 itself 88 %)
+// 2.6.0 (#4 「煙道の口の札が選択しづらい」): F_FLUE's box is the mouth's width and 1.15 m high, and the mouth's 調べる (look:IBUSHI_FLUE)
+// moved up onto the lintel and back to the wall (it stood in front of the charm: 47 % of the aims at the charm took it). Both stay listed for
+// the back-to-back reason (poses in 寝間 behind the wall: F_FLUE 85 % here, at the line); the test below measures the charm from its own room
+const RESIDUALS = 'station:S_HATCH,door:D_KOSHI,fuda:F_FLUE,look:IBUSHI_FLUE,fuda:W_NEMAM1,fuda:W_NEMAM2,look:NEMA_CANDLES';   // the candle board stands at 寝間's south wall, 奥の室 behind it (cover 71 %; from 寝間 itself 88 %)
 const NORM = "const m = /^fuda:(.+)$/.exec(T.id); const C = m && window.__kc && window.__kc.charms.get(m[1]); return C && C.door && (a === 'charmdoor:' + C.door || a === 'door:' + C.door) ? T.id : a;";
 const ONLY = (ids) => `const multi = ((G.data && G.data.plan && G.data.plan.rooms) || []).some((r) => r.floor); const fy = (f) => (G.world && G.world.floorY ? G.world.floorY(f) : f * 3.4); const floorOf = (y) => { let f = 0; while (f > -4 && y + 0.3 < fy(f) - 1.0) f--; while (f < 8 && fy(f + 1) <= y + 0.3) f++; return f; }; return G.selectables().filter((t) => ${JSON.stringify(ids)}.includes(t.id)).map((t) => ({ id: t.id, floor: multi ? floorOf(t.min[1]) : undefined, v: { min: t.min, max: t.max }, min: t.min, max: t.max }));`;
 const have = ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', 'C:/Program Files/Microsoft/Edge/Application/msedge.exe', 'C:/Program Files/Google/Chrome/Application/chrome.exe', '/usr/bin/google-chrome', '/usr/bin/chromium', process.env.BROWSER].filter(Boolean).some((p) => fs.existsSync(p));
@@ -27,4 +30,16 @@ test('select range: the trapdoor once the millstone is moved (scene hatch)', { s
   const r = spawnSync(process.execPath, ['tools/check-select-range.mjs', '--root', '.', '--preset', 'core', '--query', 'qa=1&autostart&scene=hatch', '--strict', '--things', ONLY(['station:S_HATCH'])], { encoding: 'utf8', timeout: 180000 });
   assert.equal(r.status, 0, r.stdout + r.stderr);
   assert.match(r.stdout, /station:S_HATCH/);
+});
+
+// 2.6.0: the flue charm from 燻しの間 (tools/play/flue-aim.mjs: 300 poses, 2.5.3 took 47 %) and a door's charm spot from both sides
+// (tools/play/door-back.mjs, play 2026-11-26 #5)
+const probe = (steps) => spawnSync(process.execPath, ['tools/probe.mjs', '--out', 'shots/probe-test', '--steps', steps], { encoding: 'utf8', timeout: 240000 });
+test('the flue charm is what [E] takes when aimed at from 燻しの間 (>= 95 % of 300 poses)', { skip: !have && 'no headless browser' }, () => {
+  const r = probe('tools/play/flue-aim.mjs'), m = /F_FLUE picked \d+ \/ \d+ (\d+)%/.exec(r.stdout);
+  assert.ok(m, r.stdout + r.stderr); assert.ok(+m[1] >= 95, r.stdout);
+});
+test('a door charm spot is pasted from the back and from the front, on the side you stand', { skip: !have && 'no headless browser' }, () => {
+  const r = probe('tools/play/door-back.mjs');
+  assert.match(r.stdout, /door-back: OK/, r.stdout + r.stderr);
 });

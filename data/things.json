@@ -426,15 +426,15 @@
     "feeling": "千草さんは、まだ生きていたとき、ここで書いたんだ。"
   },
   {
-    "size": 0.5,
+    "size": 0.4,
     "id": "IBUSHI_FLUE",
     "photo": "assets/photos/th-ibushi-flue.webp",
     "room": "IBUSHI",
     "position": [
       7.5,
-      -12.62
+      -12.88
     ],
-    "y": 1,
+    "y": 1.25,
     "label": "煙道の口",
     "text": [
       "北の壁に、石で囲った黒い口。燻しの煙を逃がす煙道だ。奥の室のほうへ続いている。",

@@ -49,7 +49,7 @@ export function installStory(ext, G) {
     if (!ctx || !G.usu) return;
     if (done('T_USU')) G.moveUsu(true);
     G.hatchCharm.visible = !done('T_HATCH') || (done('T_SEAL') && !done('T_RETURN'));
-    G.muroGlow.i = done('T_HATCH') ? MURO_I : 0; if (G.kilnGlow) G.kilnGlow.i = done('T_HATCH') ? 0.55 : 0; if (G.kilnPatch) for (const m of G.kilnPatch) m.visible = done('T_HATCH');
+    G.muroGlow.i = done('T_HATCH') ? MURO_I : 0; if (G.kilnGlow) G.kilnGlow.i = done('T_HATCH') ? G.KILN_I : 0; if (G.kilnPatch) for (const m of G.kilnPatch) m.visible = done('T_HATCH');
     G.combBox.visible = !done('T_BOX'); G.boxCord.visible = !done('T_BOX'); G.boxCharm.visible = !done('T_BOX');
     if (G.lure) G.lure.visible = done('T_LURE');
     if (done('T_TRAP') && !G.peeled.includes('F_FLUE')) G.peelQuiet('F_FLUE');
@@ -116,7 +116,7 @@ export function installStory(ext, G) {
   /** the run back did not end: the seals as they were when the comb was taken, she back by the drying rack */
   function resetHunt() {
     const s = huntSnap || { fuda: G.fuda, seals: { K_IBU: [Math.max(1, G.sealN('K_IBU')), 0], K_FLUE: [Math.max(2, G.sealN('K_FLUE')), 0, 1] } };
-    G.fuda = s.fuda; for (const [id, v] of Object.entries(s.seals)) G.setSeal(id, v[0], v[1], v.length > 2 ? !!v[2] : null);
+    G.fuda = s.fuda; for (const [id, v] of Object.entries(s.seals)) G.setSeal(id, v[0], v[1], v.length > 2 ? !!v[2] : null, v.length > 3 ? v[3] : null);
     // 2.4.0 #10: a charm she burnt off a door or a lid during the run is back on it after a catch
     if (s.peeled) for (const id of [...G.peeled]) if (!s.peeled.includes(id)) G.unpeel(id);
     G.showFuda();
@@ -224,7 +224,9 @@ export function installStory(ext, G) {
       if (re.test(src)) { F.fragmentShader = src.replace(re, (m, amt) => `float kcHot = smoothstep(0.42, 0.62, c.r - c.b) * smoothstep(0.72, 0.92, c.r) * smoothstep(0.5, 0.75, (c.r - c.b) / max(c.r, 0.001));
   c = mix(c, vec3(dot(c, vec3(0.3, 0.59, 0.11))), (${amt}) * (1.0 - kcHot));
   c = mix(c, c * vec3(1.12, 0.98, 0.85), kcHot);`); F.userData.kcHot = true; F.needsUpdate = true; } } }
-    G.koshiOld = [[2.22, -0.05], [2.98, 0.06]].map(([x, rz]) => { const m = new THREE.Mesh(G.charmGeo, G.burnMaterial()); m.position.set(x, ctx.world.floorY(0) + 1.78, -18.95); m.rotation.set(0, 0, rz); m.name = 'kc-koshi-old'; ctx.world.group.add(m); return m; });
+    // 2.6.0 (play 2026-11-26 #6 「最初に札が燃えるシーンは１枚ずつ順繰りに燃える感じに」): four old charms round the waxed one (top left,
+    // top right, bottom right, bottom left) - koshiScene burns them in that order, one after another
+    G.koshiOld = [[2.22, 1.78, -0.05], [2.98, 1.78, 0.06], [2.98, 0.78, 0.04], [2.22, 0.78, -0.07]].map(([x, y, rz]) => { const m = new THREE.Mesh(G.charmGeo, G.burnMaterial()); m.position.set(x, ctx.world.floorY(0) + y, -18.95); m.rotation.set(0, 0, rz); m.name = 'kc-koshi-old'; ctx.world.group.add(m); return m; });
     ctx.systems.push({ id: 'kc-story', def: { update: (dt, c2, active) => update(dt, active) }, inst: null });
     // the seal bar (the hatch pushed up from below)
     sealEl = document.createElement('div'); sealEl.id = 'kc-seal'; sealEl.className = 'kc-seal'; sealEl.hidden = true; sealEl.innerHTML = '<p>揚げ戸が押し上げられている</p><div class="kc-seal-bar"><i></i></div>';
@@ -283,7 +285,7 @@ export function installStory(ext, G) {
   // 2.4.0 #5 「電話の後、婆さんのネタバラシは聞きに行く形に」: after the call the player walks back to the lattice and asks
   ext.registerTask('T_HARU2', { run: async () => { await talk('haru_dead', '帳場の格子'); return true; } });
   ext.registerTask('T_USU', { canStart: () => (has('KOTEKO') ? true : W.usu_need), onDone: () => { G.moveUsu(); ctx.sound('noise', 'thud'); later(() => say('usu_done', 5), 1300); hatchSpot(); } });
-  ext.registerTask('T_HATCH', { run: async () => { ctx.sound('paper'); G.hatchCharm.visible = false; ctx.sound('creak'); G.setHatch(true); return true; }, onDone: () => { G.muroGlow.i = MURO_I; if (G.kilnGlow) G.kilnGlow.i = 0.55; if (G.kilnPatch) for (const m of G.kilnPatch) m.visible = true; ctx.world.setLampFloor(ctx.floor, true); hatchSpot(); G.ghostStart('cage', { at: CAGE_AT }); later(() => talk('hatch_done', '揚げ戸の札')); } });
+  ext.registerTask('T_HATCH', { run: async () => { ctx.sound('paper'); G.hatchCharm.visible = false; ctx.sound('creak'); G.setHatch(true); return true; }, onDone: () => { G.muroGlow.i = MURO_I; if (G.kilnGlow) G.kilnGlow.i = G.KILN_I; if (G.kilnPatch) for (const m of G.kilnPatch) m.visible = true; ctx.world.setLampFloor(ctx.floor, true); hatchSpot(); G.ghostStart('cage', { at: CAGE_AT }); later(() => talk('hatch_done', '揚げ戸の札')); } });
 
   // ---------------- L3: the 室, the corridor, the lattice, the flue ----------------
   ext.registerTask('T_LIGHT', { canStart: () => (has('TESHOKU') && has('MATCHES') ? true : W.light_need), onDone: () => { G.light0(true); ctx.sound('lighter'); later(() => talk('light_done', '室')); } });
@@ -314,7 +316,7 @@ export function installStory(ext, G) {
   // ---------------- L4: the comb, the run back, the hatch ----------------
   async function rise() {
     G.combBox.visible = false; G.boxCord.visible = false; G.boxCharm.visible = false;
-    huntSnap = { fuda: G.fuda, peeled: [...G.peeled], seals: Object.fromEntries([...G.seals.keys()].map((id) => [id, [G.sealN(id), 0, G.lidShut(id) ? 1 : 0]])) };
+    huntSnap = { fuda: G.fuda, peeled: [...G.peeled], seals: Object.fromEntries([...G.seals.keys()].map((id) => [id, [G.sealN(id), 0, G.lidShut(id) ? 1 : 0, G.sealSides(id)]])) };
     ctx.checkpoint = { ...CP.hunt };
     await talk('rise', '奥の棚');
     ctx.setLight(false); G.candleOut = true; ctx.sound('stinger'); ctx.fx && ctx.fx.spook && ctx.fx.spook(1);
@@ -342,10 +344,14 @@ export function installStory(ext, G) {
     ctx.sound('stinger'); ctx.fx && ctx.fx.spook && ctx.fx.spook(0.9);
     // 2.5.0 #5 「札が燃えるところが見える場面」: the eyes go to the lattice; the two plain old charms at its sides catch fire, curl and fall to
     // ash while she presses; the waxed one in the middle smokes and holds
-    G.turnTo = { x: 2.6, y: ctx.world.floorY(0) + 1.45, z: -19, t: 1.2 };
-    (G.koshiOld || []).forEach((m, i) => later(() => G.burnAway(m, 2.6), 350 + i * 650));
-    const C = G.charms.get('F_KOSHI'); if (C) { const u = C.mesh.material.userData; u.burn.value = 0.12; u.glow.value = 1; later(() => { u.glow.value = 0.2; }, 3400); }
-    await new Promise((r) => later(r, 4000));
+    G.turnTo = { x: 2.6, y: ctx.world.floorY(0) + 1.3, z: -19, t: 1.2 };
+    // 2.6.0 #6: one charm at a time - each catches only when the one before has burnt through and dropped (1.6 s, then 0.3 s of nothing),
+    // round the lattice; then the waxed one in the middle smokes and holds
+    const olds = G.koshiOld || [], BURN_S = 1.6, GAP = 300;
+    await new Promise((r) => later(r, 350));
+    for (const m of olds) { await new Promise((r) => G.burnAway(m, BURN_S, r)); await new Promise((r) => later(r, GAP)); }
+    const C = G.charms.get('F_KOSHI'); if (C) { const u = C.mesh.material.userData; u.burn.value = 0.12; u.glow.value = 1; later(() => { u.glow.value = 0.2; }, 2400); }
+    await new Promise((r) => later(r, 1200));
     await talk('koshi', '格子戸');
     ctx.completeTask('T_KOSHI_SEE');
     koshiBusy = false;
